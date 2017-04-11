@@ -9,9 +9,9 @@ int main(int argc, char *argv[])
 //    Player Player;
   //  Player.Health = 100;
 
-    SDL_Surface *ecran = NULL, *character = NULL, *bomb = NULL;
+    SDL_Surface *ecran = NULL, *character = NULL, *bomb = NULL, *background = NULL;
     SDL_Surface *map = NULL, *circle = NULL,*fog = NULL;
-    SDL_Rect characterPos,positionMap,sprite, bombPos;
+    SDL_Rect characterPos,positionMap,sprite, bombPos, spriteMap, positionDeplacementMap;
     int lastTime = 0, ActualTime = 0;
     SDL_Event event;
     int running = 1;
@@ -22,14 +22,15 @@ int main(int argc, char *argv[])
      /* sprintf(temps, "Temps : %d", compteur);
      texte = TTF_RenderText_Shaded(police, temps, couleurNoire, couleurBlanche);*/
 
-    ecran = SDL_SetVideoMode(717, 717, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    ecran = SDL_SetVideoMode(720, 720, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("WarGame #AFTEC", NULL);
 
-    map =  IMG_Load("res/background.bmp");
+    map =  IMG_Load("res/background.png");
     character =  IMG_Load("res/character.png");
     bomb = IMG_Load("res/000.png");
+    background = IMG_Load("res/backgroundblack.png");
     //fog = IMG_Load("res/fog.png");
-    circle =  IMG_Load("res/circle.bmp");
+    circle =  IMG_Load("res/fog.png");
    // SDL_SetColorKey(circle, SDL_SRCCOLORKEY, SDL_MapRGB(circle->format, 0, 162, 232));
    // SDL_SetColorKey(fog, SDL_SRCCOLORKEY, SDL_MapRGB(fog->format, 0, 162, 232));
     SDL_SetColorKey(circle, SDL_SRCCOLORKEY, SDL_MapRGB(circle->format, 160, 160, 164));
@@ -42,6 +43,10 @@ int main(int argc, char *argv[])
     sprite.y = 1;
     sprite.w = 32;
     sprite.h = 32;
+    spriteMap.x = 359;
+    spriteMap.y = 359;
+    spriteMap.w = 250;
+    spriteMap.h = 250;
 
     characterPos.x = ecran->w / 2 - character->w / 2;
     characterPos.y = ecran->h / 2 - character->h / 2;
@@ -62,32 +67,34 @@ int main(int argc, char *argv[])
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_UP: // Fleche haut
-                        characterPos.y--;
+                        //characterPos.y--;
+                        spriteMap.y--;
                         break;
                     case SDLK_DOWN: // Fleche bas
-                        characterPos.y++;
+                        //characterPos.y++;
+                        spriteMap.y++;
                         break;
                     case SDLK_RIGHT: // Fleche droite
-                        characterPos.x++;
+                        //characterPos.x++;
+                        spriteMap.x++;
                         break;
                     case SDLK_LEFT: // Fleche gauche
-                        characterPos.x--;
-                        printf("Gauche");
+                        //characterPos.x--;
+                        spriteMap.x--;
                         break;
                     case SDLK_SPACE: // Espace
                         SDL_BlitSurface(bomb, NULL, ecran, &characterPos);
-                        printf("Espace");
                         break;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
-                characterPos.x = event.button.x;
-                characterPos.y = event.button.y;
+                spriteMap.x = event.button.x;
+                spriteMap.y = event.button.y;
                 break;
         }
 
         ActualTime = SDL_GetTicks();
-    if (ActualTime - lastTime > 10)
+    if (ActualTime - lastTime > 5)
         {
        //     positioncharacter.x++;
         lastTime = ActualTime;
@@ -95,7 +102,7 @@ int main(int argc, char *argv[])
        else
            {
 
-            SDL_Delay(10 - (ActualTime - lastTime));
+            SDL_Delay(5 - (ActualTime - lastTime));
        }
 
 
@@ -108,16 +115,21 @@ int main(int argc, char *argv[])
 
 
         //DL_BlitSurface(bomb, NULL, ecran, &characterPos);
-        SDL_BlitSurface(map, NULL, ecran, &positionMap);
-       // SDL_FillRect(map, NULL, SDL_MapRGB(map->format, 255, 255, 255));
+        //SDL_FillRect(background, NULL, SDL_MapRGB(map->format, 255, 255, 255));
+        //SDL_BlitSurface(background, NULL, ecran, &positionMap);
+
+        positionDeplacementMap.y = characterPos.y - 125;
+        positionDeplacementMap.x = characterPos.x - 125;
+        SDL_BlitSurface(map, &spriteMap, ecran, &positionDeplacementMap);
+
 
        // SDL_FillRect(circle, &ecran->clip_rect, SDL_MapRGB(ecran->format, 1, 0, 0));
 
        // SDL_BlitSurface(fog, NULL, ecran, &positionMap);
         SDL_Rect circlePos = characterPos;
-        circlePos.x = characterPos.x - 135;
-        circlePos.y = characterPos.y - 135;
-        SDL_BlitSurface(circle, NULL, ecran, &circlePos);
+        circlePos.x = characterPos.x - 750;
+        circlePos.y = characterPos.y - 750;
+        //SDL_BlitSurface(circle, NULL, ecran, &circlePos);
         SDL_BlitSurface(character, &sprite, ecran, &characterPos);
         SDL_Flip(ecran);
 
