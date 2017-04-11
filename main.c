@@ -27,11 +27,11 @@ int main(int argc, char *argv[])
     ecran = SDL_SetVideoMode(717, 717, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("WarGame #AFTEC", NULL);
 
-    map =  IMG_Load("background.bmp");
-    character =  IMG_Load("character.png");
-    bomb = IMG_Load("000.png");
-    fog = IMG_Load("fog.png");
-    circle =  IMG_Load("circle.bmp");
+    map =  IMG_Load("res\\background.bmp");
+    character =  IMG_Load("res\\character.png");
+    bomb = IMG_Load("res\\000.png");
+    fog = IMG_Load("res\\fog.png");
+    circle =  IMG_Load("res\\circle.bmp");
    // SDL_SetColorKey(circle, SDL_SRCCOLORKEY, SDL_MapRGB(circle->format, 0, 162, 232));
    // SDL_SetColorKey(fog, SDL_SRCCOLORKEY, SDL_MapRGB(fog->format, 0, 162, 232));
      SDL_SetColorKey(circle, SDL_SRCCOLORKEY, SDL_MapRGB(circle->format, 160, 160, 164));

@@ -38,8 +38,8 @@
 			<Add option="-lmingw32" />
 			<Add option="-lSDLmain" />
 			<Add option="-lSDL" />
-			<Add option="SDL_ttf.lib" />
-			<Add option="SDL_image.lib" />
+			<Add option="lib\SDL_ttf.lib" />
+			<Add option="lib\SDL_image.lib" />
 			<Add library="mingw32" />
 			<Add library="SDLmain" />
 			<Add library="SDL.dll" />
