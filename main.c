@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     SDL_Surface *map = NULL, *circle = NULL,*fog = NULL;
     SDL_Rect characterPos,positionMap,sprite, bombPos, spriteMap, positionDeplacementMap;
     int lastTime = 0, ActualTime = 0;
+    int ecranWidth = 500, ecranHeight = 500;
     SDL_Event event;
     int running = 1;
     SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
      /* sprintf(temps, "Temps : %d", compteur);
      texte = TTF_RenderText_Shaded(police, temps, couleurNoire, couleurBlanche);*/
 
-    ecran = SDL_SetVideoMode(720, 720, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    ecran = SDL_SetVideoMode(ecranWidth, ecranHeight, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("WarGame #AFTEC", NULL);
 
     map =  IMG_Load("res/background.png");
@@ -41,11 +42,11 @@ int main(int argc, char *argv[])
     sprite.h = 32;
     spriteMap.x = map->w/2;
     spriteMap.y = map->h/2;
-    spriteMap.w = 250;
-    spriteMap.h = 250;
+    spriteMap.w = ecranWidth;
+    spriteMap.h = ecranHeight;
 
-    characterPos.x = ecran->w / 2 - character->w / 2;
-    characterPos.y = ecran->h / 2 - character->h / 2;
+    characterPos.x = ecran->w/2;
+    characterPos.y = ecran->h/2;
 
     SDL_EnableKeyRepeat(10, 5);
 
