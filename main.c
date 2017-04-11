@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <Item.h>
 // NO NEED RIGHT NOW #include <SDL/SDL_ttf.h>
 
 int main(int argc, char *argv[])
@@ -9,11 +10,11 @@ int main(int argc, char *argv[])
 // NO NEED RIGHT NOW  Player Player;
 // NO NEED RIGHT NOW  Player.Health = 100;
 
-    SDL_Surface *ecran = NULL, *character = NULL, *bomb = NULL, *background = NULL;
-    SDL_Surface *map = NULL, *circle = NULL,*fog = NULL;
+    SDL_Surface *ecran = NULL, *character = NULL, *bomb = NULL;
+    SDL_Surface *map = NULL,*fog = NULL;
     SDL_Rect characterPos,positionMap,sprite, bombPos, spriteMap, positionDeplacementMap;
     int lastTime = 0, ActualTime = 0;
-    int ecranWidth = 500, ecranHeight = 500;
+    int ecranWidth = 250, ecranHeight = 250;
     SDL_Event event;
     int running = 1;
     SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
@@ -29,9 +30,7 @@ int main(int argc, char *argv[])
     map =  IMG_Load("res/background.png");
     character =  IMG_Load("res/character.png");
     bomb = IMG_Load("res/000.png");
-    background = IMG_Load("res/backgroundblack.png");
-    //fog = IMG_Load("res/fog.png");
-    circle =  IMG_Load("res/fog.png");
+    fog = IMG_Load("res/fog.png");
     bombPos.x = 0;
     bombPos.y = 0;
     positionMap.x = 0;
@@ -56,6 +55,7 @@ int main(int argc, char *argv[])
         positionDeplacementMap.x = characterPos.x - spriteMap.w/2;
         SDL_BlitSurface(map, &spriteMap, ecran, &positionDeplacementMap);
         SDL_BlitSurface(character, &sprite, ecran, &characterPos);
+        SDL_BlitSurface(fog, NULL, ecran, &positionMap);
         SDL_PollEvent(&event);
         switch(event.type)
         {
@@ -103,11 +103,9 @@ int main(int argc, char *argv[])
             SDL_Delay(5 - (ActualTime - lastTime));
        }
 
-
         SDL_Flip(ecran);
 
     }
-
     SDL_FreeSurface(character);
     SDL_Quit();
 
