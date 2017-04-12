@@ -13,6 +13,7 @@
 int lastTime = 0, lastTimeAnim = 0,ActualTime = 0,ActualTimeAnim = 0;
 int const SleepTime = 5;
 int const SleepTimeAnim = 200;
+bool tour=true;
 Engine _engine;
 Player mainPlayer;
 int main(int argc, char *argv[])
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
 
     int running = 1;
     _engine.mapSurface =  IMG_Load("res/background.png");
-    _engine.fogSurface = IMG_Load("res/fog.png");
+    _engine.fogSurface = IMG_Load("res/fog_500.png");
     _engine.bombSurface = IMG_Load("res/000.png");
 
 
@@ -94,15 +95,32 @@ int GetKeyPressEvent()
                         _engine.mapRect.y--;
                         if (keystates[SDLK_RIGHT])
                         {
-                            _engine.mapRect.x++;
-                            mainPlayer.state = UP_RIGTH;
+                            if(tour)
+                            {
+                                _engine.mapRect.x++;
+                                mainPlayer.state = UP_RIGTH;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.y++;
+                                tour = true;
+                            }
 
                         }
                         else  if (keystates[SDLK_LEFT])
                         {
-                            _engine.mapRect.x--;
-                            mainPlayer.state = UP_LEFT;
-
+                            if(tour)
+                            {
+                                _engine.mapRect.x--;
+                                mainPlayer.state = UP_LEFT;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.y++;
+                                tour = true;
+                            }
                         }
                         else
                              mainPlayer.state = UP;
@@ -112,15 +130,31 @@ int GetKeyPressEvent()
                          _engine.mapRect.y++;
                         if (keystates[SDLK_RIGHT])
                         {
-                            _engine.mapRect.x++;
-                            mainPlayer.state = DOWN_RIGTH;
-
+                            if(tour)
+                            {
+                                _engine.mapRect.x++;
+                                mainPlayer.state = DOWN_RIGTH;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.y--;
+                                tour = true;
+                            }
                         }
                         else  if (keystates[SDLK_LEFT])
                         {
-                            _engine.mapRect.x--;
-                            mainPlayer.state = DOWN_LEFT;
-
+                            if(tour)
+                            {
+                                _engine.mapRect.x--;
+                                mainPlayer.state = DOWN_LEFT;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.y--;
+                                tour = true;
+                            }
                         }
                         else
                             mainPlayer.state = DOWN;
@@ -131,13 +165,31 @@ int GetKeyPressEvent()
                           _engine.mapRect.x++;
                         if (keystates[SDLK_UP])
                         {
-                            _engine.mapRect.y--;
-                            mainPlayer.state = UP_RIGTH;
+                            if(tour)
+                            {
+                                _engine.mapRect.y--;
+                                mainPlayer.state = UP_RIGTH;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.x--;
+                                tour = true;
+                            }
                         }
                         else  if (keystates[SDLK_DOWN])
                         {
-                            _engine.mapRect.y++;
-                            mainPlayer.state = DOWN_RIGTH;
+                            if(tour)
+                            {
+                                _engine.mapRect.y++;
+                                mainPlayer.state = DOWN_RIGTH;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.x--;
+                                tour = true;
+                            }
                         }
                         else
                             mainPlayer.state = RIGTH;
@@ -148,13 +200,31 @@ int GetKeyPressEvent()
                          _engine.mapRect.x--;
                         if (keystates[SDLK_UP])
                         {
-                            _engine.mapRect.y--;
-                            mainPlayer.state = UP_LEFT;
+                            if(tour)
+                            {
+                                _engine.mapRect.y--;
+                                mainPlayer.state = UP_LEFT;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.x++;
+                                tour = true;
+                            }
                         }
                         else  if (keystates[SDLK_DOWN])
                         {
-                            _engine.mapRect.y++;
-                            mainPlayer.state = DOWN_LEFT;
+                        if(tour)
+                            {
+                                _engine.mapRect.y++;
+                                mainPlayer.state = DOWN_LEFT;
+                                tour = false;
+                            }
+                            else
+                            {
+                                _engine.mapRect.x++;
+                                tour = true;
+                            }
                         }
                         else
                             mainPlayer.state = LEFT;
