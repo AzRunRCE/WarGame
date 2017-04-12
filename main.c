@@ -16,10 +16,12 @@ int const SleepTimeAnim = 200;
 bool tour=true;
 Engine _engine;
 Player mainPlayer;
+char debug[30];
+SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
 int main(int argc, char *argv[])
 {
-    _engine.WIDTH = 500;
-    _engine.HEIGTH = 500;
+    _engine.WIDTH = 360;
+    _engine.HEIGTH = 360;
     //SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
     if(SDL_Init(SDL_INIT_VIDEO)== -1)
     {
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
     }
-
+    _engine.police = TTF_OpenFont("res/police.ttf", 10);
     _engine.screenSurface = SDL_SetVideoMode(_engine.WIDTH, _engine.HEIGTH, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     SDL_WM_SetCaption("WarGame #AFTEC", NULL);
 
@@ -43,15 +45,15 @@ int main(int argc, char *argv[])
 
     int running = 1;
     _engine.mapSurface =  IMG_Load("res/background.png");
-    _engine.fogSurface = IMG_Load("res/fog_500.png");
+    _engine.fogSurface = IMG_Load("res/fog_260.png");
     _engine.bombSurface = IMG_Load("res/000.png");
 
 
 
     _engine.mapRect.x = _engine.mapSurface->w/2;
     _engine.mapRect.y = _engine.mapSurface->h/2;
-    _engine.mapRect.w = _engine.WIDTH;
-    _engine.mapRect.h = _engine.HEIGTH;
+    _engine.mapRect.w = 720;
+    _engine.mapRect.h = 720;
 
     mainPlayer.characterScreenRect.x = _engine.screenSurface->w/2 - 16;
     mainPlayer.characterScreenRect.y = _engine.screenSurface->h/2 - 16;
@@ -67,8 +69,10 @@ int main(int argc, char *argv[])
 
         SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.screenSurface, NULL);
         SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, _engine.screenSurface, &mainPlayer.characterScreenRect);
-        SDL_BlitSurface(_engine.fogSurface, NULL, _engine.screenSurface, NULL);
-
+       // SDL_BlitSurface(_engine.fogSurface, NULL, _engine.screenSurface, NULL);
+        sprintf(debug, "Position Joueur : x:%d y:%d",  _engine.mapRect.x, _engine.mapRect.y);
+        _engine.texteSurface = TTF_RenderText_Shaded(_engine.police, debug, couleurNoire, couleurBlanche);
+        SDL_BlitSurface(_engine.texteSurface, NULL, _engine.screenSurface, NULL);
         SDL_PollEvent(&_engine.event);
         FrameDelay();
         SDL_Flip(_engine.screenSurface);
@@ -89,9 +93,12 @@ int GetKeyPressEvent()
                 return 0;
                 break;
             case SDL_KEYDOWN:
+
                 switch(_engine.event.key.keysym.sym)
                 {
                     case SDLK_UP: // Fleche haut
+                        if (_engine.mapRect.y <= -180)
+                            return 1;
                         _engine.mapRect.y--;
                         if (keystates[SDLK_RIGHT])
                         {
@@ -126,7 +133,9 @@ int GetKeyPressEvent()
                              mainPlayer.state = UP;
                         mainPlayer.walk = true;
                         break;
-                    case SDLK_DOWN: // Fleche bas
+                    case SDLK_DOWN:
+                         if (_engine.mapRect.y >= 720 - 180)
+                            return 1; // Fleche bas
                          _engine.mapRect.y++;
                         if (keystates[SDLK_RIGHT])
                         {
@@ -161,8 +170,9 @@ int GetKeyPressEvent()
                         mainPlayer.walk = true;
                         break;
                     case SDLK_RIGHT: // Fleche droite
-
-                          _engine.mapRect.x++;
+                        if (_engine.mapRect.x >= 540)
+                             return 1;
+                        _engine.mapRect.x++;
                         if (keystates[SDLK_UP])
                         {
                             if(tour)
@@ -196,7 +206,8 @@ int GetKeyPressEvent()
                         mainPlayer.walk = true;
                         break;
                     case SDLK_LEFT: // Fleche gauche
-                        //characterPos.x--;
+                        if (_engine.mapRect.x <= -180)
+                             return 1;
                          _engine.mapRect.x--;
                         if (keystates[SDLK_UP])
                         {

@@ -17,6 +17,9 @@ struct Engine {
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
 
+    SDL_Rect *texteSurface;
+    TTF_Font *police;
+
     SDL_Surface *bombSurface;
 
     Player playerList[15];
