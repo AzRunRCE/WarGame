@@ -12,13 +12,13 @@
 
 int lastTime = 0, lastTimeAnim = 0,ActualTime = 0,ActualTimeAnim = 0;
 int const SleepTime = 5;
-int const SleepTimeAnim = 120;
+int const SleepTimeAnim = 200;
 Engine _engine;
 Player mainPlayer;
 int main(int argc, char *argv[])
 {
-    _engine.WIDTH = 260;
-    _engine.HEIGTH = 260;
+    _engine.WIDTH = 500;
+    _engine.HEIGTH = 500;
     //SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
     if(SDL_Init(SDL_INIT_VIDEO)== -1)
     {
@@ -57,12 +57,11 @@ int main(int argc, char *argv[])
 
     SDL_EnableKeyRepeat(10, 5);
 
-    while (GetKeyPressEvent(&_engine.event))
+    while (GetKeyPressEvent())
     {
-        if (mainPlayer.walk && mainPlayer.step < 4 && AnimDelay() )
-            mainPlayer.step++;
-        else if (mainPlayer.walk && mainPlayer.step > 3)
-            mainPlayer.step = 0;
+
+
+
         ft_getCharactSprite(&mainPlayer);
 
         SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.screenSurface, NULL);
@@ -80,53 +79,95 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-int GetKeyPressEvent(SDL_Event *ev)
+int GetKeyPressEvent()
 {
-    SDL_Event event = (*ev);
-    switch(event.type)
-    {
-        case SDL_QUIT:
-            return 0;
-            break;
-        case SDL_KEYDOWN:
-            switch(event.key.keysym.sym)
-            {
-                case SDLK_UP: // Fleche haut
-                        //characterPos.y--;
-                    _engine.mapRect.y--;
-                    mainPlayer.state = UP;
-                    mainPlayer.walk = true;
-                    break;
-                case SDLK_DOWN: // Fleche bas
-                        //characterPos.y++;
-                    _engine.mapRect.y++;
-                     mainPlayer.state = DOWN;
-                     mainPlayer.walk = true;
-                    break;
-                case SDLK_RIGHT: // Fleche droite
-                        //characterPos.x++;
-                    _engine.mapRect.x++;
-                     mainPlayer.state = RIGTH;
-                     mainPlayer.walk = true;
-                    break;
-                case SDLK_LEFT: // Fleche gauche
-                        //characterPos.x--;
-                    _engine.mapRect.x--;
-                    mainPlayer.state = LEFT;
-                    mainPlayer.walk = true;
-                    break;
-                case SDLK_SPACE: // Espace
-                    mainPlayer.fire = true;
+    Uint8 *keystates = SDL_GetKeyState(NULL);
+     switch(_engine.event.type)
+        {
+            case SDL_QUIT:
+                return 0;
+                break;
+            case SDL_KEYDOWN:
+                switch(_engine.event.key.keysym.sym)
+                {
+                    case SDLK_UP: // Fleche haut
+                        _engine.mapRect.y--;
+                        if (keystates[SDLK_RIGHT])
+                        {
+                            _engine.mapRect.x++;
+                            mainPlayer.state = UP_RIGTH;
 
-                    //SDL_BlitSurface(bomb, NULL, _engine.screen, &characterPos);
-                    break;
+                        }
+                        else  if (keystates[SDLK_LEFT])
+                        {
+                            _engine.mapRect.x--;
+                            mainPlayer.state = UP_LEFT;
+
+                        }
+                        else
+                             mainPlayer.state = UP;
+                        mainPlayer.walk = true;
+                        break;
+                    case SDLK_DOWN: // Fleche bas
+                         _engine.mapRect.y++;
+                        if (keystates[SDLK_RIGHT])
+                        {
+                            _engine.mapRect.x++;
+                            mainPlayer.state = DOWN_RIGTH;
+
+                        }
+                        else  if (keystates[SDLK_LEFT])
+                        {
+                            _engine.mapRect.x--;
+                            mainPlayer.state = DOWN_LEFT;
+
+                        }
+                        else
+                            mainPlayer.state = DOWN;
+                        mainPlayer.walk = true;
+                        break;
+                    case SDLK_RIGHT: // Fleche droite
+
+                          _engine.mapRect.x++;
+                        if (keystates[SDLK_UP])
+                        {
+                            _engine.mapRect.y--;
+                            mainPlayer.state = UP_RIGTH;
+                        }
+                        else  if (keystates[SDLK_DOWN])
+                        {
+                            _engine.mapRect.y++;
+                            mainPlayer.state = DOWN_RIGTH;
+                        }
+                        else
+                            mainPlayer.state = RIGTH;
+                        mainPlayer.walk = true;
+                        break;
+                    case SDLK_LEFT: // Fleche gauche
+                        //characterPos.x--;
+                         _engine.mapRect.x--;
+                        if (keystates[SDLK_UP])
+                        {
+                            _engine.mapRect.y--;
+                            mainPlayer.state = UP_LEFT;
+                        }
+                        else  if (keystates[SDLK_DOWN])
+                        {
+                            _engine.mapRect.y++;
+                            mainPlayer.state = DOWN_LEFT;
+                        }
+                        else
+                            mainPlayer.state = LEFT;
+                        mainPlayer.walk = true;
+                        break;
+                    case SDLK_SPACE: // Espace
+                        mainPlayer.fire = true;
+                        break;
             }
             break;
-        case SDL_MOUSEBUTTONUP:
-               // _engine.mapRect.x = event.button.x;
-                //_engine.mapRect.y = event.button.y;
-            break;
-    }
+        }
+
+
     return 1;
 }
 
