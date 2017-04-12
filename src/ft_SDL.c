@@ -1,5 +1,5 @@
 #include "sprite.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "player.h"
 void ft_getCharactSprite(Player *player)
 {

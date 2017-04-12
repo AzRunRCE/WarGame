@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
          /* Create the window where we will draw. */
         _engine.window = SDL_CreateWindow("Wargame #AFTEC",
                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                        512, 512,
+                        _engine.WIDTH, _engine.HEIGTH,
                         0);
         int h=0;
         int w=0;
@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
 
 
     mainPlayer.health = 100;
-    mainPlayer.characterSurface =  IMG_Load("res/character.png");
+    mainPlayer.characterSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
     mainPlayer.state = DOWN;
    // mainPlayer.spriteRect =  NULL;
    mainPlayer.step = 0;
 
     int running = 1;
-    _engine.mapSurface =  IMG_Load("res/background.png");
-    _engine.fogSurface = IMG_Load("res/fog_260.png");
-    _engine.bombSurface = IMG_Load("res/000.png");
+    _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
+    _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog_260.png");
+    // _engine.bombSurface = IMG_LoadTexture(_engine.screenRenderer, "res/000.png");
 
 
 
@@ -67,23 +67,21 @@ int main(int argc, char *argv[])
 
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
     mainPlayer.characterScreenRect.y = _engine.HEIGTH/2 - 16;
+    mainPlayer.characterScreenRect.w = 32;
+    mainPlayer.characterScreenRect.h = 32;
 
     // A REMETTRE SDL_EnableKeyRepeat(10, 5);
 
     while (GetKeyPressEvent())
     {
-
         ft_getCharactSprite(&mainPlayer);
         SDL_RenderClear(_engine.screenRenderer);
-        SDL_RenderCopy(_engine.screenRenderer, SDL_CreateTextureFromSurface(_engine.screenRenderer, _engine.mapSurface), NULL, NULL);
-        SDL_CreateTexture(_engine.screenRenderer, RGBA8888, aaa, 100, 200)
-     //   SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, r, NULL);
-       // SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, r, &mainPlayer.characterScreenRect);
-       // SDL_BlitSurface(_engine.fogSurface, NULL, r, NULL);
+        SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
+        SDL_RenderCopy(_engine.screenRenderer, mainPlayer.characterSurface , &mainPlayer.spriteRect, &mainPlayer.characterScreenRect);
+        SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 
         SDL_PollEvent(&_engine.event);
         FrameDelay();
-       //SDL_Flip(_engine.screenSurface);
         SDL_RenderPresent(_engine.screenRenderer);
         mainPlayer.fire = false;
         mainPlayer.walk = false;
