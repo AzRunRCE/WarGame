@@ -33,31 +33,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add directory="$(#sdl.include)" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL2-2.0.5/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-lmingw32" />
-			<Add option="-lSDLmain" />
-			<Add option="-lSDL" />
-			<Add option="lib\SDL_ttf.lib" />
-			<Add option="lib\SDL_image.lib" />
+			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL_ttf" />
 			<Add library="mingw32" />
-			<Add library="SDLmain" />
-			<Add library="SDL.dll" />
 			<Add library="user32" />
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="dxguid" />
-			<Add library="C:/Program Files (x86)/CodeBlocks/SDL-1.2.15/lib/SDL_image.lib" />
-			<Add library="C:/Program Files (x86)/CodeBlocks/SDL-1.2.15/lib/SDL_ttf.lib" />
-			<Add library="C:/Users/Greg/Nextcloud/DEV/Game/SDL_ttf.dll" />
 			<Add directory="$(#sdl.lib)" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL2-2.0.5/lib" />
 		</Linker>
 		<Unit filename="cb.bmp" />
-		<Unit filename="include/engine.h" />
+		<Unit filename="include/Engine.h" />
+		<Unit filename="include/Item.h" />
+		<Unit filename="include/Player.h" />
 		<Unit filename="include/ft_SDL.h" />
-		<Unit filename="include/item.h" />
 		<Unit filename="include/main.h" />
-		<Unit filename="include/player.h" />
 		<Unit filename="include/sprite.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

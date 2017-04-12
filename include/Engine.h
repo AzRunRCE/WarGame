@@ -9,7 +9,8 @@ struct Engine {
     int HEIGTH;
     SDL_Event event;
 
-    SDL_Surface *screenSurface;
+    SDL_Renderer* screenRenderer;
+    SDL_Window* window;
 
     SDL_Surface *mapSurface;
     SDL_Rect mapRect;

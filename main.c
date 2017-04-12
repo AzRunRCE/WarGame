@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "Item.h"
 #include "engine.h"
@@ -18,8 +18,8 @@ Engine _engine;
 Player mainPlayer;
 int main(int argc, char *argv[])
 {
-    _engine.WIDTH = 500;
-    _engine.HEIGTH = 500;
+    _engine.WIDTH = 260;
+    _engine.HEIGTH = 260;
     //SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
     if(SDL_Init(SDL_INIT_VIDEO)== -1)
     {
@@ -32,8 +32,20 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    _engine.screenSurface = SDL_SetVideoMode(_engine.WIDTH, _engine.HEIGTH, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-    SDL_WM_SetCaption("WarGame #AFTEC", NULL);
+    //_engine.screenSurface = SDL_SetVideoMode(_engine.WIDTH, _engine.HEIGTH, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    //SDL_WM_SetCaption("WarGame #AFTEC", NULL);
+         /* Create the window where we will draw. */
+        _engine.window = SDL_CreateWindow("Wargame #AFTEC",
+                        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                        512, 512,
+                        0);
+        int h=0;
+        int w=0;
+        SDL_GetWindowSize(&_engine.window, &w, &h);
+/* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
+        _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1, 0);
+/* Give us time to see the window. */
+        SDL_Delay(5000);
 
     mainPlayer.health = 100;
     mainPlayer.characterSurface =  IMG_Load("res/character.png");
@@ -43,7 +55,7 @@ int main(int argc, char *argv[])
 
     int running = 1;
     _engine.mapSurface =  IMG_Load("res/background.png");
-    _engine.fogSurface = IMG_Load("res/fog_500.png");
+    _engine.fogSurface = IMG_Load("res/fog_260.png");
     _engine.bombSurface = IMG_Load("res/000.png");
 
 
@@ -53,10 +65,10 @@ int main(int argc, char *argv[])
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGTH;
 
-    mainPlayer.characterScreenRect.x = _engine.screenSurface->w/2 - 16;
-    mainPlayer.characterScreenRect.y = _engine.screenSurface->h/2 - 16;
+    mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
+    mainPlayer.characterScreenRect.y = _engine.HEIGTH/2 - 16;
 
-    SDL_EnableKeyRepeat(10, 5);
+    // A REMETTRE SDL_EnableKeyRepeat(10, 5);
 
     while (GetKeyPressEvent())
     {
@@ -65,13 +77,14 @@ int main(int argc, char *argv[])
 
         ft_getCharactSprite(&mainPlayer);
 
-        SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.screenSurface, NULL);
-        SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, _engine.screenSurface, &mainPlayer.characterScreenRect);
-        SDL_BlitSurface(_engine.fogSurface, NULL, _engine.screenSurface, NULL);
+        SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.window, NULL);
+        SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, _engine.window, &mainPlayer.characterScreenRect);
+        SDL_BlitSurface(_engine.fogSurface, NULL, _engine.window, NULL);
 
         SDL_PollEvent(&_engine.event);
         FrameDelay();
-        SDL_Flip(_engine.screenSurface);
+       //SDL_Flip(_engine.screenSurface);
+        SDL_RenderPresent(_engine.screenRenderer);
         mainPlayer.fire = false;
         mainPlayer.walk = false;
     }
@@ -82,7 +95,7 @@ int main(int argc, char *argv[])
 
 int GetKeyPressEvent()
 {
-    Uint8 *keystates = SDL_GetKeyState(NULL);
+    Uint8 *keystates = SDL_GetKeyboardState(NULL);
      switch(_engine.event.type)
         {
             case SDL_QUIT:
