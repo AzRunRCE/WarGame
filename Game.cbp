@@ -36,7 +36,11 @@
 			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL2-2.0.5/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL_ttf" />
+			<Add option="-lmingw32" />
+			<Add option="-lSDL2main" />
+			<Add option="-lSDL2" />
+			<Add option="-lSDL2_image" />
+			<Add option="-lSDL_ttf" />
 			<Add library="mingw32" />
 			<Add library="user32" />
 			<Add library="gdi32" />

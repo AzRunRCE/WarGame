@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
         _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1, 0);
 /* Give us time to see the window. */
-        SDL_Delay(5000);
+
 
     mainPlayer.health = 100;
     mainPlayer.characterSurface =  IMG_Load("res/character.png");
@@ -73,13 +73,13 @@ int main(int argc, char *argv[])
     while (GetKeyPressEvent())
     {
 
-
-
         ft_getCharactSprite(&mainPlayer);
-
-        SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.window, NULL);
-        SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, _engine.window, &mainPlayer.characterScreenRect);
-        SDL_BlitSurface(_engine.fogSurface, NULL, _engine.window, NULL);
+        SDL_RenderClear(_engine.screenRenderer);
+        SDL_RenderCopy(_engine.screenRenderer, SDL_CreateTextureFromSurface(_engine.screenRenderer, _engine.mapSurface), NULL, NULL);
+        SDL_CreateTexture(_engine.screenRenderer, RGBA8888, aaa, 100, 200)
+     //   SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, r, NULL);
+       // SDL_BlitSurface(mainPlayer.characterSurface,&mainPlayer.spriteRect, r, &mainPlayer.characterScreenRect);
+       // SDL_BlitSurface(_engine.fogSurface, NULL, r, NULL);
 
         SDL_PollEvent(&_engine.event);
         FrameDelay();
