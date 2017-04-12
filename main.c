@@ -11,8 +11,8 @@
 #include "sprite.h"
 
 int lastTime = 0, lastTimeAnim = 0,ActualTime = 0,ActualTimeAnim = 0;
-int const SleepTime = 15;
-int const SleepTimeAnim = 100;
+int const SleepTime = 5;
+int const SleepTimeAnim = 120;
 Engine _engine;
 Player mainPlayer;
 int main(int argc, char *argv[])
@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     mainPlayer.characterSurface =  IMG_Load("res/character.png");
     mainPlayer.state = DOWN;
    // mainPlayer.spriteRect =  NULL;
+   mainPlayer.step = 0;
 
     int running = 1;
     _engine.mapSurface =  IMG_Load("res/background.png");
@@ -58,10 +59,10 @@ int main(int argc, char *argv[])
 
     while (GetKeyPressEvent(&_engine.event))
     {
-        if (mainPlayer.walk && mainPlayer.step < 3 )
+        if (mainPlayer.walk && mainPlayer.step < 4 && AnimDelay() )
             mainPlayer.step++;
-        else
-            mainPlayer.step = 1;
+        else if (mainPlayer.walk && mainPlayer.step > 3)
+            mainPlayer.step = 0;
         ft_getCharactSprite(&mainPlayer);
 
         SDL_BlitSurface( _engine.mapSurface, &_engine.mapRect, _engine.screenSurface, NULL);
@@ -133,13 +134,16 @@ int GetKeyPressEvent(SDL_Event *ev)
 bool AnimDelay()
 {
     ActualTimeAnim = SDL_GetTicks();
-    if (ActualTimeAnim - lastTimeAnim > SleepTimeAnim * 300 )
-      {
+    if (ActualTimeAnim - lastTimeAnim > SleepTimeAnim)
+    {
            lastTimeAnim = ActualTimeAnim;
            return true;
-      }
+    }
     else
-        return false;
+    {
+         return false;
+    }
+
 }
 void FrameDelay()
 {

@@ -7,7 +7,7 @@ void ft_getCharactSprite(Player *player)
     int step = player->step;
     if (player->fire == true)
     {
-        step = ft_getFirePosition(player->state);
+        step = ft_getFirePosition(state);
         state = 5;
     }
 
