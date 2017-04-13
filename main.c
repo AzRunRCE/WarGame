@@ -91,6 +91,8 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
+// KEY CODE https://wiki.libsdl.org/SDL_ScancodeAndKeycode?highlight=%28SDL_SCANCODE%29
+
 int GetKeyPressEvent()
 {
     Uint8 *keystates = SDL_GetKeyboardState(NULL);
@@ -102,9 +104,9 @@ int GetKeyPressEvent()
             case SDL_KEYDOWN:
                 switch(_engine.event.key.keysym.sym)
                 {
-                    case SDLK_UP: // Fleche haut
+                    case SDL_SCANCODE_UP: // Fleche haut
                         _engine.mapRect.y--;
-                        if (keystates[SDLK_RIGHT])
+                        if (keystates[SSDL_SCANCODE_RIGHT])
                         {
                             if(tour)
                             {
@@ -119,7 +121,7 @@ int GetKeyPressEvent()
                             }
 
                         }
-                        else  if (keystates[SDLK_LEFT])
+                        else  if (keystates[SDL_SCANCODE_LEFT])
                         {
                             if(tour)
                             {
@@ -137,9 +139,9 @@ int GetKeyPressEvent()
                              mainPlayer.state = UP;
                         mainPlayer.walk = true;
                         break;
-                    case SDLK_DOWN: // Fleche bas
+                    case SDL_SCANCODE_DOWN: // Fleche bas
                          _engine.mapRect.y++;
-                        if (keystates[SDLK_RIGHT])
+                        if (keystates[SDL_SCANCODE_RIGHT])
                         {
                             if(tour)
                             {
@@ -153,7 +155,7 @@ int GetKeyPressEvent()
                                 tour = true;
                             }
                         }
-                        else  if (keystates[SDLK_LEFT])
+                        else  if (keystates[SDL_SCANCODE_LEFT])
                         {
                             if(tour)
                             {
@@ -171,10 +173,10 @@ int GetKeyPressEvent()
                             mainPlayer.state = DOWN;
                         mainPlayer.walk = true;
                         break;
-                    case SDLK_RIGHT: // Fleche droite
+                    case SDL_SCANCODE_RIGHT: // Fleche droite
 
                           _engine.mapRect.x++;
-                        if (keystates[SDLK_UP])
+                        if (keystates[SDL_SCANCODE_UP])
                         {
                             if(tour)
                             {
@@ -188,7 +190,7 @@ int GetKeyPressEvent()
                                 tour = true;
                             }
                         }
-                        else  if (keystates[SDLK_DOWN])
+                        else  if (keystates[SDL_SCANCODE_DOWN])
                         {
                             if(tour)
                             {
@@ -206,10 +208,10 @@ int GetKeyPressEvent()
                             mainPlayer.state = RIGTH;
                         mainPlayer.walk = true;
                         break;
-                    case SDLK_LEFT: // Fleche gauche
+                    case SDL_SCANCODE_LEFT: // Fleche gauche
                         //characterPos.x--;
                          _engine.mapRect.x--;
-                        if (keystates[SDLK_UP])
+                        if (keystates[SDL_SCANCODE_UP])
                         {
                             if(tour)
                             {
@@ -223,7 +225,7 @@ int GetKeyPressEvent()
                                 tour = true;
                             }
                         }
-                        else  if (keystates[SDLK_DOWN])
+                        else  if (keystates[SDL_SCANCODE_DOWN])
                         {
                         if(tour)
                             {
