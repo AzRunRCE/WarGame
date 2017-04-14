@@ -104,9 +104,9 @@ int GetKeyPressEvent()
             case SDL_KEYDOWN:
                 switch(_engine.event.key.keysym.sym)
                 {
-                    case SDL_SCANCODE_UP: // Fleche haut
+                    case SDLK_UP: // Fleche haut
                         _engine.mapRect.y--;
-                        if (keystates[SSDL_SCANCODE_RIGHT])
+                        if (keystates[SDLK_RIGHT])
                         {
                             if(tour)
                             {
@@ -121,7 +121,7 @@ int GetKeyPressEvent()
                             }
 
                         }
-                        else  if (keystates[SDL_SCANCODE_LEFT])
+                        else  if (keystates[SDLK_LEFT])
                         {
                             if(tour)
                             {
@@ -139,44 +139,15 @@ int GetKeyPressEvent()
                              mainPlayer.state = UP;
                         mainPlayer.walk = true;
                         break;
-                    case SDL_SCANCODE_DOWN: // Fleche bas
+                    case SDLK_DOWN: // Fleche bas
                          _engine.mapRect.y++;
-                        if (keystates[SDL_SCANCODE_RIGHT])
-                        {
-                            if(tour)
-                            {
-                                _engine.mapRect.x++;
-                                mainPlayer.state = DOWN_RIGTH;
-                                tour = false;
-                            }
-                            else
-                            {
-                                _engine.mapRect.y--;
-                                tour = true;
-                            }
-                        }
-                        else  if (keystates[SDL_SCANCODE_LEFT])
-                        {
-                            if(tour)
-                            {
-                                _engine.mapRect.x--;
-                                mainPlayer.state = DOWN_LEFT;
-                                tour = false;
-                            }
-                            else
-                            {
-                                _engine.mapRect.y--;
-                                tour = true;
-                            }
-                        }
-                        else
-                            mainPlayer.state = DOWN;
+
                         mainPlayer.walk = true;
                         break;
-                    case SDL_SCANCODE_RIGHT: // Fleche droite
+                    case SDLK_RIGHT: // Fleche droite
 
                           _engine.mapRect.x++;
-                        if (keystates[SDL_SCANCODE_UP])
+                        if (keystates[SDLK_UP])
                         {
                             if(tour)
                             {
@@ -190,7 +161,7 @@ int GetKeyPressEvent()
                                 tour = true;
                             }
                         }
-                        else  if (keystates[SDL_SCANCODE_DOWN])
+                        else  if (keystates[SDLK_DOWN])
                         {
                             if(tour)
                             {
@@ -208,10 +179,10 @@ int GetKeyPressEvent()
                             mainPlayer.state = RIGTH;
                         mainPlayer.walk = true;
                         break;
-                    case SDL_SCANCODE_LEFT: // Fleche gauche
+                    case SDLK_LEFT: // Fleche gauche
                         //characterPos.x--;
                          _engine.mapRect.x--;
-                        if (keystates[SDL_SCANCODE_UP])
+                        if (keystates[SDLK_UP])
                         {
                             if(tour)
                             {
@@ -225,7 +196,7 @@ int GetKeyPressEvent()
                                 tour = true;
                             }
                         }
-                        else  if (keystates[SDL_SCANCODE_DOWN])
+                        else  if (keystates[SDLK_DOWN])
                         {
                         if(tour)
                             {
