@@ -6,7 +6,7 @@ typedef struct Engine Engine;
 
 struct Engine {
     int WIDTH;
-    int HEIGTH;
+    int HEIGHT;
     SDL_Event event;
 
     SDL_Renderer* screenRenderer;
