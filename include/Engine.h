@@ -19,9 +19,10 @@ struct Engine {
     SDL_Rect fogRect;
 
     SDL_Surface *bombSurface;
-
+    SDL_Surface *characterSurface;
+    SDL_Rect spriteRect;
     Player playerList[15];
-    Item ItemList[15];
+
     int Map[50][50];
 };
 

@@ -8,9 +8,7 @@ struct Player {
     char name[16];
     int health;
     bool fire;
-    SDL_Surface *characterSurface;
     SDL_Rect characterScreenRect;
-    SDL_Rect spriteRect;
     State state;
     int step;
     bool walk;

@@ -1,11 +1,15 @@
 #include "sprite.h"
 #include <SDL2/SDL.h>
+#include "Item.h"
+#include "engine.h"
+#include "ft_SDL.h"
 #include "player.h"
-void ft_getCharactSprite(Player *player)
+#include "sprite.h"
+
+void ft_GetPlayerOrientation(Player *player)
 {
     State state = player->state;
     int step = player->step;
-
     if (player->fire == true)
     {
         step = ft_getFirePosition(state);
@@ -21,13 +25,7 @@ void ft_getCharactSprite(Player *player)
         if ( player->walk &&  player->step > 3)
                  player->step = 0;
     }
-
-    player->spriteRect.x = 32 * step + (step + 1);
-    player->spriteRect.y = 32 * state + (state + 1);
-    player->spriteRect.h = 32;
-    player->spriteRect.w = 32;
 }
-
 
 int ft_getFirePosition(State characterState)
 {
