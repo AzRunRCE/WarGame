@@ -19,8 +19,8 @@ Player mainPlayer;
  Uint8 *keystate=NULL;
 int main(int argc, char *argv[])
 {
-    _engine.WIDTH = 260;
-    _engine.HEIGHT = 260;
+    _engine.WIDTH = 400;
+    _engine.HEIGHT = 300;
     keystate=SDL_GetKeyboardState(NULL);
     //SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
     if(SDL_Init(SDL_INIT_VIDEO)== -1)
@@ -34,9 +34,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    //_engine.screenSurface = SDL_SetVideoMode(_engine.WIDTH, _engine.HEIGTH, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-    //SDL_WM_SetCaption("WarGame #AFTEC", NULL);
-         /* Create the window where we will draw. */
+
         _engine.window = SDL_CreateWindow("Wargame #AFTEC",
                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                         _engine.WIDTH, _engine.HEIGHT,
@@ -56,15 +54,15 @@ int main(int argc, char *argv[])
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog_260.png");
     int running = 1;
-    SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+  SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
     // _engine.bombSurface = IMG_LoadTexture(_engine.screenRenderer, "res/000.png");
     _engine.mapRect.x = _engine.mapSurface->w/2;
     _engine.mapRect.y = _engine.mapSurface->h/2;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
 
-    mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
-    mainPlayer.characterScreenRect.y = _engine.HEIGHT/2 - 16;
+    mainPlayer.characterScreenRect.x = 200 - 16;
+    mainPlayer.characterScreenRect.y = 150 - 16;
     mainPlayer.characterScreenRect.w = 32;
     mainPlayer.characterScreenRect.h = 32;
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -81,7 +79,7 @@ int main(int argc, char *argv[])
         SDL_RenderClear(_engine.screenRenderer);
         SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
         SDL_RenderCopy(_engine.screenRenderer, mainPlayer.characterSurface , &mainPlayer.spriteRect, &mainPlayer.characterScreenRect);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+      //  SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
         SDL_RenderPresent(_engine.screenRenderer);
     }
     SDL_DestroyTexture(_engine.mapSurface);
