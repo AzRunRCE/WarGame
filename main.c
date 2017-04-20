@@ -21,8 +21,8 @@ SDL_Color couleurNoire = {0, 0, 0};
 SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
 int main(int argc, char *argv[])
 {
-    _engine.WIDTH = 260;
-    _engine.HEIGHT = 260;
+    _engine.WIDTH = 400;
+    _engine.HEIGHT = 300;
     TTF_Font *police = NULL;
     SDL_Surface *texte = NULL;
     SDL_Texture* blendedTexture;
@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
     mainPlayer.step = 0;
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog_260.png");
-    _engine.mapRect.x = 378;
-    _engine.mapRect.y = 354;
+    _engine.mapRect.x = 286;
+    _engine.mapRect.y = 330;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         SDL_RenderClear(_engine.screenRenderer);
         SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
         SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+        //SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
         SDL_RenderPresent(_engine.screenRenderer);
     }
     SDL_DestroyTexture(_engine.mapSurface);

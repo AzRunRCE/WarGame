@@ -21,7 +21,7 @@ typedef enum
     DOWN_LEFT = 6,
     LEFT = 7,
     UP_LEFT = 8,
-    FIRE =9,
+    FIRE = 9,
     UP_FIRE = 9,
     UP_RIGHT_FIRE = 9,
     RIGHT_FIRE = 9,
