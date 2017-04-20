@@ -123,7 +123,7 @@ int GetKeyPressEvent()
             if (_engine.event.type == SDL_QUIT)
               return 0;
         }
-           mainPlayer.fire = false;
+        mainPlayer.fire = false;
         mainPlayer.walk = false;
         if (keystate[SDL_SCANCODE_SPACE] )
           mainPlayer.fire = true;
@@ -161,6 +161,14 @@ int GetKeyPressEvent()
             SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
         if (keystates[SDL_SCANCODE_ESCAPE])
             SDL_SetWindowFullscreen(_engine.window,0);
+        if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_UP])
+            mainPlayer.state = UP_RIGHT;
+        else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_UP])
+            mainPlayer.state = UP_LEFT;
+        else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_DOWN])
+            mainPlayer.state = DOWN_LEFT;
+        else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
+            mainPlayer.state = DOWN_RIGHT;
          }
 
     return 1;
