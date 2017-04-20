@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
-    mainPlayer.characterScreenRect.y = _engine.WIDTH/2 - 16;
+    mainPlayer.characterScreenRect.y = _engine.HEIGHT/2 - 16;
     mainPlayer.characterScreenRect.w = 32;
     mainPlayer.characterScreenRect.h = 32;
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
    //SDL_Surface* solid = TTF_RenderText_Blended( police, "plop", couleurNoire );
 
 	//blendedTexture = SurfaceToTexture( solid );
-SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+//SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
     while (GetKeyPressEvent())
     {
         ft_GetPlayerOrientation(&mainPlayer);

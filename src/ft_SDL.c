@@ -25,6 +25,7 @@ void ft_GetPlayerOrientation(Player *player)
         if ( player->walk &&  player->step > 3)
                  player->step = 0;
     }
+    ft_getCharactSprite(state,step);
 }
 
 int ft_getFirePosition(State characterState)
