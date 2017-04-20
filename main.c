@@ -140,7 +140,7 @@ int GetKeyPressEvent()
         {
             if(_engine.mapRect.x >= 710) return 1;
             _engine.mapRect.x += 2;
-            mainPlayer.state = RIGTH;
+            mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_DOWN] )

@@ -36,13 +36,13 @@ int ft_getFirePosition(State characterState)
         case UP:
            step =  0;
            break;
-        case UP_RIGTH:
+        case UP_RIGHT:
            step =  1;
            break;
-        case RIGTH:
+        case RIGHT:
            step =  2;
            break;
-        case DOWN_RIGTH:
+        case DOWN_RIGHT:
            step =  3;
            break;
         case DOWN:
