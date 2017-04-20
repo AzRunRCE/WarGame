@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
    //SDL_Surface* solid = TTF_RenderText_Blended( police, "plop", couleurNoire );
 
 	//blendedTexture = SurfaceToTexture( solid );
-//SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
     while (GetKeyPressEvent())
     {
         ft_GetPlayerOrientation(&mainPlayer);
@@ -158,11 +157,10 @@ int GetKeyPressEvent()
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
-        if (keystates[SDL_SCANCODE_Q])
-        {
-
-        }
-
+        if (keystates[SDL_SCANCODE_F])
+            SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+        if (keystates[SDL_SCANCODE_ESCAPE])
+            SDL_SetWindowFullscreen(_engine.window,0);
          }
 
     return 1;
