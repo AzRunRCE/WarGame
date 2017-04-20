@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     mainPlayer.state = DOWN;
     mainPlayer.step = 0;
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
-    _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog_260.png");
+    _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
     _engine.mapRect.x = 400;
     _engine.mapRect.y = 400;
     _engine.mapRect.w = _engine.WIDTH;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         SDL_RenderClear(_engine.screenRenderer);
         SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
         SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
-        //SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+        SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
         SDL_RenderPresent(_engine.screenRenderer);
     }
     SDL_DestroyTexture(_engine.mapSurface);
@@ -131,28 +131,28 @@ int GetKeyPressEvent()
         {
         if (keystate[SDL_SCANCODE_LEFT] )
         {
-          if(_engine.mapRect.x <= 45) return 1;
+          if(_engine.mapRect.x <= 48) return 1;
           _engine.mapRect.x -= 2;
           mainPlayer.state = LEFT;
           mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_RIGHT] )
         {
-            if(_engine.mapRect.x >= 755) return 1;
+            if(_engine.mapRect.x >= 752) return 1;
             _engine.mapRect.x += 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_DOWN] )
         {
-            if(_engine.mapRect.y >= 745) return 1;
+            if(_engine.mapRect.y >= 752) return 1;
             _engine.mapRect.y += 2;
             mainPlayer.state = DOWN;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_UP] )
         {
-            if(_engine.mapRect.y <= 45) return 1;
+            if(_engine.mapRect.y <= 48) return 1;
             _engine.mapRect.y -= 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
