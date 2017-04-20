@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
     mainPlayer.step = 0;
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog_260.png");
-    _engine.mapRect.x = 286;
-    _engine.mapRect.y = 330;
+    _engine.mapRect.x = 400;
+    _engine.mapRect.y = 400;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
@@ -131,28 +131,28 @@ int GetKeyPressEvent()
         {
         if (keystate[SDL_SCANCODE_LEFT] )
         {
-          if(_engine.mapRect.x <= 0) return 1;
+          if(_engine.mapRect.x <= 45) return 1;
           _engine.mapRect.x -= 2;
           mainPlayer.state = LEFT;
           mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_RIGHT] )
         {
-            if(_engine.mapRect.x >= 710) return 1;
+            if(_engine.mapRect.x >= 755) return 1;
             _engine.mapRect.x += 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_DOWN] )
         {
-            if(_engine.mapRect.y >= 710) return 1;
+            if(_engine.mapRect.y >= 745) return 1;
             _engine.mapRect.y += 2;
             mainPlayer.state = DOWN;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_UP] )
         {
-            if(_engine.mapRect.y <= 0) return 1;
+            if(_engine.mapRect.y <= 45) return 1;
             _engine.mapRect.y -= 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
@@ -161,7 +161,8 @@ int GetKeyPressEvent()
             SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
         if (keystates[SDL_SCANCODE_ESCAPE])
             SDL_SetWindowFullscreen(_engine.window,0);
-        if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_UP])
+         }
+         if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_UP])
             mainPlayer.state = UP_RIGHT;
         else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_UP])
             mainPlayer.state = UP_LEFT;
@@ -169,7 +170,6 @@ int GetKeyPressEvent()
             mainPlayer.state = DOWN_LEFT;
         else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
             mainPlayer.state = DOWN_RIGHT;
-         }
 
     return 1;
 }
