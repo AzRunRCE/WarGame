@@ -19,8 +19,10 @@ Player mainPlayer;
 Uint8 *keystate=NULL;
 SDL_Color couleurNoire = {0, 0, 0};
 SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
+SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
+    _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
     TTF_Font *police = NULL;
@@ -73,24 +75,29 @@ int main(int argc, char *argv[])
    //SDL_Surface* solid = TTF_RenderText_Blended( police, "plop", couleurNoire );
 
 	//blendedTexture = SurfaceToTexture( solid );
-    while (GetKeyPressEvent())
-    {
-        ft_GetPlayerOrientation(&mainPlayer);
-        SDL_RenderClear(_engine.screenRenderer);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
-        SDL_RenderPresent(_engine.screenRenderer);
-    }
-    SDL_DestroyTexture(_engine.mapSurface);
-    SDL_DestroyTexture(_engine.characterSurface);
-    SDL_DestroyTexture(_engine.fogSurface);
-	SDL_DestroyRenderer(_engine.screenRenderer);
-	SDL_DestroyWindow(_engine.window);
+        while (GetKeyPressEvent())
+        {
+            //fprintf(stderr, "_engine.mapRect.x : %d\n", _engine.mapRect.x);
+            //fprintf(stderr, "_engine.mapRect.y : %d\n", _engine.mapRect.y);
+            /*SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+            MousePosition(mousePosition.x, mousePosition.y);*/
+            ft_GetPlayerOrientation(&mainPlayer);
+            SDL_RenderClear(_engine.screenRenderer);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+            SDL_RenderPresent(_engine.screenRenderer);
+        }
+        SDL_DestroyTexture(_engine.mapSurface);
+        SDL_DestroyTexture(_engine.characterSurface);
+        SDL_DestroyTexture(_engine.fogSurface);
+        SDL_DestroyRenderer(_engine.screenRenderer);
+        SDL_DestroyWindow(_engine.window);
 
-    SDL_Quit();
-    return EXIT_SUCCESS;
-}
+        SDL_Quit();
+        return EXIT_SUCCESS;
+    }
+
 
 // KEY CODE https://wiki.libsdl.org/SDL_ScancodeAndKeycode?highlight=%28SDL_SCANCODE%29
 
@@ -158,7 +165,20 @@ int GetKeyPressEvent()
             mainPlayer.walk = true;
         }
         if (keystates[SDL_SCANCODE_F])
-            SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+        {
+            if (_engine.fullscreen == 0)
+            {
+                SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+                _engine.fullscreen = 1;
+            }
+            /* WTF
+            else
+            {
+               SDL_SetWindowFullscreen(_engine.window,0);
+               _engine.fullscreen = 0;
+            }
+            */
+        }
         if (keystates[SDL_SCANCODE_ESCAPE])
             SDL_SetWindowFullscreen(_engine.window,0);
          }
@@ -170,6 +190,28 @@ int GetKeyPressEvent()
             mainPlayer.state = DOWN_LEFT;
         else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
             mainPlayer.state = DOWN_RIGHT;
+
+    /*SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+    SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);*/
+    SDL_Log("fullscreen : %i", _engine.fullscreen);
+    /*if (mousePosition.x > _engine.WIDTH/2)
+        mainPlayer.state = RIGHT;
+    if (mousePosition.x < _engine.WIDTH/2)
+        mainPlayer.state = LEFT;
+    if (mousePosition.y > _engine.HEIGHT/2)
+        mainPlayer.state = DOWN;
+    if (mousePosition.y < _engine.HEIGHT/2)
+        mainPlayer.state = UP;
+    if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
+        mainPlayer.state= DOWN_RIGHT;
+    if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
+        mainPlayer.state= UP_RIGHT;
+    if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
+        mainPlayer.state= DOWN_LEFT;
+    if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
+        mainPlayer.state= UP_LEFT;*/
+    if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
+        mainPlayer.fire = true;
 
     return 1;
 }
@@ -197,3 +239,8 @@ void FrameDelay()
     else
         SDL_Delay(SleepTime - (ActualTime - lastTime));
 }
+
+/*void MousePosition(int lastx, int lasty)
+{
+
+}*/
