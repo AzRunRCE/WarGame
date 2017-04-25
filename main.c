@@ -124,8 +124,8 @@ SDL_Texture* SurfaceToTexture( SDL_Surface* surf )
 
 int GetKeyPressEvent()
 {
-    Uint8 *keystates = SDL_GetKeyboardState(NULL);
-     if (SDL_PollEvent(&_engine.event))//close the window
+        Uint8 *keystates = SDL_GetKeyboardState(NULL);
+        if (SDL_PollEvent(&_engine.event))//close the window
         {
             if (_engine.event.type == SDL_QUIT)
               return 0;
@@ -164,20 +164,18 @@ int GetKeyPressEvent()
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
-        if (keystates[SDL_SCANCODE_F])
+        if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
-            if (_engine.fullscreen == 0)
+            if (_engine.fullscreen == 1)
             {
                 SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
-                _engine.fullscreen = 1;
+                _engine.fullscreen = 0;
             }
-            /* WTF
             else
             {
                SDL_SetWindowFullscreen(_engine.window,0);
-               _engine.fullscreen = 0;
+               _engine.fullscreen = 1;
             }
-            */
         }
         if (keystates[SDL_SCANCODE_ESCAPE])
             SDL_SetWindowFullscreen(_engine.window,0);
@@ -191,25 +189,26 @@ int GetKeyPressEvent()
         else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
             mainPlayer.state = DOWN_RIGHT;
 
-    /*SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
-    SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);*/
-    SDL_Log("fullscreen : %i", _engine.fullscreen);
-    /*if (mousePosition.x > _engine.WIDTH/2)
+    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+ //  SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);
+   // SDL_Log("fullscreen : %i", _engine.fullscreen);
+    if (mousePosition.x > _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115) )
         mainPlayer.state = RIGHT;
-    if (mousePosition.x < _engine.WIDTH/2)
-        mainPlayer.state = LEFT;
-    if (mousePosition.y > _engine.HEIGHT/2)
-        mainPlayer.state = DOWN;
-    if (mousePosition.y < _engine.HEIGHT/2)
-        mainPlayer.state = UP;
-    if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
+    else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
         mainPlayer.state= DOWN_RIGHT;
-    if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-        mainPlayer.state= UP_RIGHT;
-    if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
+    else  if (mousePosition.y > _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
+        mainPlayer.state = DOWN;
+    else if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
         mainPlayer.state= DOWN_LEFT;
-    if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-        mainPlayer.state= UP_LEFT;*/
+    else  if (mousePosition.x < _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115))
+        mainPlayer.state = LEFT;
+    else  if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
+        mainPlayer.state= UP_LEFT;
+    else if (mousePosition.y < _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
+        mainPlayer.state = UP;
+    else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
+        mainPlayer.state= UP_RIGHT;
+
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
         mainPlayer.fire = true;
 
