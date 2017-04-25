@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     // A REMETTRE SDL_EnableKeyRepeat(10, 5);
-
+SDL_ShowCursor(SDL_DISABLE);
 
 
 
@@ -136,7 +136,7 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
-        if (keystate[SDL_SCANCODE_LEFT] )
+       /* if (keystate[SDL_SCANCODE_LEFT] )
         {
           if(_engine.mapRect.x <= 48) return 1;
           _engine.mapRect.x -= 2;
@@ -150,13 +150,7 @@ int GetKeyPressEvent()
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
-        if (keystate[SDL_SCANCODE_DOWN] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-            _engine.mapRect.y += 2;
-            mainPlayer.state = DOWN;
-            mainPlayer.walk = true;
-        }
+
         if (keystate[SDL_SCANCODE_UP] )
         {
             if(_engine.mapRect.y <= 48) return 1;
@@ -187,27 +181,116 @@ int GetKeyPressEvent()
         else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_DOWN])
             mainPlayer.state = DOWN_LEFT;
         else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
-            mainPlayer.state = DOWN_RIGHT;
-
+            mainPlayer.state = DOWN_RIGHT;*/
+  }
+    if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
+        {
+            if (_engine.fullscreen == 1)
+            {
+                SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
+                _engine.fullscreen = 0;
+            }
+            else
+            {
+               SDL_SetWindowFullscreen(_engine.window,0);
+               _engine.fullscreen = 1;
+            }
+        }
     SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
  //  SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);
    // SDL_Log("fullscreen : %i", _engine.fullscreen);
     if (mousePosition.x > _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115) )
+      {
+
         mainPlayer.state = RIGHT;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.x >= 752) return 1;
+            _engine.mapRect.x += 2;
+            mainPlayer.walk = true;
+        }
+     }
     else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
-        mainPlayer.state= DOWN_RIGHT;
+        {
+
+        mainPlayer.state = DOWN_RIGHT;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+            _engine.mapRect.y += 2;
+            _engine.mapRect.x += 1;
+            mainPlayer.walk = true;
+        }
+     }
     else  if (mousePosition.y > _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
+     {
+
         mainPlayer.state = DOWN;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+            _engine.mapRect.y += 2;
+            mainPlayer.walk = true;
+        }
+     }
     else if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
+     {
         mainPlayer.state= DOWN_LEFT;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+            _engine.mapRect.y += 2;
+             _engine.mapRect.x -= 1;
+            mainPlayer.walk = true;
+        }
+     }
     else  if (mousePosition.x < _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115))
+    {
+
         mainPlayer.state = LEFT;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+           _engine.mapRect.x -= 2;
+            mainPlayer.walk = true;
+        }
+        }
     else  if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-        mainPlayer.state= UP_LEFT;
+
+        {
+             mainPlayer.state= UP_LEFT;
+        if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+             _engine.mapRect.y -= 2;
+           _engine.mapRect.x -= 1;
+            mainPlayer.walk = true;
+        }
+        }
     else if (mousePosition.y < _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
-        mainPlayer.state = UP;
+
+        {
+            mainPlayer.state = UP;
+             if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y <= 48) return 1;
+             _engine.mapRect.y -= 2;
+            mainPlayer.walk = true;
+        }
+
+        }
     else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-        mainPlayer.state= UP_RIGHT;
+       {
+            mainPlayer.state = UP_RIGHT;
+             if (keystate[SDL_SCANCODE_W] )
+        {
+            if(_engine.mapRect.y >= 752) return 1;
+             _engine.mapRect.y -= 2;
+              _engine.mapRect.x += 1;
+            mainPlayer.walk = true;
+        }
+
+        }
 
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
         mainPlayer.fire = true;
