@@ -180,19 +180,16 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
             sprintf (s_buffer, "%d %d", _engine.mapRect.x - _engine.WIDTH/2 - 16, _engine.mapRect.y - _engine.HEIGHT/2 - 118);
-            printf("Buff envoi %s\n", s_buffer);
             write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
             {
                 int n = read_server(sock, &sin, buffer);
-                printf("Buffer reçu %s\n", buffer);
                 if(n == 0)
                 {
                     printf("Server disconnected !\n");
                     break;
                 }
                 sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
-                printf("variables reçues : x=%d, y=%d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
 
             }
             ft_GetPlayerOrientation(&mainPlayer);
@@ -208,10 +205,12 @@ int main(int argc, char *argv[])
             SDL_Rect positionJoueurAbsolue;
             positionJoueurAbsolue.y = _engine.mapRect.y + _engine.HEIGHT/2;
             positionJoueurAbsolue.x = _engine.mapRect.x + _engine.WIDTH/2;
+            printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
+            printf ("Ennemi.x = %d, Ennemi.y = %d\n", enemi.x, enemi.y);
             //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
 
 
-             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &enemi);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &enemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
