@@ -15,6 +15,7 @@ struct Engine {
 
     SDL_Surface *mapSurface;
     SDL_Rect mapRect;
+    SDL_Rect mapRectEnemi;
 
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
