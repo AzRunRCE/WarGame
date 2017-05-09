@@ -41,6 +41,7 @@
 			<Add option="-lSDL2" />
 			<Add option="-lSDL2_image" />
 			<Add option="-lSDL_ttf" />
+			<Add option="-lws2_32" />
 			<Add library="mingw32" />
 			<Add library="user32" />
 			<Add library="gdi32" />
@@ -53,6 +54,7 @@
 		<Unit filename="include/Engine.h" />
 		<Unit filename="include/Item.h" />
 		<Unit filename="include/Player.h" />
+		<Unit filename="include/client.h" />
 		<Unit filename="include/ft_SDL.h" />
 		<Unit filename="include/main.h" />
 		<Unit filename="include/sprite.h" />

@@ -1,14 +1,95 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-
+#include "client.h"
 #include "Item.h"
 #include "engine.h"
 #include "ft_SDL.h"
 #include "player.h"
 #include "sprite.h"
+
+static void init(void)
+{
+#ifdef WIN32
+   WSADATA wsa;
+   int err = WSAStartup(MAKEWORD(2, 2), &wsa);
+   if(err < 0)
+   {
+      puts("WSAStartup failed !");
+      exit(EXIT_FAILURE);
+   }
+#endif
+}
+
+static void end(void)
+{
+#ifdef WIN32
+   WSACleanup();
+#endif
+}
+
+static int init_connection(const char *address, SOCKADDR_IN *sin)
+{
+   /* UDP so SOCK_DGRAM */
+   SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
+   struct hostent *hostinfo;
+
+   if(sock == INVALID_SOCKET)
+   {
+      perror("socket()");
+      exit(errno);
+   }
+
+   hostinfo = gethostbyname(address);
+   if (hostinfo == NULL)
+   {
+      fprintf (stderr, "Unknown host %s.\n", address);
+      exit(EXIT_FAILURE);
+   }
+
+   sin->sin_addr = *(IN_ADDR *) hostinfo->h_addr;
+   sin->sin_port = htons(PORT);
+   sin->sin_family = AF_INET;
+
+   return sock;
+}
+
+static void end_connection(int sock)
+{
+   closesocket(sock);
+}
+
+static int read_server(SOCKET sock, SOCKADDR_IN *sin, char *buffer)
+{
+   int n = 0;
+   size_t sinsize = sizeof *sin;
+
+   if((n = recvfrom(sock, buffer, BUF_SIZE - 1, 0, (SOCKADDR *) sin, &sinsize)) < 0)
+   {
+      perror("recvfrom()");
+      exit(errno);
+   }
+
+   buffer[n] = 0;
+
+   return n;
+}
+
+static void write_server(SOCKET sock, SOCKADDR_IN *sin, const char *buffer)
+{
+   if(sendto(sock, buffer, strlen(buffer), 0, (SOCKADDR *) sin, sizeof *sin) < 0)
+   {
+      perror("sendto()");
+      exit(errno);
+   }
+}
+
+
+
 SDL_Color textColor = { 255, 255, 255, 255 }; // white
 int lastTime = 0, lastTimeAnim = 0,ActualTime = 0,ActualTimeAnim = 0;
 int const SleepTime = 5;
@@ -22,6 +103,9 @@ SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
 SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
+
+    char host[] = "127.0.0.1";
+    char speudo[] = "client";
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -61,6 +145,10 @@ int main(int argc, char *argv[])
     _engine.mapRect.y = 400;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
+      _engine.mapRectEnemi.x = 400;
+    _engine.mapRectEnemi.y = 400;
+    _engine.mapRectEnemi.w = _engine.WIDTH;
+    _engine.mapRectEnemi.h = _engine.HEIGHT;
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
     mainPlayer.characterScreenRect.y = _engine.HEIGHT/2 - 16;
     mainPlayer.characterScreenRect.w = 32;
@@ -68,23 +156,55 @@ int main(int argc, char *argv[])
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     // A REMETTRE SDL_EnableKeyRepeat(10, 5);
-SDL_ShowCursor(SDL_DISABLE);
+//SDL_ShowCursor(SDL_DISABLE);
 
 
 
    //SDL_Surface* solid = TTF_RenderText_Blended( police, "plop", couleurNoire );
 
 	//blendedTexture = SurfaceToTexture( solid );
+        init();
+        SOCKADDR_IN sin = { 0 };
+        SOCKET sock = init_connection(host, &sin);
+        char buffer[BUF_SIZE];
+        char s_buffer[BUF_SIZE];
+        write_server(sock, &sin, speudo);
         while (GetKeyPressEvent())
         {
             //fprintf(stderr, "_engine.mapRect.x : %d\n", _engine.mapRect.x);
             //fprintf(stderr, "_engine.mapRect.y : %d\n", _engine.mapRect.y);
             /*SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
             MousePosition(mousePosition.x, mousePosition.y);*/
+
+            fd_set rdfs;
+            FD_ZERO(&rdfs);
+            FD_SET(sock, &rdfs);
+            sprintf (s_buffer, "%d %d", _engine.mapRect.x, _engine.mapRect.y);
+            write_server(sock, &sin,s_buffer);
+            if(FD_ISSET(sock, &rdfs))
+            {
+                int n = read_server(sock, &sin, buffer);
+                if(n == 0)
+                {
+                    printf("Server disconnected !\n");
+                    break;
+                }
+                sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
+
+            }
             ft_GetPlayerOrientation(&mainPlayer);
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
+           // SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRectEnemi, NULL);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
+            SDL_Rect enemi;
+            enemi.w = 32;
+            enemi.h = 32;
+            enemi.x =  _engine.mapRectEnemi.x / 2 ;
+            enemi.y =  _engine.mapRectEnemi.y / 2 ;
+
+
+             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &enemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
@@ -96,6 +216,8 @@ SDL_ShowCursor(SDL_DISABLE);
 
         SDL_Quit();
         return EXIT_SUCCESS;
+
+
     }
 
 
@@ -136,7 +258,7 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
-       /* if (keystate[SDL_SCANCODE_LEFT] )
+        if (keystate[SDL_SCANCODE_LEFT] )
         {
           if(_engine.mapRect.x <= 48) return 1;
           _engine.mapRect.x -= 2;
@@ -158,7 +280,7 @@ int GetKeyPressEvent()
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
-        if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
+      /*  if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
             if (_engine.fullscreen == 1)
             {
