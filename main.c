@@ -179,7 +179,8 @@ int main(int argc, char *argv[])
             fd_set rdfs;
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
-            sprintf (s_buffer, "%d %d", _engine.mapRect.x - _engine.WIDTH/2 - 16, _engine.mapRect.y - _engine.HEIGHT/2 - 116);
+            //sprintf (s_buffer, "%d %d", _engine.mapRect.x - _engine.WIDTH/2 - 16, _engine.mapRect.y - _engine.HEIGHT/2 - 116);
+            sprintf (s_buffer, "%d %d", _engine.mapRect.x - 216, _engine.mapRect.y - 266);
             write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
             {
@@ -196,20 +197,23 @@ int main(int argc, char *argv[])
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
            // SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRectEnemi, NULL);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
+
             _engine.mapRectEnemi.w = 32;
             _engine.mapRectEnemi.h = 32;
             SDL_Rect positionJoueurAbsolue;
             positionJoueurAbsolue.y = _engine.mapRect.y - _engine.HEIGHT/2 - 100;
             positionJoueurAbsolue.x = _engine.mapRect.x - _engine.WIDTH/2;
             SDL_Rect positionEnnemiAbsolue;
+            positionEnnemiAbsolue.w = 32;
+            positionEnnemiAbsolue.h = 32;
             positionEnnemiAbsolue.y = _engine.mapRectEnemi.y + 16;
             positionEnnemiAbsolue.x = _engine.mapRectEnemi.x + 16;
-            printf ("Player.x = %d, Player.y = %d\n", positionJoueurAbsolue.x, positionJoueurAbsolue.y);
-            printf ("Ennemi.x = %d, Ennemi.y = %d\n", positionEnnemiAbsolue.x, positionEnnemiAbsolue.y);
+            printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
+            printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
+            //printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
             //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
 
-
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
@@ -222,8 +226,6 @@ int main(int argc, char *argv[])
 
         SDL_Quit();
         return EXIT_SUCCESS;
-        mainPlayer.characterScreenRect.y--;
-        mainPlayer.characterScreenRect.x--;
 
     }
 
