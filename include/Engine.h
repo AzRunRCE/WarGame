@@ -22,6 +22,7 @@ struct Engine {
 
     SDL_Surface *bombSurface;
     SDL_Surface *characterSurface;
+     SDL_Surface *characterEnemiSurface;
     SDL_Rect spriteRect;
     Player playerList[15];
 

@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
     char host[] = "127.0.0.1";
     char pseudo[] = "client";
     _engine.fullscreen = 0;
-    _engine.WIDTH = 800;
-    _engine.HEIGHT = 600;
+    _engine.WIDTH = 400;
+    _engine.HEIGHT = 300;
     TTF_Font *police = NULL;
     SDL_Surface *texte = NULL;
     SDL_Texture* blendedTexture;
@@ -137,12 +137,13 @@ int main(int argc, char *argv[])
     _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     mainPlayer.health = 100;
     _engine.characterSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
+    _engine.characterEnemiSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/enemi.png");
     mainPlayer.state = DOWN;
     mainPlayer.step = 0;
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
-    _engine.mapRect.x = 400;
-    _engine.mapRect.y = 400;
+    _engine.mapRect.x = 0;
+    _engine.mapRect.y = 0;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
     _engine.mapRectEnemi.x = 400;
@@ -216,7 +217,7 @@ int main(int argc, char *argv[])
             //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
 
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnemiSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
@@ -272,14 +273,14 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_LEFT] )
         {
          // if(_engine.mapRect.x <= 48) return 1;
-          _engine.mapRectEnemi.x -= 2;
+         mainPlayer.characterScreenRect.x -= 2;
           mainPlayer.state = LEFT;
           mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_RIGHT] )
         {
            // if(_engine.mapRect.x >= 752) return 1;
-            _engine.mapRectEnemi.x += 2;
+         mainPlayer.characterScreenRect.x += 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
@@ -287,34 +288,17 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_UP] )
         {
            // if(_engine.mapRect.y <= 48) return 1;
-            _engine.mapRectEnemi.y -= 2;
+           mainPlayer.characterScreenRect.y -= 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
-      /*  if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
+      if (keystate[SDL_SCANCODE_DOWN] )
         {
-            if (_engine.fullscreen == 1)
-            {
-                SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
-                _engine.fullscreen = 0;
-            }
-            else
-            {
-               SDL_SetWindowFullscreen(_engine.window,0);
-               _engine.fullscreen = 1;
-            }
+           // if(_engine.mapRect.y <= 48) return 1;
+           mainPlayer.characterScreenRect.y += 2;
+            mainPlayer.state = DOWN;
+            mainPlayer.walk = true;
         }
-        if (keystates[SDL_SCANCODE_ESCAPE])
-            SDL_SetWindowFullscreen(_engine.window,0);
-         }
-         if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_UP])
-            mainPlayer.state = UP_RIGHT;
-        else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_UP])
-            mainPlayer.state = UP_LEFT;
-        else if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_DOWN])
-            mainPlayer.state = DOWN_LEFT;
-        else if (keystate[SDL_SCANCODE_RIGHT] && keystate[SDL_SCANCODE_DOWN])
-            mainPlayer.state = DOWN_RIGHT;*/
   }
     if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
@@ -329,101 +313,9 @@ int GetKeyPressEvent()
                _engine.fullscreen = 1;
             }
         }
-    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+        SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
  //  SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);
    // SDL_Log("fullscreen : %i", _engine.fullscreen);
-    if (mousePosition.x > _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115) )
-      {
-
-        mainPlayer.state = RIGHT;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.x >= 752) return 1;
-           mainPlayer.characterScreenRect.x += 2;
-            mainPlayer.walk = true;
-        }
-     }
-    else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
-        {
-
-        mainPlayer.state = DOWN_RIGHT;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-           mainPlayer.characterScreenRect.y += 2;
-            mainPlayer.characterScreenRect.x += 1;
-            mainPlayer.walk = true;
-        }
-     }
-    else  if (mousePosition.y > _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
-     {
-
-        mainPlayer.state = DOWN;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-          mainPlayer.characterScreenRect.y += 2;
-            mainPlayer.walk = true;
-        }
-     }
-    else if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y > _engine.HEIGHT/2)
-     {
-        mainPlayer.state= DOWN_LEFT;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-            mainPlayer.characterScreenRect.y += 2;
-            mainPlayer.characterScreenRect.x -= 1;
-            mainPlayer.walk = true;
-        }
-     }
-    else  if (mousePosition.x < _engine.WIDTH/2 && (mousePosition.y < 175 && mousePosition.y > 115))
-    {
-
-        mainPlayer.state = LEFT;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-          mainPlayer.characterScreenRect.x -= 2;
-            mainPlayer.walk = true;
-        }
-        }
-    else  if (mousePosition.x < _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-
-        {
-             mainPlayer.state= UP_LEFT;
-        if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-           mainPlayer.characterScreenRect.y -= 2;
-           mainPlayer.characterScreenRect.x -= 1;
-            mainPlayer.walk = true;
-        }
-        }
-    else if (mousePosition.y < _engine.HEIGHT/2 && (mousePosition.x > 175 && mousePosition.x < 225))
-
-        {
-            mainPlayer.state = UP;
-             if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y <= 48) return 1;
-           mainPlayer.characterScreenRect.y -= 2;
-            mainPlayer.walk = true;
-        }
-
-        }
-    else if (mousePosition.x > _engine.WIDTH/2 && mousePosition.y < _engine.HEIGHT/2)
-       {
-            mainPlayer.state = UP_RIGHT;
-             if (keystate[SDL_SCANCODE_W] )
-        {
-            if(_engine.mapRect.y >= 752) return 1;
-           mainPlayer.characterScreenRect.y -= 2;
-           mainPlayer.characterScreenRect.x += 1;
-            mainPlayer.walk = true;
-        }
-
-        }
 
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
         mainPlayer.fire = true;
