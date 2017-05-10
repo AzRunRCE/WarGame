@@ -103,7 +103,9 @@ SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
 SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
-
+    int traiter = 0;
+    int tempX = 0;
+    int tempY = 0;
     char host[] = "172.24.9.63";
     char pseudo[] = "client";
     _engine.fullscreen = 0;
@@ -184,19 +186,78 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
             //sprintf (s_buffer, "%d %d", _engine.mapRect.x - _engine.WIDTH/2 - 16, _engine.mapRect.y - _engine.HEIGHT/2 - 116);
-            sprintf (s_buffer, "%d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
-            write_server(sock, &sin,s_buffer);
+            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            //write_server(sock, &sin,s_buffer);
+        //sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+        write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
             {
                 int n = read_server(sock, &sin, buffer);
                 if(n == 0)
                 {
                     printf("Server disconnected !\n");
-                    break;
+
                 }
-                sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
+                    sscanf (buffer,"%d %d %i",&tempX,&tempY, &traiter);
+                    printf ("Traiter: %i\n", traiter);
+                    if (traiter == 1)
+                        sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
+                    traiter = 0;
+
 
             }
+        if (keystate[SDL_SCANCODE_LEFT] )
+        {
+         // if(_engine.mapRect.x <= 48) return 1;
+
+            mainPlayer.characterScreenRect.x -= 2;
+            _engine.mapRectEnemi.x += 2;
+            mainPlayer.state = LEFT;
+            mainPlayer.walk = true;
+            traiter = 1;
+            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            write_server(sock, &sin,s_buffer);
+            traiter = 0;
+        }
+        if (keystate[SDL_SCANCODE_RIGHT] )
+        {
+           // if(_engine.mapRect.x >= 752) return 1;
+
+            mainPlayer.characterScreenRect.x += 2;
+            _engine.mapRectEnemi.x -= 2;
+            mainPlayer.state = RIGHT;
+            mainPlayer.walk = true;
+            traiter = 1;
+            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            write_server(sock, &sin,s_buffer);
+            traiter = 0;
+        }
+
+        if (keystate[SDL_SCANCODE_UP] )
+        {
+           // if(_engine.mapRect.y <= 48) return 1;
+            mainPlayer.characterScreenRect.y -= 2;
+            _engine.mapRectEnemi.y += 2;
+            mainPlayer.state = UP;
+            mainPlayer.walk = true;
+            traiter = 1;
+            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            write_server(sock, &sin,s_buffer);
+            traiter = 0;
+        }
+      if (keystate[SDL_SCANCODE_DOWN] )
+        {
+           // if(_engine.mapRect.y <= 48) return 1;
+            mainPlayer.characterScreenRect.y += 2;
+            _engine.mapRectEnemi.y -= 2;
+            mainPlayer.state = DOWN;
+            mainPlayer.walk = true;
+            traiter = 1;
+            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            write_server(sock, &sin,s_buffer);
+            traiter = 0;
+        }
+
             _engine.mapRectEnemi.w = 32;
             _engine.mapRectEnemi.h = 32;
             printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
@@ -265,35 +326,6 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
-        if (keystate[SDL_SCANCODE_LEFT] )
-        {
-         // if(_engine.mapRect.x <= 48) return 1;
-         mainPlayer.characterScreenRect.x -= 2;
-          mainPlayer.state = LEFT;
-          mainPlayer.walk = true;
-        }
-        if (keystate[SDL_SCANCODE_RIGHT] )
-        {
-           // if(_engine.mapRect.x >= 752) return 1;
-         mainPlayer.characterScreenRect.x += 2;
-            mainPlayer.state = RIGHT;
-            mainPlayer.walk = true;
-        }
-
-        if (keystate[SDL_SCANCODE_UP] )
-        {
-           // if(_engine.mapRect.y <= 48) return 1;
-           mainPlayer.characterScreenRect.y -= 2;
-            mainPlayer.state = UP;
-            mainPlayer.walk = true;
-        }
-      if (keystate[SDL_SCANCODE_DOWN] )
-        {
-           // if(_engine.mapRect.y <= 48) return 1;
-           mainPlayer.characterScreenRect.y += 2;
-            mainPlayer.state = DOWN;
-            mainPlayer.walk = true;
-        }
   }
     if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
