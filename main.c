@@ -104,7 +104,7 @@ SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
 
-    char host[] = "127.0.0.1";
+    char host[] = "172.24.9.63";
     char pseudo[] = "client";
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
@@ -146,14 +146,17 @@ int main(int argc, char *argv[])
     _engine.mapRect.y = 0;
     _engine.mapRect.w = _engine.WIDTH;
     _engine.mapRect.h = _engine.HEIGHT;
-    _engine.mapRectEnemi.x = 400;
-    _engine.mapRectEnemi.y = 400;
-    _engine.mapRectEnemi.w = _engine.WIDTH;
-    _engine.mapRectEnemi.h = _engine.HEIGHT;
+
     mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
     mainPlayer.characterScreenRect.y = _engine.HEIGHT/2 - 16;
     mainPlayer.characterScreenRect.w = 32;
     mainPlayer.characterScreenRect.h = 32;
+    SDL_Rect pCenter;
+    pCenter.x = _engine.WIDTH/2 - 16;
+    pCenter.y = _engine.HEIGHT/2 - 16;
+    pCenter.w = 32;
+    pCenter.h = 32;
+
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     // A REMETTRE SDL_EnableKeyRepeat(10, 5);
@@ -194,29 +197,21 @@ int main(int argc, char *argv[])
                 sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
 
             }
-            ft_GetPlayerOrientation(&mainPlayer);
-            SDL_RenderClear(_engine.screenRenderer);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
-           // SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRectEnemi, NULL);
-
             _engine.mapRectEnemi.w = 32;
             _engine.mapRectEnemi.h = 32;
-            //_engine.mapRectEnemi.x = 100;
-            //_engine.mapRectEnemi.y = 100;
-            SDL_Rect positionJoueurAbsolue;
-            positionJoueurAbsolue.y = _engine.mapRect.y - _engine.HEIGHT/2 - 100;
-            positionJoueurAbsolue.x = _engine.mapRect.x - _engine.WIDTH/2;
-            SDL_Rect positionEnnemiAbsolue;
-            positionEnnemiAbsolue.w = 32;
-            positionEnnemiAbsolue.h = 32;
-            positionEnnemiAbsolue.y = _engine.mapRectEnemi.y + 16;
-            positionEnnemiAbsolue.x = _engine.mapRectEnemi.x + 16;
             printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
             printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
             printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
-            //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
-           SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
+            ft_GetPlayerOrientation(&mainPlayer);
+            SDL_RenderClear(_engine.screenRenderer);
+            _engine.mapRect.x =  mainPlayer.characterScreenRect.x ;
+            _engine.mapRect.y = mainPlayer.characterScreenRect.y;
+            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
 
+
+
+
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &pCenter);
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnemiSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
