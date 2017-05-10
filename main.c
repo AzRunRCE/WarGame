@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 {
 
     char host[] = "127.0.0.1";
-    char speudo[] = "client";
+    char pseudo[] = "client";
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         SOCKET sock = init_connection(host, &sin);
         char buffer[BUF_SIZE];
         char s_buffer[BUF_SIZE];
-        write_server(sock, &sin, speudo);
+        write_server(sock, &sin, pseudo);
         while (GetKeyPressEvent())
         {
             //fprintf(stderr, "_engine.mapRect.x : %d\n", _engine.mapRect.x);
@@ -200,6 +200,8 @@ int main(int argc, char *argv[])
 
             _engine.mapRectEnemi.w = 32;
             _engine.mapRectEnemi.h = 32;
+            //_engine.mapRectEnemi.x = 100;
+            //_engine.mapRectEnemi.y = 100;
             SDL_Rect positionJoueurAbsolue;
             positionJoueurAbsolue.y = _engine.mapRect.y - _engine.HEIGHT/2 - 100;
             positionJoueurAbsolue.x = _engine.mapRect.x - _engine.WIDTH/2;
@@ -210,7 +212,7 @@ int main(int argc, char *argv[])
             positionEnnemiAbsolue.x = _engine.mapRectEnemi.x + 16;
             printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
             printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
-            //printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
+            printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
             //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
 
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
