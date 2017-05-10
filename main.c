@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
     char host[] = "127.0.0.1";
     char pseudo[] = "client";
     _engine.fullscreen = 0;
-    _engine.WIDTH = 400;
-    _engine.HEIGHT = 300;
+    _engine.WIDTH = 800;
+    _engine.HEIGHT = 600;
     TTF_Font *police = NULL;
     SDL_Surface *texte = NULL;
     SDL_Texture* blendedTexture;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
             //sprintf (s_buffer, "%d %d", _engine.mapRect.x - _engine.WIDTH/2 - 16, _engine.mapRect.y - _engine.HEIGHT/2 - 116);
-            sprintf (s_buffer, "%d %d", _engine.mapRect.x - 216, _engine.mapRect.y - 266);
+            sprintf (s_buffer, "%d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
             write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
             {
@@ -214,8 +214,8 @@ int main(int argc, char *argv[])
             printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
             printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
             //printf("y: %d, x: %d\n", positionJoueurAbsolue.y, positionJoueurAbsolue.x);
+           SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
 
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &mainPlayer.characterScreenRect);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
@@ -271,23 +271,23 @@ int GetKeyPressEvent()
         {
         if (keystate[SDL_SCANCODE_LEFT] )
         {
-          if(_engine.mapRect.x <= 48) return 1;
-          _engine.mapRect.x -= 2;
+         // if(_engine.mapRect.x <= 48) return 1;
+          _engine.mapRectEnemi.x -= 2;
           mainPlayer.state = LEFT;
           mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_RIGHT] )
         {
-            if(_engine.mapRect.x >= 752) return 1;
-            _engine.mapRect.x += 2;
+           // if(_engine.mapRect.x >= 752) return 1;
+            _engine.mapRectEnemi.x += 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
 
         if (keystate[SDL_SCANCODE_UP] )
         {
-            if(_engine.mapRect.y <= 48) return 1;
-            _engine.mapRect.y -= 2;
+           // if(_engine.mapRect.y <= 48) return 1;
+            _engine.mapRectEnemi.y -= 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
@@ -339,7 +339,7 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.x >= 752) return 1;
-            _engine.mapRect.x += 2;
+           mainPlayer.characterScreenRect.x += 2;
             mainPlayer.walk = true;
         }
      }
@@ -350,8 +350,8 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-            _engine.mapRect.y += 2;
-            _engine.mapRect.x += 1;
+           mainPlayer.characterScreenRect.y += 2;
+            mainPlayer.characterScreenRect.x += 1;
             mainPlayer.walk = true;
         }
      }
@@ -362,7 +362,7 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-            _engine.mapRect.y += 2;
+          mainPlayer.characterScreenRect.y += 2;
             mainPlayer.walk = true;
         }
      }
@@ -372,8 +372,8 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-            _engine.mapRect.y += 2;
-             _engine.mapRect.x -= 1;
+            mainPlayer.characterScreenRect.y += 2;
+            mainPlayer.characterScreenRect.x -= 1;
             mainPlayer.walk = true;
         }
      }
@@ -384,7 +384,7 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-           _engine.mapRect.x -= 2;
+          mainPlayer.characterScreenRect.x -= 2;
             mainPlayer.walk = true;
         }
         }
@@ -395,8 +395,8 @@ int GetKeyPressEvent()
         if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-             _engine.mapRect.y -= 2;
-           _engine.mapRect.x -= 1;
+           mainPlayer.characterScreenRect.y -= 2;
+           mainPlayer.characterScreenRect.x -= 1;
             mainPlayer.walk = true;
         }
         }
@@ -407,7 +407,7 @@ int GetKeyPressEvent()
              if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y <= 48) return 1;
-             _engine.mapRect.y -= 2;
+           mainPlayer.characterScreenRect.y -= 2;
             mainPlayer.walk = true;
         }
 
@@ -418,8 +418,8 @@ int GetKeyPressEvent()
              if (keystate[SDL_SCANCODE_W] )
         {
             if(_engine.mapRect.y >= 752) return 1;
-             _engine.mapRect.y -= 2;
-              _engine.mapRect.x += 1;
+           mainPlayer.characterScreenRect.y -= 2;
+           mainPlayer.characterScreenRect.x += 1;
             mainPlayer.walk = true;
         }
 
