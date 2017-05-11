@@ -12,6 +12,8 @@ struct Player {
     State state;
     int step;
     bool walk;
+    int lastAnim;
+    SDL_Rect Pos;
 };
 
 

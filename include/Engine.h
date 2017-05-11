@@ -14,8 +14,8 @@ struct Engine {
     SDL_Window* window;
 
     SDL_Surface *mapSurface;
-    SDL_Rect mapRect;
-    SDL_Rect mapRectEnnemi;
+    SDL_Rect camera;
+
 
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;

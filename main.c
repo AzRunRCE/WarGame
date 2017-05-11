@@ -91,7 +91,7 @@ static void write_server(SOCKET sock, SOCKADDR_IN *sin, const char *buffer)
 
 
 SDL_Color textColor = { 255, 255, 255, 255 }; // white
-int lastTime = 0, lastTimeAnim = 0,ActualTime = 0,ActualTimeAnim = 0;
+int lastTime = 0, lastTimeAnim = 0;
 int const SleepTime = 5;
 int const SleepTimeAnim = 200;
 bool tour=true;
@@ -106,8 +106,10 @@ int main(int argc, char *argv[])
     char host[] = "127.0.0.1";
     char pseudo[] = "client";
     Player  enemiPlayer;
-      enemiPlayer.state = DOWN;
+    enemiPlayer.state = DOWN;
     enemiPlayer.step = 0;
+    enemiPlayer.Pos.w = 32;
+    enemiPlayer.Pos.h = 32;
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -133,26 +135,24 @@ int main(int argc, char *argv[])
                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                         _engine.WIDTH, _engine.HEIGHT,
                         0);
-        //int h=0;
-        //int w=0;
-    //SDL_GetWindowSize(&_engine.window, &w, &h);
     _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    _engine.characterSurface =          IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
+    _engine.characterEnnemiSurface =    IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
+    _engine.mapSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
+    _engine.fogSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
+
+    _engine.camera.x = 0;
+    _engine.camera.y = 0;
+    _engine.camera.w = _engine.WIDTH;
+    _engine.camera.h = _engine.HEIGHT;
+
     mainPlayer.health = 100;
-    _engine.characterSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
-    _engine.characterEnnemiSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
     mainPlayer.state = DOWN;
     mainPlayer.step = 0;
-    _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
-    _engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
-    _engine.mapRect.x = 0;
-    _engine.mapRect.y = 0;
-    _engine.mapRect.w = _engine.WIDTH;
-    _engine.mapRect.h = _engine.HEIGHT;
-
-    mainPlayer.characterScreenRect.x = _engine.WIDTH/2 - 16;
-    mainPlayer.characterScreenRect.y = _engine.HEIGHT/2 - 16;
-    mainPlayer.characterScreenRect.w = 32;
-    mainPlayer.characterScreenRect.h = 32;
+    mainPlayer.Pos.x = _engine.WIDTH/2 - 16;
+    mainPlayer.Pos.y = _engine.HEIGHT/2 - 16;
+    mainPlayer.Pos.w = 32;
+    mainPlayer.Pos.h = 32;
     SDL_Rect pCenter;
     pCenter.x = _engine.WIDTH/2 - 16;
     pCenter.y = _engine.HEIGHT/2 - 16;
@@ -161,14 +161,7 @@ int main(int argc, char *argv[])
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    // A REMETTRE SDL_EnableKeyRepeat(10, 5);
-//SDL_ShowCursor(SDL_DISABLE);
 
-
-
-   //SDL_Surface* solid = TTF_RenderText_Blended( police, "plop", couleurNoire );
-
-	//blendedTexture = SurfaceToTexture( solid );
         init();
         SOCKADDR_IN sin = { 0 };
         SOCKET sock = init_connection(host, &sin);
@@ -181,7 +174,7 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
 
-            sprintf (s_buffer, "%d %d %d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, mainPlayer.state,mainPlayer.fire);
+            sprintf (s_buffer, "%d %d %d %d %d", mainPlayer.Pos.x, mainPlayer.Pos.y, mainPlayer.state,mainPlayer.fire,mainPlayer.walk);
 
         write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
@@ -192,66 +185,47 @@ int main(int argc, char *argv[])
                     printf("Server disconnected !\n");
 
                 }
-                sscanf (buffer,"%d %d %d %d",&_engine.mapRectEnnemi.x,&_engine.mapRectEnnemi.y,&enemiPlayer.state,&enemiPlayer.fire);
+                sscanf (buffer,"%d %d %d %d %d",&enemiPlayer.Pos.x,&enemiPlayer.Pos.y,&enemiPlayer.state,&enemiPlayer.fire,&enemiPlayer.walk);
 
             }
+            enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
+            enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
+
+            _engine.camera.x = mainPlayer.Pos.x ;
+            _engine.camera.y = mainPlayer.Pos.y;
+
+            ft_GetPlayerOrientation(&mainPlayer);
+            ft_GetPlayerOrientation(&enemiPlayer);
         if (keystate[SDL_SCANCODE_LEFT] )
         {
-         // if(_engine.mapRect.x <= 48) return 1;
-
-            mainPlayer.characterScreenRect.x -= 2;
-            _engine.mapRectEnnemi.x += 2;
+            mainPlayer.Pos.x -= 2;
             mainPlayer.state = LEFT;
             mainPlayer.walk = true;
         }
         if (keystate[SDL_SCANCODE_RIGHT] )
         {
-           // if(_engine.mapRect.x >= 752) return 1;
-
-            mainPlayer.characterScreenRect.x += 2;
-            _engine.mapRectEnnemi.x -= 2;
+            mainPlayer.Pos.x += 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
 
         if (keystate[SDL_SCANCODE_UP] )
         {
-           // if(_engine.mapRect.y <= 48) return 1;
-            mainPlayer.characterScreenRect.y -= 2;
-            _engine.mapRectEnnemi.y += 2;
+            mainPlayer.Pos.y -= 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
       if (keystate[SDL_SCANCODE_DOWN] )
         {
-           // if(_engine.mapRect.y <= 48) return 1;
-            mainPlayer.characterScreenRect.y += 2;
-            _engine.mapRectEnnemi.y -= 2;
+            mainPlayer.Pos.y += 2;
             mainPlayer.state = DOWN;
             mainPlayer.walk = true;
         }
 
-            _engine.mapRectEnnemi.w = 32;
-            _engine.mapRectEnnemi.h = 32;
-            //system("cls");
-            printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
-
-            printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
-            ft_GetPlayerOrientation(&mainPlayer);
             SDL_RenderClear(_engine.screenRenderer);
-            _engine.mapRect.x =  mainPlayer.characterScreenRect.x ;
-            _engine.mapRect.y = mainPlayer.characterScreenRect.y;
-            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.mapRect, NULL);
-
-
-
-
+            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &pCenter);
-            _engine.mapRectEnnemi.x = _engine.mapRectEnnemi.x - _engine.mapRect.x + _engine.WIDTH/2 - 16;
-            _engine.mapRectEnnemi.y = _engine.mapRectEnnemi.y - _engine.mapRect.y + _engine.HEIGHT/2 - 16;
-            printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnnemi.x, _engine.mapRectEnnemi.y);
-            ft_GetPlayerOrientation(&enemiPlayer);
-            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.spriteRect, &_engine.mapRectEnnemi);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.spriteRect, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
@@ -329,12 +303,12 @@ int GetKeyPressEvent()
 }
 
 
-bool AnimDelay()
+bool AnimDelay(Player *player)
 {
-    ActualTimeAnim = SDL_GetTicks();
-    if (ActualTimeAnim - lastTimeAnim > SleepTimeAnim)
+    int ActualTimeAnim = SDL_GetTicks();
+    if (ActualTimeAnim - player->lastAnim > SleepTimeAnim)
     {
-           lastTimeAnim = ActualTimeAnim;
+           player->lastAnim = ActualTimeAnim;
            return true;
     }
     else
@@ -345,7 +319,7 @@ bool AnimDelay()
 }
 void FrameDelay()
 {
-    ActualTime = SDL_GetTicks();
+   int ActualTime = SDL_GetTicks();
     if (ActualTime - lastTime > SleepTime )
         lastTime = ActualTime;
     else
