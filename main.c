@@ -252,44 +252,44 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
-              if (keystate[SDL_SCANCODE_LEFT] )
-        {
+            if (keystate[SDL_SCANCODE_LEFT] )
+            {
             mainPlayer.Pos.x -= 2;
-            mainPlayer.state = LEFT;
-            mainPlayer.walk = true;
-        }
-        if (keystate[SDL_SCANCODE_RIGHT] )
-        {
-            mainPlayer.Pos.x += 2;
-            mainPlayer.state = RIGHT;
-            mainPlayer.walk = true;
-        }
-        if (keystate[SDL_SCANCODE_UP] )
-        {
-            mainPlayer.Pos.y -= 2;
-            mainPlayer.state = UP;
-            mainPlayer.walk = true;
-        }
-        if (keystate[SDL_SCANCODE_DOWN] )
-        {
-            mainPlayer.Pos.y += 2;
-            mainPlayer.state = DOWN;
-            mainPlayer.walk = true;
-        }
+                mainPlayer.state = LEFT;
+                mainPlayer.walk = true;
+            }
+            if (keystate[SDL_SCANCODE_RIGHT] )
+            {
+                mainPlayer.Pos.x += 2;
+                mainPlayer.state = RIGHT;
+                mainPlayer.walk = true;
+            }
+            if (keystate[SDL_SCANCODE_UP] )
+            {
+                mainPlayer.Pos.y -= 2;
+                mainPlayer.state = UP;
+                mainPlayer.walk = true;
+            }
+            if (keystate[SDL_SCANCODE_DOWN] )
+            {
+                mainPlayer.Pos.y += 2;
+                mainPlayer.state = DOWN;
+                mainPlayer.walk = true;
+            }
 
   }
     if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
-            if (_engine.fullscreen == 1)
-            {
+            /*if (_engine.fullscreen == 1)
+            {*/
                 SDL_SetWindowFullscreen(_engine.window,SDL_WINDOW_FULLSCREEN);
-                _engine.fullscreen = 0;
+               /* _engine.fullscreen = 0;
             }
             else
             {
                SDL_SetWindowFullscreen(_engine.window,0);
                _engine.fullscreen = 1;
-            }
+            }*/
         }
     SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
