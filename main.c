@@ -89,8 +89,14 @@ static void write_server(SOCKET sock, SOCKADDR_IN *sin, const char *buffer)
 }
 
 
+// TEXT
+SDL_Window *ecran = NULL;
+SDL_Surface *text = NULL;
+TTF_Font *font = NULL;
+SDL_Color colorWhite = {255, 255, 255};
+SDL_Surface *fontSurface = NULL;
+char message[20];
 
-SDL_Color textColor = { 255, 255, 255, 255 }; // white
 int lastTime = 0, lastTimeAnim = 0;
 int const SleepTime = 5;
 int const SleepTimeAnim = 200;
@@ -98,8 +104,6 @@ bool tour=true;
 Engine _engine;
 Player mainPlayer;
 Uint8 *keystate=NULL;
-SDL_Color couleurNoire = {0, 0, 0};
-SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
 SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
@@ -113,10 +117,7 @@ int main(int argc, char *argv[])
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
-    TTF_Font *police = NULL;
-    SDL_Surface *texte = NULL;
-    SDL_Texture* blendedTexture;
-    //SDL_Color couleurNoire = {0, 0, 0}, couleurBlanche = {255, 255, 255};
+
     if(SDL_Init(SDL_INIT_VIDEO)== -1)
     {
         fprintf(stderr, "Erreur d'initialisation de SDL_Init : %s\n", SDL_GetError());
@@ -127,10 +128,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
     }
+    font = TTF_OpenFont("res/verdana.ttf", 20);
+
 
 
     keystate=SDL_GetKeyboardState(NULL);
-    police = TTF_OpenFont("res\verdana.ttf", 15 );
     _engine.window = SDL_CreateWindow("Wargame #AFTEC",
                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                         _engine.WIDTH, _engine.HEIGHT,
@@ -145,6 +147,8 @@ int main(int argc, char *argv[])
     _engine.camera.y = 0;
     _engine.camera.w = _engine.WIDTH;
     _engine.camera.h = _engine.HEIGHT;
+    fontSurface = SDL_GetWindowSurface(_engine.window);
+
 
     mainPlayer.health = 100;
     mainPlayer.state = DOWN;
@@ -196,14 +200,21 @@ int main(int argc, char *argv[])
 
             ft_GetPlayerOrientation(&mainPlayer);
             ft_GetPlayerOrientation(&enemiPlayer);
+            sprintf(message, "%i,%i", mainPlayer.Pos.x, mainPlayer.Pos.y);
+            text = TTF_RenderText_Blended(font, message, colorWhite);
+            SDL_Rect posText = {0, 0, text->w, text->h};
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
             SDL_RenderPresent(_engine.screenRenderer);
         }
+        TTF_CloseFont(font);
+        SDL_FreeSurface(text);
         SDL_DestroyTexture(_engine.mapSurface);
         SDL_DestroyTexture(_engine.characterSurface);
         SDL_DestroyTexture(_engine.fogSurface);
