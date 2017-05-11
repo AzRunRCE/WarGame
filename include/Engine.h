@@ -15,14 +15,14 @@ struct Engine {
 
     SDL_Surface *mapSurface;
     SDL_Rect mapRect;
-    SDL_Rect mapRectEnemi;
+    SDL_Rect mapRectEnnemi;
 
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
 
     SDL_Surface *bombSurface;
     SDL_Surface *characterSurface;
-     SDL_Surface *characterEnemiSurface;
+     SDL_Surface *characterEnnemiSurface;
     SDL_Rect spriteRect;
     Player playerList[15];
 

@@ -103,9 +103,6 @@ SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
 SDL_Point mousePosition;
 int main(int argc, char *argv[])
 {
-    int traiter = 0;
-    int tempX = 0;
-    int tempY = 0;
     char host[] = "127.0.0.1";
     char pseudo[] = "client";
     _engine.fullscreen = 0;
@@ -139,7 +136,7 @@ int main(int argc, char *argv[])
     _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     mainPlayer.health = 100;
     _engine.characterSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
-    _engine.characterEnemiSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/enemi.png");
+    _engine.characterEnnemiSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
     mainPlayer.state = DOWN;
     mainPlayer.step = 0;
     _engine.mapSurface =  IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
@@ -181,7 +178,7 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
 
-            sprintf (s_buffer, "%d %d %i", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, traiter);
+            sprintf (s_buffer, "%d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
 
         write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
@@ -192,7 +189,7 @@ int main(int argc, char *argv[])
                     printf("Server disconnected !\n");
 
                 }
-                sscanf (buffer,"%d %d",&_engine.mapRectEnemi.x,&_engine.mapRectEnemi.y);
+                sscanf (buffer,"%d %d",&_engine.mapRectEnnemi.x,&_engine.mapRectEnnemi.y);
 
             }
         if (keystate[SDL_SCANCODE_LEFT] )
@@ -200,7 +197,7 @@ int main(int argc, char *argv[])
          // if(_engine.mapRect.x <= 48) return 1;
 
             mainPlayer.characterScreenRect.x -= 2;
-            _engine.mapRectEnemi.x += 2;
+            _engine.mapRectEnnemi.x += 2;
             mainPlayer.state = LEFT;
             mainPlayer.walk = true;
         }
@@ -209,7 +206,7 @@ int main(int argc, char *argv[])
            // if(_engine.mapRect.x >= 752) return 1;
 
             mainPlayer.characterScreenRect.x += 2;
-            _engine.mapRectEnemi.x -= 2;
+            _engine.mapRectEnnemi.x -= 2;
             mainPlayer.state = RIGHT;
             mainPlayer.walk = true;
         }
@@ -218,7 +215,7 @@ int main(int argc, char *argv[])
         {
            // if(_engine.mapRect.y <= 48) return 1;
             mainPlayer.characterScreenRect.y -= 2;
-            _engine.mapRectEnemi.y += 2;
+            _engine.mapRectEnnemi.y += 2;
             mainPlayer.state = UP;
             mainPlayer.walk = true;
         }
@@ -226,16 +223,16 @@ int main(int argc, char *argv[])
         {
            // if(_engine.mapRect.y <= 48) return 1;
             mainPlayer.characterScreenRect.y += 2;
-            _engine.mapRectEnemi.y -= 2;
+            _engine.mapRectEnnemi.y -= 2;
             mainPlayer.state = DOWN;
             mainPlayer.walk = true;
         }
 
-            _engine.mapRectEnemi.w = 32;
-            _engine.mapRectEnemi.h = 32;
-            system("cls");
+            _engine.mapRectEnnemi.w = 32;
+            _engine.mapRectEnnemi.h = 32;
+            //system("cls");
             printf ("Player.x = %d, Player.y = %d\n", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
-            printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnemi.x, _engine.mapRectEnemi.y);
+
             printf ("map.x = %d, map.y = %d\n", _engine.mapRect.x, _engine.mapRect.y);
             ft_GetPlayerOrientation(&mainPlayer);
             SDL_RenderClear(_engine.screenRenderer);
@@ -247,9 +244,10 @@ int main(int argc, char *argv[])
 
 
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &pCenter);
-            _engine.mapRectEnemi.x = _engine.mapRectEnemi.x - _engine.mapRect.x + _engine.mapRect.h / 2;
-            _engine.mapRectEnemi.y = _engine.mapRectEnemi.y - _engine.mapRect.y +  _engine.mapRect.w / 2;;
-            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnemiSurface , &_engine.spriteRect, &_engine.mapRectEnemi);
+            _engine.mapRectEnnemi.x = _engine.mapRectEnnemi.x - _engine.mapRect.x + _engine.WIDTH/2 - 16;
+            _engine.mapRectEnnemi.y = _engine.mapRectEnnemi.y - _engine.mapRect.y + _engine.HEIGHT/2 - 16;
+            printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnnemi.x, _engine.mapRectEnnemi.y);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.spriteRect, &_engine.mapRectEnnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
