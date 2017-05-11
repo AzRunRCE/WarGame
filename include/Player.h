@@ -8,12 +8,12 @@ struct Player {
     char name[16];
     int health;
     bool fire;
-    SDL_Rect characterScreenRect;
     State state;
     int step;
     bool walk;
     int lastAnim;
     SDL_Rect Pos;
+    SDL_Rect sprite;
 };
 
 

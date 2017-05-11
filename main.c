@@ -196,36 +196,11 @@ int main(int argc, char *argv[])
 
             ft_GetPlayerOrientation(&mainPlayer);
             ft_GetPlayerOrientation(&enemiPlayer);
-        if (keystate[SDL_SCANCODE_LEFT] )
-        {
-            mainPlayer.Pos.x -= 2;
-            mainPlayer.state = LEFT;
-            mainPlayer.walk = true;
-        }
-        if (keystate[SDL_SCANCODE_RIGHT] )
-        {
-            mainPlayer.Pos.x += 2;
-            mainPlayer.state = RIGHT;
-            mainPlayer.walk = true;
-        }
-
-        if (keystate[SDL_SCANCODE_UP] )
-        {
-            mainPlayer.Pos.y -= 2;
-            mainPlayer.state = UP;
-            mainPlayer.walk = true;
-        }
-      if (keystate[SDL_SCANCODE_DOWN] )
-        {
-            mainPlayer.Pos.y += 2;
-            mainPlayer.state = DOWN;
-            mainPlayer.walk = true;
-        }
 
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.spriteRect, &pCenter);
-            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.spriteRect, &enemiPlayer.Pos);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
@@ -243,13 +218,12 @@ int main(int argc, char *argv[])
 
 // KEY CODE https://wiki.libsdl.org/SDL_ScancodeAndKeycode?highlight=%28SDL_SCANCODE%29
 
-void ft_getCharactSprite(State state,int step)
+void ft_getCharactSprite(Player *player, State state,int step)
 {
-    _engine.spriteRect.x = 32 * step + (step + 1);
-    _engine.spriteRect.y = 32 * state + (state + 1);
-    _engine.spriteRect.h = 32;
-    _engine.spriteRect.w = 32;
-
+    player->sprite.x = 32 * step + (step + 1);
+    player->sprite.y = 32 * state + (state + 1);
+    player->sprite.h = 32;
+    player->sprite.w = 32;
 }
 
 
@@ -278,6 +252,31 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
+              if (keystate[SDL_SCANCODE_LEFT] )
+        {
+            mainPlayer.Pos.x -= 2;
+            mainPlayer.state = LEFT;
+            mainPlayer.walk = true;
+        }
+        if (keystate[SDL_SCANCODE_RIGHT] )
+        {
+            mainPlayer.Pos.x += 2;
+            mainPlayer.state = RIGHT;
+            mainPlayer.walk = true;
+        }
+        if (keystate[SDL_SCANCODE_UP] )
+        {
+            mainPlayer.Pos.y -= 2;
+            mainPlayer.state = UP;
+            mainPlayer.walk = true;
+        }
+        if (keystate[SDL_SCANCODE_DOWN] )
+        {
+            mainPlayer.Pos.y += 2;
+            mainPlayer.state = DOWN;
+            mainPlayer.walk = true;
+        }
+
   }
     if (keystates[SDL_SCANCODE_LALT] && keystates[SDL_SCANCODE_RETURN] )
         {
@@ -292,13 +291,9 @@ int GetKeyPressEvent()
                _engine.fullscreen = 1;
             }
         }
-        SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
- //  SDL_Log("Mouse position : x=%i y=%i", mousePosition.x, mousePosition.y);
-   // SDL_Log("fullscreen : %i", _engine.fullscreen);
-
+    SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
         mainPlayer.fire = true;
-
     return 1;
 }
 
