@@ -105,6 +105,9 @@ int main(int argc, char *argv[])
 {
     char host[] = "127.0.0.1";
     char pseudo[] = "client";
+    Player  enemiPlayer;
+      enemiPlayer.state = DOWN;
+    enemiPlayer.step = 0;
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -178,7 +181,7 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
 
-            sprintf (s_buffer, "%d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y);
+            sprintf (s_buffer, "%d %d %d %d", mainPlayer.characterScreenRect.x, mainPlayer.characterScreenRect.y, mainPlayer.state,mainPlayer.fire);
 
         write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
@@ -189,7 +192,7 @@ int main(int argc, char *argv[])
                     printf("Server disconnected !\n");
 
                 }
-                sscanf (buffer,"%d %d",&_engine.mapRectEnnemi.x,&_engine.mapRectEnnemi.y);
+                sscanf (buffer,"%d %d %d %d",&_engine.mapRectEnnemi.x,&_engine.mapRectEnnemi.y,&enemiPlayer.state,&enemiPlayer.fire);
 
             }
         if (keystate[SDL_SCANCODE_LEFT] )
@@ -247,6 +250,7 @@ int main(int argc, char *argv[])
             _engine.mapRectEnnemi.x = _engine.mapRectEnnemi.x - _engine.mapRect.x + _engine.WIDTH/2 - 16;
             _engine.mapRectEnnemi.y = _engine.mapRectEnnemi.y - _engine.mapRect.y + _engine.HEIGHT/2 - 16;
             printf ("Ennemi.x = %d, Ennemi.y = %d\n", _engine.mapRectEnnemi.x, _engine.mapRectEnnemi.y);
+            ft_GetPlayerOrientation(&enemiPlayer);
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.spriteRect, &_engine.mapRectEnnemi);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
