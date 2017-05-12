@@ -105,6 +105,21 @@ Engine _engine;
 Player mainPlayer;
 Uint8 *keystate=NULL;
 SDL_Point mousePosition;
+
+// Screen
+
+int menu(void)
+
+{
+    while(true)
+    {
+        SDL_RenderClear(_engine.screenRenderer);
+        SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
+        SDL_RenderPresent(_engine.screenRenderer);
+    }
+
+}
+
 int main(int argc, char *argv[])
 {
     char host[] = "127.0.0.1";
@@ -138,15 +153,15 @@ int main(int argc, char *argv[])
                         _engine.WIDTH, _engine.HEIGHT,
                         0);
     _engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    _engine.menuSurface =               IMG_LoadTexture(_engine.screenRenderer, "res/menu.png");
+    //menu();
     _engine.characterSurface =          IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
     _engine.characterEnnemiSurface =    IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
     _engine.mapSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
 
-    _engine.camera.x = 0;
-    _engine.camera.y = 0;
-    _engine.camera.w = _engine.WIDTH;
-    _engine.camera.h = _engine.HEIGHT;
     fontSurface = SDL_GetWindowSurface(_engine.window);
 
 
@@ -162,9 +177,12 @@ int main(int argc, char *argv[])
     pCenter.y = _engine.HEIGHT/2 - 16;
     pCenter.w = 32;
     pCenter.h = 32;
+    _engine.camera.x = 0;
+    _engine.camera.y = 0;
+    _engine.camera.w = _engine.WIDTH;
+    _engine.camera.h = _engine.HEIGHT;
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
 
         init();
         SOCKADDR_IN sin = { 0 };
@@ -178,7 +196,7 @@ int main(int argc, char *argv[])
             FD_ZERO(&rdfs);
             FD_SET(sock, &rdfs);
 
-            sprintf (s_buffer, "%d %d %d %d %d", mainPlayer.Pos.x, mainPlayer.Pos.y, mainPlayer.state,mainPlayer.fire,mainPlayer.walk);
+            sprintf (s_buffer, "%d %d %d %d %d", mainPlayer.Pos.x, mainPlayer.Pos.y, mainPlayer.state, mainPlayer.fire, mainPlayer.walk);
 
         write_server(sock, &sin,s_buffer);
             if(FD_ISSET(sock, &rdfs))
@@ -189,13 +207,13 @@ int main(int argc, char *argv[])
                     printf("Server disconnected !\n");
 
                 }
-                sscanf (buffer,"%d %d %d %d %d",&enemiPlayer.Pos.x,&enemiPlayer.Pos.y,&enemiPlayer.state,&enemiPlayer.fire,&enemiPlayer.walk);
+                sscanf (buffer,"%d %d %d %d %d", &enemiPlayer.Pos.x, &enemiPlayer.Pos.y, &enemiPlayer.state, &enemiPlayer.fire, &enemiPlayer.walk);
 
             }
             enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
             enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
 
-            _engine.camera.x = mainPlayer.Pos.x ;
+            _engine.camera.x = mainPlayer.Pos.x;
             _engine.camera.y = mainPlayer.Pos.y;
 
             ft_GetPlayerOrientation(&mainPlayer);
@@ -207,10 +225,11 @@ int main(int argc, char *argv[])
 
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
+            /*SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
-            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
+            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);*/
+            SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
         TTF_CloseFont(font);
@@ -220,6 +239,7 @@ int main(int argc, char *argv[])
         SDL_DestroyTexture(_engine.fogSurface);
         SDL_DestroyRenderer(_engine.screenRenderer);
         SDL_DestroyWindow(_engine.window);
+        end();
 
         SDL_Quit();
         return EXIT_SUCCESS;
