@@ -263,25 +263,25 @@ int GetKeyPressEvent()
           mainPlayer.fire = true;
         else
         {
-            if (keystate[SDL_SCANCODE_LEFT] )
+            if (keystate[SDL_SCANCODE_LEFT] &   mainPlayer.Pos.x >= 50)
             {
             mainPlayer.Pos.x -= 2;
                 mainPlayer.state = LEFT;
                 mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_RIGHT] )
+            if (keystate[SDL_SCANCODE_RIGHT] & mainPlayer.Pos.x <= 750)
             {
                 mainPlayer.Pos.x += 2;
                 mainPlayer.state = RIGHT;
                 mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_UP] )
+            if (keystate[SDL_SCANCODE_UP] &   mainPlayer.Pos.y >= 50 )
             {
                 mainPlayer.Pos.y -= 2;
                 mainPlayer.state = UP;
                 mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_DOWN] )
+            if (keystate[SDL_SCANCODE_DOWN] &   mainPlayer.Pos.y <= 750 )
             {
                 mainPlayer.Pos.y += 2;
                 mainPlayer.state = DOWN;
