@@ -122,7 +122,7 @@ int menu(void)
 
 int main(int argc, char *argv[])
 {
-    char host[] = "127.0.0.1";
+    char host[] = "192.168.0.33";
     char pseudo[] = "client";
     Player  enemiPlayer;
     enemiPlayer.state = DOWN;
@@ -190,6 +190,7 @@ int main(int argc, char *argv[])
         char buffer[BUF_SIZE];
         char s_buffer[BUF_SIZE];
         write_server(sock, &sin, pseudo);
+
         while (GetKeyPressEvent())
         {
             fd_set rdfs;
@@ -210,6 +211,7 @@ int main(int argc, char *argv[])
                 sscanf (buffer,"%d %d %d %d %d", &enemiPlayer.Pos.x, &enemiPlayer.Pos.y, &enemiPlayer.state, &enemiPlayer.fire, &enemiPlayer.walk);
 
             }
+
             enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
             enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
 
@@ -225,13 +227,15 @@ int main(int argc, char *argv[])
 
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-            /*SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
-            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);*/
+            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
             SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
+         s_buffer[0] == '\0';
+        write_server(sock, &sin,s_buffer);
         TTF_CloseFont(font);
         SDL_FreeSurface(text);
         SDL_DestroyTexture(_engine.mapSurface);
@@ -275,7 +279,10 @@ int GetKeyPressEvent()
         if (SDL_PollEvent(&_engine.event))//close the window
         {
             if (_engine.event.type == SDL_QUIT)
-              return 0;
+            {
+                return 0;
+            }
+
         }
         mainPlayer.fire = false;
         mainPlayer.walk = false;
