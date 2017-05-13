@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1494676635 source:/home/pi/Bureau/UnixWargameServer/main.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	"server.h"
+	"client.h"
+
+1494676023 /home/pi/Bureau/UnixWargameServer/include/server.h
+	<winsock2.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<unistd.h>
+	<netdb.h>
+	"client.h"
+
+1494622774 /home/pi/Bureau/UnixWargameServer/include/client.h
+	"server.h"
+
