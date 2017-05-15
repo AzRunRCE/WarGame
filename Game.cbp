@@ -53,6 +53,7 @@
 		<Unit filename="cb.bmp" />
 		<Unit filename="include/Engine.h" />
 		<Unit filename="include/Item.h" />
+		<Unit filename="include/Packet.h" />
 		<Unit filename="include/Player.h" />
 		<Unit filename="include/client.h" />
 		<Unit filename="include/ft_SDL.h" />

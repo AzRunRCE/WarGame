@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -11,6 +15,7 @@
 #include "ft_SDL.h"
 #include "player.h"
 #include "sprite.h"
+#include "Packet.h"
 
 static void init(void)
 {
@@ -63,25 +68,23 @@ static void end_connection(int sock)
    closesocket(sock);
 }
 
-static int read_server(SOCKET sock, SOCKADDR_IN *sin, char *buffer)
+static Packet read_server(SOCKET sock, SOCKADDR_IN *sin)
 {
-   int n = 0;
-   size_t sinsize = sizeof *sin;
-
-   if((n = recvfrom(sock, buffer, BUF_SIZE - 1, 0, (SOCKADDR *) sin, &sinsize)) < 0)
-   {
-      perror("recvfrom()");
-      exit(errno);
-   }
-
-   buffer[n] = 0;
-
-   return n;
+    int n = 0;
+    size_t sinsize = sizeof *sin;
+    Packet pck;
+    if((n = recvfrom(sock, &pck, sizeof(pck), 0, (SOCKADDR *) sin, &sinsize)) < 0)
+    {
+        perror("recvfrom()");
+        exit(errno);
+    }
+  // buffer[n] = 0;
+    return pck;
 }
 
-static void write_server(SOCKET sock, SOCKADDR_IN *sin, const char *buffer)
+static void write_server(SOCKET sock, SOCKADDR_IN *sin,Packet pck)
 {
-   if(sendto(sock, buffer, strlen(buffer), 0, (SOCKADDR *) sin, sizeof *sin) < 0)
+   if(sendto(sock, &pck, sizeof(pck), 0, (SOCKADDR *) sin, sizeof *sin) < 0)
    {
       perror("sendto()");
       exit(errno);
@@ -98,7 +101,7 @@ SDL_Surface *fontSurface = NULL;
 char message[20];
 
 int lastTime = 0, lastTimeAnim = 0;
-int const SleepTime = 5;
+int const SleepTime = 30;
 int const SleepTimeAnim = 200;
 bool tour=true;
 Engine _engine;
@@ -108,27 +111,65 @@ SDL_Point mousePosition;
 
 // Screen
 
-int menu(void)
 
+
+
+ Player  enemiPlayer;
+
+ void *NetworkThreadingListening(void *arg)
 {
-    while(true)
-    {
-        SDL_RenderClear(_engine.screenRenderer);
-        SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
-        SDL_RenderPresent(_engine.screenRenderer);
-    }
+      char host[] = "127.0.0.1";
+    char pseudo[] = "client";
 
+    init();
+    SOCKADDR_IN sin = {0};
+    SOCKET sock = init_connection(host, &sin);
+    Packet w;
+    strcpy(w.name,"Quentin");
+    write_server(sock, &sin,  w);
+   while(true)
+   {
+    if(   FrameDelay())
+        {
+
+
+            Packet pck;
+            strcpy(pck.name,"Quentin");
+
+            pck.Y = mainPlayer.Pos.y;
+            pck.X = mainPlayer.Pos.x;
+            pck.state = mainPlayer.state;
+            pck.fire = mainPlayer.fire;
+            pck.walk = mainPlayer.walk;
+           write_server(sock, &sin,pck);
+
+
+
+            Packet p;
+            p = read_server(sock, &sin);
+
+            enemiPlayer.Pos.x = p.X;
+            enemiPlayer.Pos.y = p.Y;
+            enemiPlayer.state = p.state;
+            enemiPlayer.fire = p.fire;
+            enemiPlayer.walk = p.walk;
+              enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
+            enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
+        }
+   }
+    pthread_exit(NULL);
 }
-
 int main(int argc, char *argv[])
 {
-    char host[] = "192.168.0.33";
-    char pseudo[] = "client";
-    Player  enemiPlayer;
+
+
+    pthread_t NwkThread;
     enemiPlayer.state = DOWN;
     enemiPlayer.step = 0;
     enemiPlayer.Pos.w = 32;
     enemiPlayer.Pos.h = 32;
+      enemiPlayer.Pos.x = _engine.WIDTH/2 - 16;
+    enemiPlayer.Pos.y = _engine.HEIGHT/2 - 16;
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -182,46 +223,27 @@ int main(int argc, char *argv[])
     _engine.camera.w = _engine.WIDTH;
     _engine.camera.h = _engine.HEIGHT;
 
+    if(pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
+        perror("pthread_create");
+	return EXIT_FAILURE;
+    }
 
 
-        init();
-        SOCKADDR_IN sin = { 0 };
-        SOCKET sock = init_connection(host, &sin);
         char buffer[BUF_SIZE];
         char s_buffer[BUF_SIZE];
-        write_server(sock, &sin, pseudo);
+
 
         while (GetKeyPressEvent())
         {
-            fd_set rdfs;
-            FD_ZERO(&rdfs);
-            FD_SET(sock, &rdfs);
 
-            sprintf (s_buffer, "%d %d %d %d %d", mainPlayer.Pos.x, mainPlayer.Pos.y, mainPlayer.state, mainPlayer.fire, mainPlayer.walk);
-
-        write_server(sock, &sin,s_buffer);
-            if(FD_ISSET(sock, &rdfs))
-            {
-                int n = read_server(sock, &sin, buffer);
-                if(n == 0)
-                {
-                    printf("Server disconnected !\n");
-
-                }
-                sscanf (buffer,"%d %d %d %d %d", &enemiPlayer.Pos.x, &enemiPlayer.Pos.y, &enemiPlayer.state, &enemiPlayer.fire, &enemiPlayer.walk);
-
-            }
-
-            enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
-            enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
 
             _engine.camera.x = mainPlayer.Pos.x;
             _engine.camera.y = mainPlayer.Pos.y;
-
             ft_GetPlayerOrientation(&mainPlayer);
             ft_GetPlayerOrientation(&enemiPlayer);
-            sprintf(message, "%i,%i", mainPlayer.Pos.x, mainPlayer.Pos.y);
+             sprintf(message, "%i,%i", mainPlayer.Pos.x, mainPlayer.Pos.y);
             text = TTF_RenderText_Blended(font, message, colorWhite);
+
             SDL_Rect posText = {0, 0, text->w, text->h};
             SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 
@@ -231,11 +253,11 @@ int main(int argc, char *argv[])
             SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
+           // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
-         s_buffer[0] == '\0';
-        write_server(sock, &sin,s_buffer);
+        s_buffer[0] == '\0';
+      //  write_server(sock, &sin,s_buffer);
         TTF_CloseFont(font);
         SDL_FreeSurface(text);
         SDL_DestroyTexture(_engine.mapSurface);
@@ -350,13 +372,16 @@ bool AnimDelay(Player *player)
     }
 
 }
-void FrameDelay()
+int FrameDelay()
 {
    int ActualTime = SDL_GetTicks();
     if (ActualTime - lastTime > SleepTime )
-        lastTime = ActualTime;
+  {
+       lastTime = ActualTime;
+        return 1;
+  }
     else
-        SDL_Delay(SleepTime - (ActualTime - lastTime));
+       return 0;
 }
 
 /*void MousePosition(int lastx, int lasty)

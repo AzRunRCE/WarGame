@@ -1,6 +1,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-
+#include "Packet.h"
 #ifdef WIN32
 
 #include <winsock2.h>
@@ -37,7 +37,7 @@ static void end(void);
 static void app(const char *address, const char *name);
 static int init_connection(const char *address, SOCKADDR_IN *sin);
 static void end_connection(int sock);
-static int read_server(SOCKET sock, SOCKADDR_IN *sin, char *buffer);
-static void write_server(SOCKET sock, SOCKADDR_IN *sin, const char *buffer);
+static Packet read_server(SOCKET sock, SOCKADDR_IN *sin);
+static void write_server(SOCKET sock, SOCKADDR_IN *sin,Packet pck);
 
 #endif /* guard */
