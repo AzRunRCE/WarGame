@@ -100,7 +100,7 @@ SDL_Color colorWhite = {255, 255, 255};
 SDL_Surface *fontSurface = NULL;
 char message[20];
 
-int lastTime = 0, lastTimeAnim = 0;
+time_t lastTime = 0, lastTimeAnim = 0;
 int const SleepTime = 30;
 int const SleepTimeAnim = 200;
 bool tour=true;
@@ -129,12 +129,11 @@ SDL_Point mousePosition;
     write_server(sock, &sin,  w);
    while(true)
    {
-    if(   FrameDelay())
-        {
+    usleep(100);
 
 
             Packet pck;
-            strcpy(pck.name,"Quentin");
+            strcpy(pck.name,"Jack");
 
             pck.Y = mainPlayer.Pos.y;
             pck.X = mainPlayer.Pos.x;
@@ -155,7 +154,6 @@ SDL_Point mousePosition;
             enemiPlayer.walk = p.walk;
               enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
             enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
-        }
    }
     pthread_exit(NULL);
 }
@@ -374,7 +372,7 @@ bool AnimDelay(Player *player)
 }
 int FrameDelay()
 {
-   int ActualTime = SDL_GetTicks();
+   time_t ActualTime = time(0); // Get the system time;
     if (ActualTime - lastTime > SleepTime )
   {
        lastTime = ActualTime;
