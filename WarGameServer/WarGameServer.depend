@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1494877239 source:c:\users\utilisateur\documents\wargameserver\main.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+	"server.h"
+	"client.h"
+
+1494854327 c:\users\utilisateur\documents\wargameserver\server.h
+	<winsock2.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<unistd.h>
+	<netdb.h>
+	"client.h"
+
+1494877957 c:\users\utilisateur\documents\wargameserver\client.h
+	"server.h"
+
