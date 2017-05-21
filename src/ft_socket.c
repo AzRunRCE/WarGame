@@ -30,9 +30,11 @@ static void init(void)
 #endif
 }
 
-static void end(void)
+void end()
 {
-
+ Packet w;
+    strcpy(w.name,"\0");
+    write_server(sock, &sin,  w);
 #ifdef WIN32
    WSACleanup();
 #endif
@@ -43,7 +45,7 @@ int create_connection()
 {
 
 
-    char host[] = "127.0.0.1";
+    char host[] = "192.168.0.33";
     char pseudo[] = "client";
     init();
     sin.sin_family = 0;

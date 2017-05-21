@@ -32,8 +32,8 @@ typedef struct in_addr IN_ADDR;
 
 #define BUF_SIZE 1024
 
-static void init(void);
-static void end(void);
+static void init();
+void end();
 static void app(const char *address, const char *name);
 static int init_connection(const char *address, SOCKADDR_IN *sin);
 static void end_connection(int sock);

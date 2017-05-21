@@ -58,16 +58,10 @@ int main(int argc, char *argv[])
            // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
-        TTF_CloseFont(_engine.font);
-        SDL_FreeSurface(text);
-        SDL_DestroyTexture(_engine.mapSurface);
-        SDL_DestroyTexture(_engine.characterSurface);
-        SDL_DestroyTexture(_engine.fogSurface);
-        SDL_DestroyRenderer(_engine.screenRenderer);
-        SDL_DestroyWindow(_engine.window);
+
         end();
 
-        SDL_Quit();
+
         return EXIT_SUCCESS;
 
     }
