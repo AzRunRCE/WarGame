@@ -1,5 +1,13 @@
 #include "sprite.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "Item.h"
 #include "engine.h"
 #include "ft_SDL.h"
@@ -26,6 +34,29 @@ void ft_GetPlayerOrientation(Player *player)
                  player->step = 0;
     }
     ft_getCharactSprite(player,state,step);
+}
+int SDL_Update()
+{
+            SDL_RenderClear(_engine.screenRenderer);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.mainPlayer.sprite, &_engine.pCenter);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+           //
+            SDL_RenderPresent(_engine.screenRenderer);
+}
+int SDL_init()
+{
+    if(SDL_Init(SDL_INIT_VIDEO)== -1)
+    {
+        fprintf(stderr, "Erreur d'initialisation de SDL_Init : %s\n", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+    if(TTF_Init() == -1)
+    {
+        fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
+        exit(EXIT_FAILURE);
+    }
 }
 
 int ft_getFirePosition(State characterState)

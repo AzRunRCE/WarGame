@@ -2,6 +2,9 @@
 #define PLAYER_H
 #include "sprite.h"
 #include "main.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 typedef struct Player Player;
 
 struct Player {

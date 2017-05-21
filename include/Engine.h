@@ -10,6 +10,7 @@ struct Engine {
     int HEIGHT;
     int fullscreen;
     SDL_Event event;
+    SDL_Rect pCenter;
     Player  enemiPlayer;
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
@@ -17,8 +18,7 @@ struct Engine {
 
     SDL_Surface *mapSurface;
     SDL_Rect camera;
-
-
+    TTF_Font *font;
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
 

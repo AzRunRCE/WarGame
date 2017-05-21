@@ -124,7 +124,6 @@ void *NetworkThreadingListening(void *arg)
          _engine.enemiPlayer.walk = p.walk;
         _engine.enemiPlayer.Pos.x =  p.X -  _engine.camera.x +  _engine.WIDTH/2 - 16;
          _engine.enemiPlayer.Pos.y =  p.Y-  _engine.camera.y +  _engine.HEIGHT/2 - 16;
-        printf("%d %d \n", _engine.enemiPlayer.Pos.y,  _engine.enemiPlayer.Pos.x);
     }
     pthread_exit(NULL);
 }
@@ -134,13 +133,9 @@ void *NetworkThreadingListening(void *arg)
 {
    while(true)
    {
-            Packet pck;
+            Packet pck = {.X = _engine.mainPlayer.Pos.x,.Y = _engine.mainPlayer.Pos.y,
+             .state = _engine.mainPlayer.state, .fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk};
             strcpy(pck.name,"Jack");
-            pck.Y = _engine.mainPlayer.Pos.y;
-            pck.X = _engine.mainPlayer.Pos.x;
-            pck.state = _engine.mainPlayer.state;
-            pck.fire = _engine.mainPlayer.fire;
-            pck.walk = _engine.mainPlayer.walk;
             write_server(sock, &sin,pck);
             usleep(200);
    }
