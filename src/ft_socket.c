@@ -32,10 +32,12 @@ static void init(void)
 
 static void end(void)
 {
+
 #ifdef WIN32
    WSACleanup();
 #endif
 }
+
 
 int create_connection()
 {
@@ -137,7 +139,7 @@ void *NetworkThreadingListening(void *arg)
              .state = _engine.mainPlayer.state, .fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk};
             strcpy(pck.name,"Jack");
             write_server(sock, &sin,pck);
-            usleep(200);
+            usleep(1000);
    }
     pthread_exit(NULL);
 }

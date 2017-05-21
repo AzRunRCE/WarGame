@@ -32,15 +32,8 @@ int const SleepTimeAnim = 200;
 int main(int argc, char *argv[])
 {
     SDL_init();
-    _engine.font = TTF_OpenFont("res/verdana.ttf", 20);
     Engine_init();
-
-
-
-
     fontSurface = SDL_GetWindowSurface(_engine.window);
-
-
     create_connection(&_engine);
         while (GetKeyPressEvent())
         {
@@ -52,11 +45,18 @@ int main(int argc, char *argv[])
             ft_GetPlayerOrientation(&_engine.enemiPlayer);
             sprintf(message, "%i,%i", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y);
             text = TTF_RenderText_Blended( _engine.font, message, colorWhite);
+
             SDL_Rect posText = {0, 0, text->w, text->h};
             SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 
-            SDL_Update();
+            SDL_RenderClear(_engine.screenRenderer);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.mainPlayer.sprite, &_engine.pCenter);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
+           // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
+            SDL_RenderPresent(_engine.screenRenderer);
         }
         TTF_CloseFont(_engine.font);
         SDL_FreeSurface(text);

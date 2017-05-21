@@ -16,7 +16,7 @@ void Engine_init()
     _engine.characterEnnemiSurface =    IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
     _engine.mapSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
-
+     _engine.font = TTF_OpenFont("res/verdana.ttf", 20);
 
     _engine.enemiPlayer = (Player) {.health = 100,.state = DOWN, .step = 0,.Pos.x = 48,.Pos.y = 48,.Pos.w = 32,.Pos.h = 32};
     _engine.mainPlayer = (Player) {.health = 100,.state = DOWN, .step = 0,.Pos.x = 48,.Pos.y = 48,.Pos.w = 32,.Pos.h = 32};
