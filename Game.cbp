@@ -42,11 +42,14 @@
 			<Add option="-lSDL2_image" />
 			<Add option="-lSDL_ttf" />
 			<Add option="-lws2_32" />
+			<Add option="-lpthread" />
+			<Add option="-lpthread" />
 			<Add library="mingw32" />
 			<Add library="user32" />
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="dxguid" />
+			<Add library="../../../../Program Files (x86)/CodeBlocks/MinGW/lib/libpthreadGC2.a" />
 			<Add directory="$(#sdl.lib)" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL2-2.0.5/lib" />
 		</Linker>
@@ -60,6 +63,9 @@
 		<Unit filename="include/main.h" />
 		<Unit filename="include/sprite.h" />
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/client.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/ft_SDL.c">

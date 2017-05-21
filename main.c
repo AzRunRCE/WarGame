@@ -114,54 +114,49 @@ SDL_Point mousePosition;
 
 
 
- Player  enemiPlayer;
-
- void *NetworkThreadingListening(void *arg)
+Player  enemiPlayer;
+SOCKADDR_IN sin;
+SOCKET sock;
+  void *NetworkThreadingListening(void *arg)
 {
-      char host[] = "127.0.0.1";
-    char pseudo[] = "client";
+    while(true)
+    {
+        Packet p;
+        p = read_server(sock, &sin);
+        enemiPlayer.state = p.state;
+        enemiPlayer.fire = p.fire;
+        enemiPlayer.walk = p.walk;
+        enemiPlayer.Pos.x =  p.X - _engine.camera.x + _engine.WIDTH/2 - 16;
+        enemiPlayer.Pos.y =  p.Y- _engine.camera.y + _engine.HEIGHT/2 - 16;
+    }
+    pthread_exit(NULL);
+}
 
-    init();
-    SOCKADDR_IN sin = {0};
-    SOCKET sock = init_connection(host, &sin);
-    Packet w;
-    strcpy(w.name,"Quentin");
-    write_server(sock, &sin,  w);
+
+ void *SreamClientData(void *arg)
+{
    while(true)
    {
-    usleep(100);
-
-
             Packet pck;
             strcpy(pck.name,"Jack");
-
             pck.Y = mainPlayer.Pos.y;
             pck.X = mainPlayer.Pos.x;
             pck.state = mainPlayer.state;
             pck.fire = mainPlayer.fire;
             pck.walk = mainPlayer.walk;
-           write_server(sock, &sin,pck);
-
-
-
-            Packet p;
-            p = read_server(sock, &sin);
-
-            enemiPlayer.Pos.x = p.X;
-            enemiPlayer.Pos.y = p.Y;
-            enemiPlayer.state = p.state;
-            enemiPlayer.fire = p.fire;
-            enemiPlayer.walk = p.walk;
-              enemiPlayer.Pos.x =   enemiPlayer.Pos.x - _engine.camera.x + _engine.WIDTH/2 - 16;
-            enemiPlayer.Pos.y = enemiPlayer.Pos.y - _engine.camera.y + _engine.HEIGHT/2 - 16;
+            write_server(sock, &sin,pck);
+            usleep(100);
    }
     pthread_exit(NULL);
 }
+
+
 int main(int argc, char *argv[])
 {
 
 
     pthread_t NwkThread;
+     pthread_t NwkThreadSender;
     enemiPlayer.state = DOWN;
     enemiPlayer.step = 0;
     enemiPlayer.Pos.w = 32;
@@ -220,15 +215,22 @@ int main(int argc, char *argv[])
     _engine.camera.y = 0;
     _engine.camera.w = _engine.WIDTH;
     _engine.camera.h = _engine.HEIGHT;
-
+    char host[] = "127.0.0.1";
+    char pseudo[] = "client";
+    init();
+    sin.sin_family = 0;
+    sock = init_connection(host, &sin);
+    Packet w;
+    strcpy(w.name,"Quentin");
+    write_server(sock, &sin,  w);
     if(pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
         perror("pthread_create");
-	return EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
-
-
-        char buffer[BUF_SIZE];
-        char s_buffer[BUF_SIZE];
+    if(pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
+        perror("pthread_create");
+        return EXIT_FAILURE;
+    }
 
 
         while (GetKeyPressEvent())
@@ -254,8 +256,6 @@ int main(int argc, char *argv[])
            // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
-        s_buffer[0] == '\0';
-      //  write_server(sock, &sin,s_buffer);
         TTF_CloseFont(font);
         SDL_FreeSurface(text);
         SDL_DestroyTexture(_engine.mapSurface);
