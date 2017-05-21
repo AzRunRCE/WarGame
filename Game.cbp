@@ -43,7 +43,6 @@
 			<Add option="-lSDL_ttf" />
 			<Add option="-lws2_32" />
 			<Add option="-lpthread" />
-			<Add option="-lpthread" />
 			<Add library="mingw32" />
 			<Add library="user32" />
 			<Add library="gdi32" />
@@ -58,6 +57,7 @@
 		<Unit filename="include/Item.h" />
 		<Unit filename="include/Packet.h" />
 		<Unit filename="include/Player.h" />
+		<Unit filename="include/Socket.h" />
 		<Unit filename="include/client.h" />
 		<Unit filename="include/ft_SDL.h" />
 		<Unit filename="include/main.h" />
@@ -65,10 +65,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/client.c">
+		<Unit filename="src/ft_SDL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/ft_SDL.c">
+		<Unit filename="src/socket.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

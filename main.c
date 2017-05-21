@@ -5,92 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include "client.h"
 #include "Item.h"
 #include "engine.h"
 #include "ft_SDL.h"
 #include "player.h"
 #include "sprite.h"
 #include "Packet.h"
-
-static void init(void)
-{
-#ifdef WIN32
-   WSADATA wsa;
-   int err = WSAStartup(MAKEWORD(2, 2), &wsa);
-   if(err < 0)
-   {
-      puts("WSAStartup failed !");
-      exit(EXIT_FAILURE);
-   }
-#endif
-}
-
-static void end(void)
-{
-#ifdef WIN32
-   WSACleanup();
-#endif
-}
-
-static int init_connection(const char *address, SOCKADDR_IN *sin)
-{
-   /* UDP so SOCK_DGRAM */
-   SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-   struct hostent *hostinfo;
-
-   if(sock == INVALID_SOCKET)
-   {
-      perror("socket()");
-      exit(errno);
-   }
-
-   hostinfo = gethostbyname(address);
-   if (hostinfo == NULL)
-   {
-      fprintf (stderr, "Unknown host %s.\n", address);
-      exit(EXIT_FAILURE);
-   }
-
-   sin->sin_addr = *(IN_ADDR *) hostinfo->h_addr;
-   sin->sin_port = htons(PORT);
-   sin->sin_family = AF_INET;
-
-   return sock;
-}
-
-static void end_connection(int sock)
-{
-   closesocket(sock);
-}
-
-static Packet read_server(SOCKET sock, SOCKADDR_IN *sin)
-{
-    int n = 0;
-    size_t sinsize = sizeof *sin;
-    Packet pck;
-    if((n = recvfrom(sock, &pck, sizeof(pck), 0, (SOCKADDR *) sin, &sinsize)) < 0)
-    {
-        perror("recvfrom()");
-        exit(errno);
-    }
-  // buffer[n] = 0;
-    return pck;
-}
-
-static void write_server(SOCKET sock, SOCKADDR_IN *sin,Packet pck)
-{
-   if(sendto(sock, &pck, sizeof(pck), 0, (SOCKADDR *) sin, sizeof *sin) < 0)
-   {
-      perror("sendto()");
-      exit(errno);
-   }
-}
-
+#include "Socket.h"
 
 // TEXT
 SDL_Window *ecran = NULL;
@@ -99,70 +23,23 @@ TTF_Font *font = NULL;
 SDL_Color colorWhite = {255, 255, 255};
 SDL_Surface *fontSurface = NULL;
 char message[20];
-
 time_t lastTime = 0, lastTimeAnim = 0;
 int const SleepTime = 30;
 int const SleepTimeAnim = 200;
 bool tour=true;
 Engine _engine;
-Player mainPlayer;
 Uint8 *keystate=NULL;
 SDL_Point mousePosition;
 
-// Screen
 
 
-
-
-Player  enemiPlayer;
-SOCKADDR_IN sin;
-SOCKET sock;
-  void *NetworkThreadingListening(void *arg)
-{
-    while(true)
-    {
-        Packet p;
-        p = read_server(sock, &sin);
-        enemiPlayer.state = p.state;
-        enemiPlayer.fire = p.fire;
-        enemiPlayer.walk = p.walk;
-        enemiPlayer.Pos.x =  p.X - _engine.camera.x + _engine.WIDTH/2 - 16;
-        enemiPlayer.Pos.y =  p.Y- _engine.camera.y + _engine.HEIGHT/2 - 16;
-    }
-    pthread_exit(NULL);
-}
-
-
- void *SreamClientData(void *arg)
-{
-   while(true)
-   {
-            Packet pck;
-            strcpy(pck.name,"Jack");
-            pck.Y = mainPlayer.Pos.y;
-            pck.X = mainPlayer.Pos.x;
-            pck.state = mainPlayer.state;
-            pck.fire = mainPlayer.fire;
-            pck.walk = mainPlayer.walk;
-            write_server(sock, &sin,pck);
-            usleep(100);
-   }
-    pthread_exit(NULL);
-}
 
 
 int main(int argc, char *argv[])
 {
 
 
-    pthread_t NwkThread;
-     pthread_t NwkThreadSender;
-    enemiPlayer.state = DOWN;
-    enemiPlayer.step = 0;
-    enemiPlayer.Pos.w = 32;
-    enemiPlayer.Pos.h = 32;
-      enemiPlayer.Pos.x = _engine.WIDTH/2 - 16;
-    enemiPlayer.Pos.y = _engine.HEIGHT/2 - 16;
+
     _engine.fullscreen = 0;
     _engine.WIDTH = 400;
     _engine.HEIGHT = 300;
@@ -199,49 +76,29 @@ int main(int argc, char *argv[])
     fontSurface = SDL_GetWindowSurface(_engine.window);
 
 
-    mainPlayer.health = 100;
-    mainPlayer.state = DOWN;
-    mainPlayer.step = 0;
-    mainPlayer.Pos.x = _engine.WIDTH/2 - 16;
-    mainPlayer.Pos.y = _engine.HEIGHT/2 - 16;
-    mainPlayer.Pos.w = 32;
-    mainPlayer.Pos.h = 32;
-    SDL_Rect pCenter;
-    pCenter.x = _engine.WIDTH/2 - 16;
-    pCenter.y = _engine.HEIGHT/2 - 16;
-    pCenter.w = 32;
-    pCenter.h = 32;
+    _engine.mainPlayer.health = 100;
+    _engine.mainPlayer.state = DOWN;
+    _engine.mainPlayer.step = 0;
+    _engine.mainPlayer.Pos.x = 48;
+    _engine.mainPlayer.Pos.y = 48;
+    _engine.mainPlayer.Pos.w = 32;
+    _engine.mainPlayer.Pos.h = 32;
+    _engine.enemiPlayer = _engine.mainPlayer;
+    SDL_Rect pCenter = {_engine.WIDTH/2 - 16, _engine.HEIGHT/2 - 16,32,32};
     _engine.camera.x = 0;
     _engine.camera.y = 0;
     _engine.camera.w = _engine.WIDTH;
     _engine.camera.h = _engine.HEIGHT;
-    char host[] = "127.0.0.1";
-    char pseudo[] = "client";
-    init();
-    sin.sin_family = 0;
-    sock = init_connection(host, &sin);
-    Packet w;
-    strcpy(w.name,"Quentin");
-    write_server(sock, &sin,  w);
-    if(pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
-        perror("pthread_create");
-        return EXIT_FAILURE;
-    }
-    if(pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
-        perror("pthread_create");
-        return EXIT_FAILURE;
-    }
-
-
+   create_connection(&_engine);
         while (GetKeyPressEvent())
         {
 
 
-            _engine.camera.x = mainPlayer.Pos.x;
-            _engine.camera.y = mainPlayer.Pos.y;
-            ft_GetPlayerOrientation(&mainPlayer);
-            ft_GetPlayerOrientation(&enemiPlayer);
-             sprintf(message, "%i,%i", mainPlayer.Pos.x, mainPlayer.Pos.y);
+            _engine.camera.x = _engine.mainPlayer.Pos.x;
+            _engine.camera.y = _engine.mainPlayer.Pos.y;
+            ft_GetPlayerOrientation(&_engine.mainPlayer);
+            ft_GetPlayerOrientation(&_engine.enemiPlayer);
+             sprintf(message, "%i,%i", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y);
             text = TTF_RenderText_Blended(font, message, colorWhite);
 
             SDL_Rect posText = {0, 0, text->w, text->h};
@@ -249,8 +106,8 @@ int main(int argc, char *argv[])
 
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &mainPlayer.sprite, &pCenter);
-            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &enemiPlayer.sprite, &enemiPlayer.Pos);
+            SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.mainPlayer.sprite, &pCenter);
+            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
             SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
            // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
@@ -304,35 +161,35 @@ int GetKeyPressEvent()
             }
 
         }
-        mainPlayer.fire = false;
-        mainPlayer.walk = false;
+        _engine.mainPlayer.fire = false;
+        _engine.mainPlayer.walk = false;
         if (keystate[SDL_SCANCODE_SPACE] )
-          mainPlayer.fire = true;
+          _engine.mainPlayer.fire = true;
         else
         {
-            if (keystate[SDL_SCANCODE_LEFT] &   mainPlayer.Pos.x >= 50)
+            if (keystate[SDL_SCANCODE_LEFT] &   _engine.mainPlayer.Pos.x >= 50)
             {
-            mainPlayer.Pos.x -= 2;
-                mainPlayer.state = LEFT;
-                mainPlayer.walk = true;
+            _engine.mainPlayer.Pos.x -= 2;
+                _engine.mainPlayer.state = LEFT;
+                _engine.mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_RIGHT] & mainPlayer.Pos.x <= 750)
+            if (keystate[SDL_SCANCODE_RIGHT] & _engine.mainPlayer.Pos.x <= 750)
             {
-                mainPlayer.Pos.x += 2;
-                mainPlayer.state = RIGHT;
-                mainPlayer.walk = true;
+                _engine.mainPlayer.Pos.x += 2;
+                _engine.mainPlayer.state = RIGHT;
+                _engine.mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_UP] &   mainPlayer.Pos.y >= 50 )
+            if (keystate[SDL_SCANCODE_UP] &   _engine.mainPlayer.Pos.y >= 50 )
             {
-                mainPlayer.Pos.y -= 2;
-                mainPlayer.state = UP;
-                mainPlayer.walk = true;
+                _engine.mainPlayer.Pos.y -= 2;
+                _engine.mainPlayer.state = UP;
+                _engine.mainPlayer.walk = true;
             }
-            if (keystate[SDL_SCANCODE_DOWN] &   mainPlayer.Pos.y <= 750 )
+            if (keystate[SDL_SCANCODE_DOWN] &   _engine.mainPlayer.Pos.y <= 750 )
             {
-                mainPlayer.Pos.y += 2;
-                mainPlayer.state = DOWN;
-                mainPlayer.walk = true;
+                _engine.mainPlayer.Pos.y += 2;
+                _engine.mainPlayer.state = DOWN;
+                _engine.mainPlayer.walk = true;
             }
 
   }
@@ -351,7 +208,7 @@ int GetKeyPressEvent()
         }
     SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
     if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
-        mainPlayer.fire = true;
+        _engine.mainPlayer.fire = true;
     return 1;
 }
 

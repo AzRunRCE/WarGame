@@ -2,6 +2,7 @@
 #define ENGINE_H
 #include "Player.h"
 
+
 typedef struct Engine Engine;
 
 struct Engine {
@@ -9,7 +10,8 @@ struct Engine {
     int HEIGHT;
     int fullscreen;
     SDL_Event event;
-
+    Player  enemiPlayer;
+    Player mainPlayer;
     SDL_Renderer* screenRenderer;
     SDL_Window* window;
 
@@ -27,5 +29,5 @@ struct Engine {
     SDL_Rect spriteRect;
 };
 
-
+extern Engine _engine;
 #endif // ENGINE_H
