@@ -7,12 +7,6 @@ typedef struct
 {
     SOCKADDR_IN sin;
     char name[BUF_SIZE];
-    int Y;
-    int X;
-    State state;
-    char name[256];
-    bool walk;
-    bool fire;
 }Client;
 
 typedef enum

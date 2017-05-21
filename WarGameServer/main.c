@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-
+#include <winsock2.h>
 #include "server.h"
 #include "client.h"
 
@@ -27,6 +27,8 @@ static void end(void)
 }
 Client clients[MAX_CLIENTS];
 int actual = 0;
+
+
 static void app(void)
 {
    SOCKET sock = init_connection();
@@ -208,7 +210,7 @@ static Packet read_client(SOCKET sock, SOCKADDR_IN *sin)
       perror("recvfrom()");
 
    }
-    printf("%s %d %d",packet.name,packet.X,packet.Y);
+    //printf("%s %d %d",packet.name,packet.X,packet.Y);
    //buffer[n] = 0;
 
    return packet;
