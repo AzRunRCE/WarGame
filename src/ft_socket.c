@@ -45,13 +45,13 @@ int create_connection()
 {
 
 
-    char host[] = "192.168.0.33";
+    char host[] = "ams.chunkz.net";
     char pseudo[] = "client";
     init();
     sin.sin_family = 0;
     sock = init_connection(host, &sin);
     Packet w;
-    strcpy(w.name,"Quentin");
+    strcpy(w.name,"Bertrand");
     write_server(sock, &sin,  w);
     if(pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
         perror("pthread_create");
