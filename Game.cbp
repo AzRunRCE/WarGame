@@ -49,6 +49,7 @@
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="dxguid" />
+			<Add library="pthread_lib/lib/libpthreadGC2.a" />
 			<Add directory="$(#sdl.lib)" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL2-2.0.5/lib" />
 		</Linker>
