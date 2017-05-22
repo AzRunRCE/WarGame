@@ -45,7 +45,7 @@ int create_connection()
 {
 
 
-    char host[] = "127.0.0.1";
+    char host[] = "192.168.43.175";
     char pseudo[] = "client";
     init();
     sin.sin_family = 0;
