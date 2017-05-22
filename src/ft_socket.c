@@ -45,7 +45,7 @@ int create_connection()
 {
 
 
-    char host[] = "chunkz.net";
+    char host[] = "127.0.0.1";
     char pseudo[] = "client";
     init();
     sin.sin_family = 0;
@@ -57,9 +57,9 @@ int create_connection()
         perror("pthread_create");
         return EXIT_FAILURE;
     }
-    if(pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
-        perror("pthread_create");
-        return EXIT_FAILURE;
+   if(pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
+       perror("pthread_create");
+       return EXIT_FAILURE;
     }
 }
 
@@ -123,11 +123,13 @@ void *NetworkThreadingListening(void *arg)
     {
         Packet p;
         p = read_server(sock, &sin);
-        _engine.enemiPlayer.state = p.state;
-        _engine.enemiPlayer.fire = p.fire;
-         _engine.enemiPlayer.walk = p.walk;
-        _engine.enemiPlayer.Pos.x =  p.X -  _engine.camera.x +  _engine.WIDTH/2 - 16;
-         _engine.enemiPlayer.Pos.y =  p.Y-  _engine.camera.y +  _engine.HEIGHT/2 - 16;
+        _engine.players[p.clientNum].fire = p.fire;
+        _engine.players[p.clientNum].state = p.state;
+        _engine.players[p.clientNum].walk = p.walk;
+          _engine.players[p.clientNum].Pos.h =32;
+           _engine.players[p.clientNum].Pos.w =32;
+        _engine.players[p.clientNum].Pos.x =  p.X -  _engine.camera.x +  _engine.WIDTH/2 - 16;
+        _engine.players[p.clientNum].Pos.y =  p.Y-  _engine.camera.y +  _engine.HEIGHT/2 - 16;
     }
     pthread_exit(NULL);
 }

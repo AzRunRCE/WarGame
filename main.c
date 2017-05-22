@@ -38,24 +38,28 @@ int main(int argc, char *argv[])
         while (GetKeyPressEvent())
         {
 
-
+            sprintf(message, "%i,%i", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y);
+            text = TTF_RenderText_Blended( _engine.font, message, colorWhite);
+            SDL_Rect posText = {0, 0, text->w, text->h};
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
             _engine.camera.x = _engine.mainPlayer.Pos.x;
             _engine.camera.y = _engine.mainPlayer.Pos.y;
             ft_GetPlayerOrientation(&_engine.mainPlayer);
-            ft_GetPlayerOrientation(&_engine.enemiPlayer);
-            sprintf(message, "%i,%i", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y);
-            text = TTF_RenderText_Blended( _engine.font, message, colorWhite);
-
-            SDL_Rect posText = {0, 0, text->w, text->h};
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
-
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.mainPlayer.sprite, &_engine.pCenter);
-            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+            int i;
+            for (i = 0; i < 15; i++)
+            {
+                if ( _engine.players[i].Pos.x == 0 &&  _engine.players[i].Pos.y == 0)
+                    continue;
+                  ft_GetPlayerOrientation(&_engine.players[i]);
+                SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.players[i].sprite, &_engine.players[i].Pos);
+            }
+
+
+          //  SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
             SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
-           // SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
             SDL_RenderPresent(_engine.screenRenderer);
         }
 

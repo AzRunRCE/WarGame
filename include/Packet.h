@@ -12,6 +12,7 @@ typedef struct
     char name[256];
     bool walk;
     bool fire;
+    int clientNum;
 }Packet;
 
 #endif // PACKET_H

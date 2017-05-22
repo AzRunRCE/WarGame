@@ -11,7 +11,7 @@ struct Engine {
     int fullscreen;
     SDL_Event event;
     SDL_Rect pCenter;
-    Player  enemiPlayer;
+    Player players[16];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
     SDL_Window* window;
