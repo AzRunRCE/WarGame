@@ -45,7 +45,7 @@ int create_connection()
 {
 
 
-    char host[] = "192.168.43.175";
+    char host[] = "chunkz.net";
     char pseudo[] = "client";
     init();
     sin.sin_family = 0;
@@ -141,7 +141,7 @@ void *NetworkThreadingListening(void *arg)
              .state = _engine.mainPlayer.state, .fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk};
             strcpy(pck.name,"Jack");
             write_server(sock, &sin,pck);
-            usleep(1000);
+            usleep(18000);
    }
     pthread_exit(NULL);
 }
