@@ -16,7 +16,7 @@
 #include "Packet.h"
 #include "Socket.h"
 #include "Engine.h"
-
+#define MAX_LENGTH 10
 Engine _engine;
 
 SDL_Color colorWhite = {255, 255, 255};
@@ -28,7 +28,8 @@ SDL_Surface *menuTitle = NULL;
 SDL_Surface *ipAddress = NULL;
 SDL_Surface *menuStart = NULL;
 SDL_Surface *menuOptions = NULL;
-char textInput[20] = {'\0'};
+
+char textInput[MAX_LENGTH +1] = {'\0'};
 char *composition;
 int menuSelection = 1;
 Sint32 cursor;
@@ -77,7 +78,13 @@ SDL_SetTextInputRect(&rect);
                         break;
                     case SDL_TEXTINPUT:
                         /* Add new text onto the end of our text */
-                        strcat(textInput, event.text.text);
+
+                        if (strlen(textInput) < MAX_LENGTH)
+                        {
+                             strcat(textInput, event.text.text);
+
+                        }
+
                         break;
                     case SDL_TEXTEDITING:
                     /*
@@ -94,6 +101,7 @@ SDL_SetTextInputRect(&rect);
                         {
                             textInput[strlen(textInput)-1] = 0;
                         }
+
                     break;
 
                 }
@@ -105,7 +113,7 @@ SDL_SetTextInputRect(&rect);
                 SDL_RenderCopy(_engine.screenRenderer, textureTextStart, NULL, &posIpAddress);
             }
             SDL_RenderPresent(_engine.screenRenderer);
-            printf("%s\n", textInput);
+            printf("%d\n",strlen(textInput));
         }
 
     }
