@@ -26,6 +26,7 @@ struct Engine {
     SDL_Surface *characterSurface;
     SDL_Surface *characterEnnemiSurface;
     SDL_Surface *menuSurface;
+    SDL_Surface *selectionSurface;
     SDL_Rect spriteRect;
 };
 

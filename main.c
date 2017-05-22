@@ -24,10 +24,13 @@ SDL_Color colorWhite = {255, 255, 255};
 // MENU
 int menu()
 {
-SDL_Surface *MenuTitle = NULL;
-SDL_Surface *Start = NULL;
-char textInput[20];
+SDL_Surface *menuTitle = NULL;
+SDL_Surface *ipAddress = NULL;
+SDL_Surface *menuStart = NULL;
+SDL_Surface *menuOptions = NULL;
+char textInput[20] = {'\0'};
 char *composition;
+int menuSelection = 1;
 Sint32 cursor;
 Sint32 selection_len;
 SDL_Rect rect;
@@ -42,17 +45,29 @@ SDL_SetTextInputRect(&rect);
         SDL_bool done = SDL_FALSE;
         //SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, NULL, NULL);
 
-        MenuTitle = TTF_RenderText_Blended( _engine.font, "WarGame", colorWhite);
-        SDL_Rect posText = {_engine.WIDTH/2-MenuTitle->w/2, 0, MenuTitle->w, MenuTitle->h};
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, MenuTitle);
+        menuTitle = TTF_RenderText_Blended( _engine.font, "WarGame", colorWhite);
+        SDL_Rect posMenuTitle = {_engine.WIDTH/2-menuTitle->w/2, 0, menuTitle->w, menuTitle->h};
+        SDL_Texture *textMenuTitle = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuTitle);
 
+        menuStart = TTF_RenderText_Blended( _engine.font, "START", colorWhite);
+        SDL_Rect posMenuStart = {_engine.WIDTH/2-menuStart->w/2, _engine.HEIGHT/2-menuStart->h*1.5, menuStart->w, menuStart->h};
+        SDL_Texture *textMenuStart = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuStart);
+
+        menuOptions = TTF_RenderText_Blended( _engine.font, "OPTIONS", colorWhite);
+        SDL_Rect posMenuOptions = {_engine.WIDTH/2-menuOptions->w/2, _engine.HEIGHT/2-menuOptions->h/2, menuOptions->w, menuOptions->h};
+        SDL_Texture *textMenuOptions = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuOptions);
+
+        //SDL_Rect posSelection = {0, 0, 200, 200};
 
         SDL_StartTextInput();
         int i;
         while (!done) {
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
-            SDL_RenderCopy(_engine.screenRenderer,texture, NULL, &posText);
+            SDL_RenderCopy(_engine.screenRenderer, textMenuTitle, NULL, &posMenuTitle);
+            SDL_RenderCopy(_engine.screenRenderer, textMenuStart, NULL, &posMenuStart);
+            SDL_RenderCopy(_engine.screenRenderer, textMenuOptions, NULL, &posMenuOptions);
+            //SDL_RenderCopy(_engine.screenRenderer, _engine.selectionSurface, NULL, &posMenuOptions);
             SDL_Event event;
             if (SDL_PollEvent(&event)) {
                 switch (event.type) {
@@ -83,10 +98,12 @@ SDL_SetTextInputRect(&rect);
 
                 }
             }
-            Start = TTF_RenderText_Blended( _engine.font, textInput, colorWhite);
-            SDL_Rect posTextStart = {_engine.WIDTH/2-Start->w/2, _engine.HEIGHT/2-Start->h/2, Start->w, Start->h};
-            SDL_Texture *textureTextStart = SDL_CreateTextureFromSurface(_engine.screenRenderer, Start);
-            SDL_RenderCopy(_engine.screenRenderer, textureTextStart, NULL, &posTextStart);
+            if(textInput[0] != '\0') {
+                ipAddress = TTF_RenderText_Blended( _engine.font, textInput, colorWhite);
+                SDL_Rect posIpAddress = {_engine.WIDTH/2-ipAddress->w/2, _engine.HEIGHT/2-ipAddress->h/2, ipAddress->w, ipAddress->h};
+                SDL_Texture *textureTextStart = SDL_CreateTextureFromSurface(_engine.screenRenderer, ipAddress);
+                SDL_RenderCopy(_engine.screenRenderer, textureTextStart, NULL, &posIpAddress);
+            }
             SDL_RenderPresent(_engine.screenRenderer);
             printf("%s\n", textInput);
         }
