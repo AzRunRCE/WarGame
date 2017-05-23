@@ -91,11 +91,13 @@ void menu()
                         }
                     }
                     if (event.key.keysym.sym == SDLK_DOWN)
-                        if (Menu.menuSelection < 2)
+                        if (Menu.menuSelection < 2 && Menu.selectionOptionsDone == false)
                             Menu.menuSelection++;
-                    if (event.key.keysym.sym == SDLK_UP)
+                    if (event.key.keysym.sym == SDLK_UP && Menu.selectionOptionsDone == false)
                         if (Menu.menuSelection > 0)
                             Menu.menuSelection--;
+                    if (event.key.keysym.sym == SDLK_ESCAPE && Menu.selectionOptionsDone == true)
+                        Menu.selectionOptionsDone = false;
                 break;
 
             }
