@@ -19,6 +19,7 @@ struct Engine {
     SDL_Surface *mapSurface;
     SDL_Rect camera;
     TTF_Font *font;
+    SDL_Color colorWhite;
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
 

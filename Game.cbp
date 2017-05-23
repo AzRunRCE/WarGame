@@ -60,7 +60,9 @@
 		<Unit filename="include/Socket.h" />
 		<Unit filename="include/client.h" />
 		<Unit filename="include/ft_Engine.h" />
+		<Unit filename="include/ft_Menu.h" />
 		<Unit filename="include/ft_SDL.h" />
+		<Unit filename="include/ft_UserPreferences.h" />
 		<Unit filename="include/main.h" />
 		<Unit filename="include/sprite.h" />
 		<Unit filename="main.c">
@@ -69,7 +71,13 @@
 		<Unit filename="src/ft_Engine.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/ft_Menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/ft_SDL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/ft_UserPreferences.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/ft_socket.c">

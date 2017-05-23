@@ -16,110 +16,12 @@
 #include "Packet.h"
 #include "Socket.h"
 #include "Engine.h"
-#define MAX_LENGTH 10
+#include "ft_Menu.h"
+#define MAX_LENGTH 32
 Engine _engine;
 
-SDL_Color colorWhite = {255, 255, 255};
-
-// MENU
-int menu()
-{
-SDL_Surface *menuTitle = NULL;
-SDL_Surface *ipAddress = NULL;
-SDL_Surface *menuStart = NULL;
-SDL_Surface *menuOptions = NULL;
-
-char textInput[MAX_LENGTH +1] = {'\0'};
-char *composition;
-int menuSelection = 1;
-Sint32 cursor;
-Sint32 selection_len;
-SDL_Rect rect;
-rect.h = 100;
-rect.w = 100;
-rect.x = 0;
-rect.y = 0;
-SDL_SetTextInputRect(&rect);
-
-    while(true)
-    {
-        SDL_bool done = SDL_FALSE;
-        //SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, NULL, NULL);
-
-        menuTitle = TTF_RenderText_Blended( _engine.font, "WarGame", colorWhite);
-        SDL_Rect posMenuTitle = {_engine.WIDTH/2-menuTitle->w/2, 0, menuTitle->w, menuTitle->h};
-        SDL_Texture *textMenuTitle = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuTitle);
-
-        menuStart = TTF_RenderText_Blended( _engine.font, "START", colorWhite);
-        SDL_Rect posMenuStart = {_engine.WIDTH/2-menuStart->w/2, _engine.HEIGHT/2-menuStart->h*1.5, menuStart->w, menuStart->h};
-        SDL_Texture *textMenuStart = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuStart);
-
-        menuOptions = TTF_RenderText_Blended( _engine.font, "OPTIONS", colorWhite);
-        SDL_Rect posMenuOptions = {_engine.WIDTH/2-menuOptions->w/2, _engine.HEIGHT/2-menuOptions->h/2, menuOptions->w, menuOptions->h};
-        SDL_Texture *textMenuOptions = SDL_CreateTextureFromSurface(_engine.screenRenderer, menuOptions);
-
-        //SDL_Rect posSelection = {0, 0, 200, 200};
-
-        SDL_StartTextInput();
-        int i;
-        while (!done) {
-            SDL_RenderClear(_engine.screenRenderer);
-            SDL_RenderCopy(_engine.screenRenderer, _engine.menuSurface, NULL, NULL);
-            SDL_RenderCopy(_engine.screenRenderer, textMenuTitle, NULL, &posMenuTitle);
-            SDL_RenderCopy(_engine.screenRenderer, textMenuStart, NULL, &posMenuStart);
-            SDL_RenderCopy(_engine.screenRenderer, textMenuOptions, NULL, &posMenuOptions);
-            //SDL_RenderCopy(_engine.screenRenderer, _engine.selectionSurface, NULL, &posMenuOptions);
-            SDL_Event event;
-            if (SDL_PollEvent(&event)) {
-                switch (event.type) {
-                    case SDL_QUIT:
-                        /* Quit */
-                        done = SDL_TRUE;
-                        break;
-                    case SDL_TEXTINPUT:
-                        /* Add new text onto the end of our text */
-
-                        if (strlen(textInput) < MAX_LENGTH)
-                        {
-                             strcat(textInput, event.text.text);
-
-                        }
-
-                        break;
-                    case SDL_TEXTEDITING:
-                    /*
-                    Update the composition text.
-                    Update the cursor position.
-                    Update the selection length (if any).
-                    */
-                    composition = event.edit.text;
-                    cursor = event.edit.start;
-                    selection_len = event.edit.length;
-                    break;
-                    case SDL_KEYDOWN:
-                        if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(textInput) > 0)
-                        {
-                            textInput[strlen(textInput)-1] = 0;
-                        }
-
-                    break;
-
-                }
-            }
-            if(textInput[0] != '\0') {
-                ipAddress = TTF_RenderText_Blended( _engine.font, textInput, colorWhite);
-                SDL_Rect posIpAddress = {_engine.WIDTH/2-ipAddress->w/2, _engine.HEIGHT/2-ipAddress->h/2, ipAddress->w, ipAddress->h};
-                SDL_Texture *textureTextStart = SDL_CreateTextureFromSurface(_engine.screenRenderer, ipAddress);
-                SDL_RenderCopy(_engine.screenRenderer, textureTextStart, NULL, &posIpAddress);
-            }
-            SDL_RenderPresent(_engine.screenRenderer);
-            printf("%d\n",strlen(textInput));
-        }
-
-    }
-}
-
 // TEXT
+SDL_Color colorWhite = {255, 255, 255};
 
 SDL_Surface *text = NULL;
 SDL_Surface *fontSurface = NULL;
