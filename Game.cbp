@@ -64,6 +64,7 @@
 		<Unit filename="include/ft_SDL.h" />
 		<Unit filename="include/ft_UserPreferences.h" />
 		<Unit filename="include/main.h" />
+		<Unit filename="include/point.h" />
 		<Unit filename="include/sprite.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
