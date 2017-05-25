@@ -16,6 +16,7 @@ void Engine_init()
     _engine.characterEnnemiSurface =    IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
     _engine.mapSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
     _engine.fogSurface =                IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
+    _engine.bulletSurface =             IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
     _engine.font = TTF_OpenFont("res/verdana.ttf", 20);
     _engine.colorWhite = (SDL_Color) {255, 255, 255};
     _engine.colorWarGame = (SDL_Color) {52, 22, 20};

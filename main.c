@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
             SDL_RenderClear(_engine.screenRenderer);
             SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
             SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface , &_engine.mainPlayer.sprite, &_engine.pCenter);
+             SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface , NULL, &_engine.pCenter);
             int i;
             for (i = 0; i < 15; i++)
             {

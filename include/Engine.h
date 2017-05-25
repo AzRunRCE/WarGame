@@ -24,6 +24,7 @@ struct Engine {
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
 
+    SDL_Surface *bulletSurface;
     SDL_Surface *bombSurface;
     SDL_Surface *characterSurface;
     SDL_Surface *characterEnnemiSurface;
