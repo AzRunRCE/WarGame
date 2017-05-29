@@ -84,18 +84,6 @@ void ft_getCharactSprite(Player *player, State state,int step)
     player->sprite.w = 32;
 }
 
-
-SDL_Texture* SurfaceToTexture( SDL_Surface* surf )
-{
-	SDL_Texture* text;
-
-	text = SDL_CreateTextureFromSurface( _engine.screenRenderer, surf );
-
-	SDL_FreeSurface( surf );
-
-	return text;
-}
-
 int GetKeyPressEvent()
 {
         Uint8 *keystate = SDL_GetKeyboardState(NULL);
@@ -183,8 +171,3 @@ int FrameDelay()
     else
        return 0;
 }
-
-/*void MousePosition(int lastx, int lasty)
-{
-
-}*/
