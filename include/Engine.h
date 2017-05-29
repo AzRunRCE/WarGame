@@ -23,21 +23,17 @@ struct Engine {
     SDL_Color colorWarGame;
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
-<<<<<<< HEAD
 
-    SDL_Rect *texteSurface;
-    TTF_Font *police;
-
-=======
 
     SDL_Surface *bulletSurface;
->>>>>>> alpha
+
     SDL_Surface *bombSurface;
     SDL_Surface *characterSurface;
     SDL_Surface *characterEnnemiSurface;
     SDL_Surface *menuSurface;
     SDL_Surface *selectionSurface;
     SDL_Rect spriteRect;
+    SDL_Rect mousePos;
 };
 
 extern Engine _engine;
