@@ -2,30 +2,43 @@
 #define ENGINE_H
 #include "Player.h"
 
+
 typedef struct Engine Engine;
 
 struct Engine {
     int WIDTH;
-    int HEIGTH;
+    int HEIGHT;
+    int fullscreen;
     SDL_Event event;
-
-    SDL_Surface *screenSurface;
+    SDL_Rect pCenter;
+    Player players[16];
+    Player mainPlayer;
+    SDL_Renderer* screenRenderer;
+    SDL_Window* window;
 
     SDL_Surface *mapSurface;
-    SDL_Rect mapRect;
-
+    SDL_Rect camera;
+    TTF_Font *font;
+    SDL_Color colorWhite;
+    SDL_Color colorWarGame;
     SDL_Surface *fogSurface;
     SDL_Rect fogRect;
+<<<<<<< HEAD
 
     SDL_Rect *texteSurface;
     TTF_Font *police;
 
-    SDL_Surface *bombSurface;
+=======
 
-    Player playerList[15];
-    Item ItemList[15];
-    int Map[50][50];
+    SDL_Surface *bulletSurface;
+>>>>>>> alpha
+    SDL_Surface *bombSurface;
+    SDL_Surface *characterSurface;
+    SDL_Surface *characterEnnemiSurface;
+    SDL_Surface *menuSurface;
+    SDL_Surface *selectionSurface;
+    SDL_Rect spriteRect;
 };
 
-
+extern Engine _engine;
 #endif // ENGINE_H
