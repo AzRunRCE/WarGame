@@ -32,11 +32,12 @@ char message[20];
 time_t lastTime = 0, lastTimeAnim = 0;
 int const SleepTime = 30;
 int const SleepTimeAnim = 200;
- SDL_Rect p  = {.x =200,.y =200,.w = 4, .h = 4};
-  int dX  = 0;
-    int dY  = 0;
-    Bullet bulletFired[300];
-    int actual = 0;
+SDL_Rect p  = {.x =200,.y =200,.w = 4, .h = 4};
+int dX  = 0;
+int dY  = 0;
+Bullet bulletFired[300];
+int actual = 0;
+
 int main(int argc, char *argv[])
 {
     SDL_init();
