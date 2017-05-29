@@ -105,9 +105,6 @@ void menu()
                 Menu.countBlink = 0;
             Menu.countBlink++;
         }
-        printf("sel=%d\n", Menu.menuSelection);
-        printf("seldone=%d\n", Menu.selectionDone);
         SDL_RenderPresent(_engine.screenRenderer);
-        //printf("%d\n",selectionDone);
     }
 }
