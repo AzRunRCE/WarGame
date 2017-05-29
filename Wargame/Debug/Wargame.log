@@ -1,0 +1,60 @@
+﻿  main.c
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(43): warning C4013: 'Engine_init' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(47): warning C4013: 'GetKeyPressEvent' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(56): warning C4013: 'ft_GetPlayerOrientation' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(58): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(59): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(66): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(75): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(77): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(82): warning C4013: 'end' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(114): warning C4090: 'initialisation' : qualificateurs 'const' différents
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(195): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(196): warning C4244: '=' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(193): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\main.c(216): warning C4013: 'time' non défini(e) ; extern retournant int pris par défaut
+  ft_UserPreferences.c
+  ft_socket.c
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_socket.c(40): warning C4047: 'fonction' : les niveaux d'indirection de 'SOCKADDR_IN *' et de 'double (__cdecl *)(double)' sont différents
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_socket.c(40): warning C4024: 'write_server' : types différents pour le paramètre formel et réel 2
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_socket.c(107): warning C4133: 'fonction' : types incompatibles - de 'Packet *' à 'char *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_socket.c(118): warning C4133: 'fonction' : types incompatibles - de 'Packet *' à 'const char *'
+  ft_SDL.c
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(23): warning C4013: 'AnimDelay' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(40): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(41): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(43): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+  ft_Menu.c
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(17): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(18): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(19): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(20): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(44): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(46): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(47): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(48): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(58): warning C4013: 'strlen' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(59): warning C4013: 'strcat' non défini(e) ; extern retournant int pris par défaut
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(100): warning C4133: 'fonction' : types incompatibles - de 'SDL_Surface *' à 'SDL_Texture *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(22): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(24): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(26): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(28): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(30): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(32): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(93): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(99): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_menu.c(102): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+  ft_Engine.c
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_engine.c(14): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_engine.c(15): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_engine.c(16): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_engine.c(17): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_engine.c(18): warning C4133: '=' : types incompatibles - de 'SDL_Texture *' à 'SDL_Surface *'
+  ft_bullet.c
+  Génération de code en cours...
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(46): warning C4716: 'SDL_Update' : doit retourner une valeur
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_sdl.c(59): warning C4715: 'SDL_init' : les chemins de contrôle ne retournent pas tous une valeur
+c:\users\utilisateur\documents\visual studio 2017\projects\testsdl\wargame\ft_socket.c(69): warning C4715: 'create_connection' : les chemins de contrôle ne retournent pas tous une valeur
+  Wargame.vcxproj -> C:\Users\Utilisateur\Documents\Visual Studio 2017\Projects\TestSDL\Debug\WarGame.exe
+  Wargame.vcxproj -> C:\Users\Utilisateur\Documents\Visual Studio 2017\Projects\TestSDL\Debug\WarGame.pdb (Partial PDB)
