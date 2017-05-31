@@ -140,6 +140,7 @@
     <ClCompile Include="ft_SDL.c" />
     <ClCompile Include="ft_socket.c" />
     <ClCompile Include="ft_UserPreferences.c" />
+    <ClCompile Include="ini.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -155,7 +156,11 @@
     <ClInclude Include="include\ft_socket.h" />
     <ClInclude Include="include\ft_sprite.h" />
     <ClInclude Include="include\ft_userPreferences.h" />
+    <ClInclude Include="include\ini.h" />
     <ClInclude Include="include\main.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="settings.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

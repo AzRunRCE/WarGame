@@ -19,6 +19,7 @@
 #include "include\ft_menu.h"
 #include "include\ft_point.h"
 #include "include\ft_bullet.h"
+#include "include\ft_userPreferences.h"
 #define MAX_LENGTH 32
 
 Engine _engine;
@@ -35,9 +36,12 @@ int dX = 0;
 int dY = 0;
 Bullet bulletFired[300];
 int actual = 0;
+configuration *mainConfiguration;
 
 int main(int argc, char *argv[])
 {
+	mainConfiguration = CONF_Load("settings.ini");
+	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname,mainConfiguration->server);
 	SDL_init();
 	Engine_init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
@@ -45,13 +49,16 @@ int main(int argc, char *argv[])
 	create_connection(&_engine);
 	SDL_Rect posText;
 	SDL_Texture *texture;
+	sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
+	text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
+	texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 	while (GetKeyPressEvent())
 	{
 
 		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
-		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
+		
 		posText = (SDL_Rect){ 0, 0, text->w, text->h };
-		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
+		
 		
 		
 		
