@@ -16,14 +16,21 @@ void menu()
 	Menu.WarGameFont = TTF_OpenFont("res/boston.ttf", 40);
 	Menu.menuBackground = IMG_LoadTexture(_engine.screenRenderer, "res/menu.png");
 	Menu.menuOptionsBackground = IMG_LoadTexture(_engine.screenRenderer, "res/menu-options.png");
+	Menu.selectionRight = IMG_LoadTexture(_engine.screenRenderer, "res/selection-right.png");
 	Menu.selectionLeft = IMG_LoadTexture(_engine.screenRenderer, "res/selection-left.png");
-	// Position PLAY
+	// Position PLAY LEFT
 	pointLeft[0] = (point) { _engine.WIDTH / 2 - Menu.selectionLeft->h*2.5, _engine.HEIGHT / 2 - Menu.selectionLeft->h*1.2 };
+	// Position PLAY RIGHT
+	pointRight[0] = (point) { _engine.WIDTH / 2 + Menu.selectionRight->h*1.5, _engine.HEIGHT / 2 - Menu.selectionRight->h*1.2 };
+	// Position OPTIONS LEFT
 	pointLeft[1] = (point) { _engine.WIDTH / 2 - Menu.selectionLeft->h*3.5, _engine.HEIGHT / 2 + Menu.selectionLeft->h / 3.5 };
+	// Position OPTIONS RIGHT
+	pointRight[1] = (point) { _engine.WIDTH / 2 + Menu.selectionRight->h*2.5, _engine.HEIGHT / 2 + Menu.selectionRight->h / 3.5 };
+	// Position QUIT LEFT
 	pointLeft[2] = (point) { _engine.WIDTH / 2 - Menu.selectionLeft->h*2.5, _engine.HEIGHT / 2 + Menu.selectionLeft->h*1.7 };
+	// Position QUIT RIGHT
+	pointRight[2] = (point) { _engine.WIDTH / 2 + Menu.selectionRight->h*1.5, _engine.HEIGHT / 2 + Menu.selectionLeft->h*1.7 };
 	// Position ADDRESS
-
-
 	Menu.labelIpAddress = TTF_RenderText_Blended(Menu.WarGameFont, "Server address ", _engine.colorWarGame);
 	Menu.labelPseudo = TTF_RenderText_Blended(Menu.WarGameFont, "Pseudo  ", _engine.colorWarGame);
 	Menu.labelApply = TTF_RenderText_Blended(Menu.WarGameFont, "Apply", _engine.colorWarGame);
@@ -44,12 +51,14 @@ void menu()
 	Menu.selectionMenuOptionsDone = false;
 	while (!Menu.selectionDone) {
 		Menu.posSelectionLeft = (SDL_Rect) { pointLeft[Menu.menuSelection].x, pointLeft[Menu.menuSelection].y, Menu.selectionLeft->h, Menu.selectionLeft->h };
+		Menu.posSelectionRight = (SDL_Rect) { pointRight[Menu.menuSelection].x, pointRight[Menu.menuSelection].y, Menu.selectionRight->h, Menu.selectionRight->h };
 		SDL_RenderClear(_engine.screenRenderer);
 		if (Menu.menuSelection == 1 && Menu.selectionOptionsDone == true)
 			SDL_RenderCopy(_engine.screenRenderer, Menu.menuOptionsBackground, NULL, NULL);
 		else {
 			SDL_RenderCopy(_engine.screenRenderer, Menu.menuBackground, NULL, NULL);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.selectionLeft, NULL, &Menu.posSelectionLeft);
+			SDL_RenderCopy(_engine.screenRenderer, Menu.selectionRight, NULL, &Menu.posSelectionRight);
 		}
 		SDL_Event event;
 		if (SDL_PollEvent(&event)) {

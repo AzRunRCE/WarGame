@@ -17,6 +17,7 @@ struct Menu {
     SDL_Surface *menuBackground;
     SDL_Surface *menuOptionsBackground;
     SDL_Surface *selectionLeft;
+	SDL_Surface *selectionRight;
     SDL_Surface *ipAddress;
 	SDL_Surface *pseudo;
 	SDL_Surface *labelPseudo;
