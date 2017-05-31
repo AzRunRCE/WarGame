@@ -43,13 +43,19 @@ int main(int argc, char *argv[])
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu();
 	create_connection(&_engine);
+	SDL_Rect posText;
+	SDL_Texture *texture;
 	while (GetKeyPressEvent())
 	{
 
 		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
-		SDL_Rect posText = { 0, 0, text->w, text->h };
-		SDL_Texture *texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
+		posText = (SDL_Rect){ 0, 0, text->w, text->h };
+		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
+		
+		
+		
+		
 		_engine.camera.x = _engine.mainPlayer.Pos.x;
 		_engine.camera.y = _engine.mainPlayer.Pos.y;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
@@ -75,6 +81,7 @@ int main(int argc, char *argv[])
 		}
 		SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
+		SDL_DestroyTexture(texture);
 		SDL_RenderPresent(_engine.screenRenderer);
 	}
 

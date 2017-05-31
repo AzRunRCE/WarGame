@@ -65,6 +65,8 @@ void menu()
 				if (strlen(Menu.textInput) < MAX_LENGTH && Menu.selectionOptionsDone == true)
 					strcat(Menu.textInput, event.text.text);
 				break;
+			case SDL_KEYUP:
+				break;
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(Menu.textInput) > 0 && Menu.menuOptionsSelection == 0)
 					Menu.textInput[strlen(Menu.textInput) - 1] = 0;
@@ -76,7 +78,12 @@ void menu()
 						Menu.selectionDone = true;
 						break;
 					case 1:
-						Menu.selectionOptionsDone = true;
+						if (Menu.selectionOptionsDone)
+							Menu.countBlink = 0;
+						else {
+							Menu.selectionOptionsDone = true;
+							Menu.countBlink = -1;
+						}
 						break;
 					case 2:
 						exit(1);
@@ -86,19 +93,32 @@ void menu()
 						Menu.selectionMenuOptionsDone = true;
 				}
 				if (event.key.keysym.sym == SDLK_DOWN)
+				{
 					if (Menu.menuSelection < 2 && Menu.selectionOptionsDone == false)
 						Menu.menuSelection++;
 					else if (Menu.menuOptionsSelection < 1 && Menu.selectionOptionsDone == true)
+					{
 						Menu.menuOptionsSelection++;
+						Menu.countBlink = -1;
+					}
+				}
 				if (event.key.keysym.sym == SDLK_UP)
+				{
 					if (Menu.menuSelection > 0 && Menu.selectionOptionsDone == false)
+					{
 						Menu.menuSelection--;
+					}
 					else if (Menu.menuOptionsSelection > 0 && Menu.selectionOptionsDone == true)
+					{
+						Menu.countBlink = -1;
 						Menu.menuOptionsSelection--;
+					
+					}
+				}
 				if (event.key.keysym.sym == SDLK_ESCAPE && Menu.selectionOptionsDone == true)
 					Menu.selectionOptionsDone = false;
-				break;
 
+				break;
 			}
 		}
 		if (Menu.menuSelection == 1 && Menu.textInput[0] != '\0' && Menu.selectionOptionsDone == true) {
@@ -117,25 +137,25 @@ void menu()
 			case 1:
 				Menu.posOptionsSelectionLeft = (SDL_Rect) { 0, _engine.HEIGHT / 1.5 + Menu.selectionLeft->h / 8, Menu.selectionLeft->h, Menu.selectionLeft->h };
 				SDL_StopTextInput();
-				Menu.countBlink = 0;
 				break;
 			}
 			/*SDL_RenderCopy(_engine.screenRenderer, Menu.selectionLeft, NULL, &Menu.posOptionsSelectionLeft);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelIpAddress, NULL, &Menu.posLabelIpAddress);*/
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelPseudo, NULL, &Menu.posLabelPseudo);
-			if (Menu.countBlink < 50) {
+			if (Menu.countBlink == -1)
+			{
 				SDL_RenderCopy(_engine.screenRenderer, Menu.selectionLeft, NULL, &Menu.posOptionsSelectionLeft);
 				SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelIpAddress, NULL, &Menu.posLabelIpAddress);
 			}
-			else if (Menu.countBlink == 80)
+			else if (Menu.countBlink < 50) {
+				SDL_RenderCopy(_engine.screenRenderer, Menu.selectionLeft, NULL, &Menu.posOptionsSelectionLeft);
+				SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelIpAddress, NULL, &Menu.posLabelIpAddress);
+			}
+			else if (Menu.countBlink > 80)
 				Menu.countBlink = 0;
-			if (Menu.menuOptionsSelection == 0 && Menu.selectionMenuOptionsDone == true) {
+			if (Menu.countBlink != -1 && Menu.menuOptionsSelection == 0)
 				Menu.countBlink++;
-			}	
 		}
 		SDL_RenderPresent(_engine.screenRenderer);
-		printf("menuOptionsSelection=%d\n", Menu.menuOptionsSelection);
-		printf("selectionOptionsDone=%d\n", Menu.selectionOptionsDone);
-		printf("selectionMenuOptionsDone=%d\n", Menu.selectionMenuOptionsDone);
 	}
 }

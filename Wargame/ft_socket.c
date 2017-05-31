@@ -45,7 +45,7 @@ void end()
 
 int create_connection()
 {
-	char host[] = "192.168.43.175";
+	char host[] = "127.0.0.1";
 	char pseudo[] = "client";
 	init();
 	psin = malloc(sizeof(SOCKADDR_IN));
@@ -143,7 +143,7 @@ void *SreamClientData(void *arg)
 		 .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
 		strcpy(pck.name, "Jack");
 		write_server(sock, psin, pck);
-		Sleep(1800);
+		Sleep(10);
 	}
 	pthread_exit(NULL);
 }
