@@ -1,6 +1,9 @@
 #include "include\ft_configuration.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+const char path[] = "settings.ini";
+
 static int handler(void* user, const char* section, const char* name,
 	const char* value)
 {
@@ -24,10 +27,21 @@ static int handler(void* user, const char* section, const char* name,
 configuration *ft_loadConf()
 {
 	configuration *settings = malloc(sizeof(configuration));
-	char path[] = "settings.ini";
 	if (ini_parse(path, handler, settings) < 0) {
 		printf("Can't load '%s'\n", path);
 		settings = NULL;
 	}
 	return settings;
+}
+
+bool ft_saveConf(configuration *settings)
+{
+
+	FILE * fp;
+	fp = fopen(path, "w+");
+	fprintf(fp, "[game]\nversion=%i\nserver=%s\n[player]\nnickname=%s\n", settings->version, settings->server, settings->nickname);
+
+	fclose(fp);
+	printf("Can't load '%s'\n", path);
+	return true;
 }
