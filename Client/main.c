@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	Engine_init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu(mainConfiguration);
-	create_connection(&_engine);
+	create_connection(mainConfiguration);
 	SDL_Rect posText;
 	SDL_Texture *texture;
 	explode.Pos.h = 7;

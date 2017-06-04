@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "main.h"
 #include "include\ft_configuration.h"
-#include "include\ini.h"
 
 
 void initMenuOptions(Menu *Menu, configuration *settings)

@@ -12,6 +12,7 @@
 #include "include\ft_socket.h"
 #include "include\ft_client.h"
 #include "include\ft_engine.h"
+#include "include\ft_configuration.h"
 
 SOCKADDR_IN *psin;
 SOCKET sock;
@@ -43,7 +44,7 @@ void end()
 
 
 
-int create_connection()
+int create_connection(configuration *settings)
 {
 	char host[] = "127.0.0.1";
 	char pseudo[] = "client";
@@ -52,7 +53,7 @@ int create_connection()
 	psin->sin_family = AF_INET;
 	sock = init_connection(host, psin);
 	Packet w;
-	strcpy(w.name, "Bertrand");
+	strcpy(w.name, settings->nickname);
 	write_server(sock, psin, w);
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
