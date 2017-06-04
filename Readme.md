@@ -4,4 +4,3 @@
 - Fix enemy moving 2 pixels when moving main player
 - Fix map walls
 - Continue projectiles implementation
-- Fix Menu.ipAddress memory leak
