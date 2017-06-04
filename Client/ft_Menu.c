@@ -113,6 +113,7 @@ void menu(configuration *settings)
 						Menu.menuOptionsSelection = 0;
 						break;
 					case 3:			
+						
 						settings->server = strdup(Menu.textInput);
 						settings->nickname = strdup(Menu.textInput);
 

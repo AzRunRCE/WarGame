@@ -49,18 +49,16 @@ int main(int argc, char *argv[])
 	create_connection(&_engine);
 	SDL_Rect posText;
 	SDL_Texture *texture;
-	sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
-	text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
-	texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 	while (GetKeyPressEvent())
 	{
 
 		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
 		
-		posText = (SDL_Rect){ 0, 0, text->w, text->h };
 		
 		
-		
+		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
+		posText = (SDL_Rect) { 0, 0, text->w, text->h };
+		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 		
 		
 		_engine.camera.x = _engine.mainPlayer.Pos.x;
@@ -88,8 +86,9 @@ int main(int argc, char *argv[])
 		}
 		SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
-		SDL_DestroyTexture(texture);
 		SDL_RenderPresent(_engine.screenRenderer);
+		SDL_DestroyTexture(texture);
+		SDL_FreeSurface(text);
 	}
 
 	end();

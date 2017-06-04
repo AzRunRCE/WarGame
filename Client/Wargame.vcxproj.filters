@@ -39,6 +39,9 @@
     <ClCompile Include="ft_configuration.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="ft_expl.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ft_bullet.h">
@@ -81,6 +84,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\ft_configuration.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="ft_expl.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
