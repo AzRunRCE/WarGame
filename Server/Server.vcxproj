@@ -73,12 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>${ProjectDir}library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>${ProjectDir}\library\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>${ProjectDir}..\library\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>${ProjectDir}library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>${ProjectDir}\library\lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>${ProjectDir}..\library\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
