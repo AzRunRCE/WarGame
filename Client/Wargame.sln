@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WarGame", "Wargame.vcxproj", "{8991DFE5-B561-4E9C-8DC8-8DF8E043CC7C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "..\Server\Server.vcxproj", "{25B02BF4-ED0A-4D2F-BF13-0E8EEB1F03C4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "..\Server\Windows\Server.vcxproj", "{25B02BF4-ED0A-4D2F-BF13-0E8EEB1F03C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

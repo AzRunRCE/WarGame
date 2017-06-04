@@ -235,7 +235,3 @@ int FrameDelay()
 		return 0;
 }
 
-/*void MousePosition(int lastx, int lasty)
-{
-
-}*/

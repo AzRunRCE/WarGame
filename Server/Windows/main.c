@@ -3,8 +3,8 @@
 #include <errno.h>
 #include <string.h>
 #include <winsock2.h>
-#include "server.h"
-#include "client.h"
+#include "include\server.h"
+#include "include\client.h"
 
 static void init(void)
 {
