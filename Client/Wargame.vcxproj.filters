@@ -39,7 +39,7 @@
     <ClCompile Include="ft_configuration.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="ft_expl.c">
+    <ClCompile Include="ft_explode.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,7 +86,7 @@
     <ClInclude Include="include\ft_configuration.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="ft_expl.h">
+    <ClInclude Include="include\ft_explode.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

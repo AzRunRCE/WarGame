@@ -26,7 +26,7 @@ struct Engine {
 
 
     SDL_Surface *bulletSurface;
-
+	SDL_Surface *explodeSurface;
     SDL_Surface *bombSurface;
     SDL_Surface *characterSurface;
     SDL_Surface *characterEnnemiSurface;

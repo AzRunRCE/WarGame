@@ -137,7 +137,7 @@
     <ClCompile Include="ft_bullet.c" />
     <ClCompile Include="ft_configuration.c" />
     <ClCompile Include="ft_Engine.c" />
-    <ClCompile Include="ft_expl.c" />
+    <ClCompile Include="ft_explode.c" />
     <ClCompile Include="ft_Menu.c" />
     <ClCompile Include="ft_SDL.c" />
     <ClCompile Include="ft_socket.c" />
@@ -145,11 +145,11 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ft_expl.h" />
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_client.h" />
     <ClInclude Include="include\ft_configuration.h" />
     <ClInclude Include="include\ft_engine.h" />
+    <ClInclude Include="include\ft_explode.h" />
     <ClInclude Include="include\ft_item.h" />
     <ClInclude Include="include\ft_menu.h" />
     <ClInclude Include="include\ft_packet.h" />

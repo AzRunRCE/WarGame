@@ -20,6 +20,7 @@
 #include "include\ft_point.h"
 #include "include\ft_bullet.h"
 #include "include\ft_configuration.h"
+#include "include\ft_explode.h"
 #define MAX_LENGTH 32
 
 Engine _engine;
@@ -49,8 +50,13 @@ int main(int argc, char *argv[])
 	create_connection(&_engine);
 	SDL_Rect posText;
 	SDL_Texture *texture;
+	Explode explode;
+	explode.explodeState = 0;
 	while (GetKeyPressEvent())
 	{
+	
+		
+		ft_getNextExplodeSprite(&explode);
 
 		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
 		
@@ -108,6 +114,19 @@ void ft_getCharactSprite(Player *player, State state, int step)
 	player->sprite.h = 32;
 	player->sprite.w = 32;
 }
+
+bool ft_getNextExplodeSprite(Explode *explode)
+{
+	if (explode->explodeState == 36)
+		return false;
+	explode->Pos.x = 256 * (explode->explodeState % 8);
+	explode->Pos.y = 256 * (explode->explodeState / 8);
+	explode->Pos.h = 256;
+	explode->Pos.w = 256;
+	explode->explodeState = explode->explodeState +1;
+	return true;
+}
+
 
 
 SDL_Texture* SurfaceToTexture(SDL_Surface* surf)
