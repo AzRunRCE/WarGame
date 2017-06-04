@@ -25,6 +25,7 @@ struct Menu {
 	SDL_Surface *labelApply;
 	SDL_Surface *labelReturn;
     SDL_Rect posIpAddress;
+	SDL_Rect posPseudo;
 	SDL_Rect posLabelPseudo;
     SDL_Rect posLabelIpAddress;
     SDL_Rect posSelectionRight;
@@ -33,12 +34,14 @@ struct Menu {
 	SDL_Rect posLabelApply;
 	SDL_Rect posLabelReturn;
     SDL_Texture *textureTextIpAdress;
+	SDL_Texture *textureTextPseudo;
     SDL_Texture *textureLabelIpAddress;
 	SDL_Texture *textureLabelPseudo;
 	SDL_Texture *textureLabelApply;
 	SDL_Texture *textureLabelReturn;
     TTF_Font *WarGameFont;
-    char *textInput;
+    char *textInputIpAddress;
+	char *textInputPseudo;
     bool selectionDone;
     bool selectionOptionsDone;
 

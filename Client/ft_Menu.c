@@ -11,7 +11,8 @@ void menu(configuration *settings)
 	Menu Menu;
 	point pointLeft[3];
 	point pointRight[3];
-	Menu.textInput = malloc(sizeof(char) + MAX_LENGTH + 1);
+	Menu.textInputIpAddress = malloc(sizeof(char) + MAX_LENGTH + 1);
+	Menu.textInputPseudo = malloc(sizeof(char) + MAX_LENGTH + 1);
 	Menu.menuSelection = 0;
 	Menu.menuOptionsSelection = 0;
 	Menu.countBlink = 0;
@@ -45,9 +46,7 @@ void menu(configuration *settings)
 	Menu.textureLabelPseudo = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.labelPseudo);
 	Menu.textureLabelApply = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.labelApply);
 	Menu.textureLabelReturn = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.labelReturn);
-
 	Menu.ipAddress = NULL;
-	Menu.textInput = strdup(settings->server);
 	Menu.selectionDone = false;
 	Menu.selectionOptionsDone = false;
 	Menu.selectionMenuOptionsDone = false;
@@ -70,14 +69,16 @@ void menu(configuration *settings)
 				break;
 			case SDL_TEXTINPUT:
 				/* Add new text onto the end of our text */
-				if (strlen(Menu.textInput) < MAX_LENGTH && Menu.selectionOptionsDone)
-					strcat(Menu.textInput, event.text.text);
+				if (strlen(Menu.textInputIpAddress) < MAX_LENGTH && Menu.selectionOptionsDone && Menu.confirmOptionsForm == 0)
+					strcat(Menu.textInputIpAddress, event.text.text);
+				else if (strlen(Menu.textInputPseudo) < MAX_LENGTH && Menu.selectionOptionsDone && Menu.confirmOptionsForm == 0)
+					strcat(Menu.textInputPseudo, event.text.text);
 				break;
 				/*case SDL_KEYUP:
 					break;*/
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(Menu.textInput) > 0 && Menu.menuOptionsSelection == 0)
-					Menu.textInput[strlen(Menu.textInput) - 1] = 0;
+				if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(Menu.textInputIpAddress) > 0 && Menu.menuOptionsSelection == 0 && Menu.confirmOptionsForm == 0)
+					Menu.textInputIpAddress[strlen(Menu.textInputIpAddress) - 1] = 0;
 				if (event.key.keysym.sym == SDLK_RETURN)
 				{
 					switch (Menu.menuSelection)
@@ -87,7 +88,10 @@ void menu(configuration *settings)
 						break;
 					case 1:
 						if (!Menu.selectionOptionsDone)
+						{
 							Menu.confirmOptionsForm = -2;
+							Menu.textInputIpAddress = strdup(settings->server);
+						}
 						Menu.selectionMenuOptionsDone = true;
 						break;
 					case 2:
@@ -113,10 +117,8 @@ void menu(configuration *settings)
 						Menu.menuOptionsSelection = 0;
 						break;
 					case 3:			
-						
-						settings->server = strdup(Menu.textInput);
-						settings->nickname = strdup(Menu.textInput);
-
+						settings->server = strdup(Menu.textInputIpAddress);
+						settings->nickname = strdup(Menu.textInputIpAddress);
 						ft_saveConf(settings);
 						break;
 					}
@@ -167,16 +169,21 @@ void menu(configuration *settings)
 				break;
 			}
 		}
-		if (Menu.menuSelection == 1 && Menu.textInput[0] != '\0' && Menu.selectionOptionsDone) {
-			Menu.ipAddress = TTF_RenderText_Blended(Menu.WarGameFont, Menu.textInput, _engine.colorWarGame);
+		if (Menu.textInputIpAddress[0] != '\0' && Menu.selectionOptionsDone) {
+			Menu.ipAddress = TTF_RenderText_Blended(Menu.WarGameFont, Menu.textInputIpAddress, _engine.colorWarGame);
 			Menu.posIpAddress = (SDL_Rect) { _engine.WIDTH / 2, _engine.HEIGHT / 2.2 + Menu.ipAddress->h / 2, Menu.ipAddress->w, Menu.ipAddress->h };
 			Menu.textureTextIpAdress = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.ipAddress);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextIpAdress, NULL, &Menu.posIpAddress);
 		}
+		if (Menu.textInputPseudo[0] != '\0' && Menu.selectionOptionsDone) {
+			Menu.pseudo = TTF_RenderText_Blended(Menu.WarGameFont, Menu.textInputPseudo, _engine.colorWarGame);
+			Menu.posPseudo = (SDL_Rect) { _engine.WIDTH / 2, _engine.HEIGHT / 2 + Menu.pseudo->h / 2, Menu.pseudo->w, Menu.pseudo->h };
+			Menu.textureTextPseudo = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.pseudo);
+			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextPseudo, NULL, &Menu.posPseudo);
+		}
 		if (Menu.menuSelection == 1 && Menu.selectionOptionsDone) {
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelApply, NULL, &Menu.posLabelApply);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelReturn, NULL, &Menu.posLabelReturn);
-			SDL_StartTextInput();
 			switch (Menu.menuOptionsSelection)
 			{
 			case 0:
@@ -186,7 +193,6 @@ void menu(configuration *settings)
 			case 1:
 				Menu.posOptionsSelectionLeft = (SDL_Rect) { 0, _engine.HEIGHT / 1.8 + Menu.selectionLeft->h / 8, Menu.selectionLeft->h, Menu.selectionLeft->h };
 				SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelIpAddress, NULL, &Menu.posLabelIpAddress);
-				SDL_StopTextInput();
 				break;
 			case 2:
 				Menu.posOptionsSelectionLeft = (SDL_Rect) { _engine.WIDTH / 3.5 - Menu.labelApply->w, _engine.HEIGHT / 1.3 + Menu.selectionLeft->h / 8, Menu.selectionLeft->h, Menu.selectionLeft->h };
@@ -211,6 +217,10 @@ void menu(configuration *settings)
 		printf("menuOptionsSelec=%d\n", Menu.menuOptionsSelection);
 		printf("confirmOptionsForm=%d\n", Menu.confirmOptionsForm);
 		printf("selectionOptionsDone=%d\n", Menu.selectionOptionsDone);
-		SDL_FreeSurface(Menu.ipAddress);
+		if (Menu.menuSelection == 1 && Menu.textInputIpAddress[0] != '\0' && Menu.selectionOptionsDone)
+		{
+			SDL_DestroyTexture(Menu.textureTextIpAdress);
+			SDL_FreeSurface(Menu.ipAddress);
+		}
 	}
 }
