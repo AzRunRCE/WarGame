@@ -36,6 +36,7 @@ void endMenuOptions(Menu *Menu, configuration *settings)
 	SDL_FreeSurface(Menu->labelApply);
 	SDL_FreeSurface(Menu->labelReturn);
 	SDL_FreeSurface(Menu->menuOptionsBackground);
+	SDL_FreeSurface(Menu->selectionLeft);
 }
 
 void menu(configuration *settings)
@@ -205,7 +206,7 @@ void menu(configuration *settings)
 			Menu.textureTextPseudo = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.pseudo);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextPseudo, NULL, &Menu.posPseudo);
 		}
-		if (Menu.selectionOptionsDone) {
+		if (Menu.selectionOptionsDone && Menu.selectionMenuOptionsDone) {
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelApply, NULL, &Menu.posLabelApply);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelReturn, NULL, &Menu.posLabelReturn);
 			switch (Menu.menuOptionsSelection)
@@ -237,12 +238,12 @@ void menu(configuration *settings)
 				Menu.countBlink++;
 		}
 		SDL_RenderPresent(_engine.screenRenderer);
-		if (Menu.ipAddress != NULL)
+		if (Menu.textInputIpAddress[0] != '\0' && Menu.selectionOptionsDone)
 		{
 			SDL_DestroyTexture(Menu.textureTextIpAdress);
 			SDL_FreeSurface(Menu.ipAddress);
 		}
-		if (Menu.pseudo != NULL)
+		if (Menu.textInputPseudo[0] != '\0' && Menu.selectionOptionsDone)
 		{
 			SDL_DestroyTexture(Menu.textureTextPseudo);
 			SDL_FreeSurface(Menu.pseudo);

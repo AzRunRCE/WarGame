@@ -5,7 +5,9 @@
 typedef struct
 {
 	SDL_Rect Pos;
-	int explodeState;
+	SDL_Rect Sprite;
+
+	int Step;
 	int Delay;
 	
 }Explode;

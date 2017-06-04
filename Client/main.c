@@ -38,7 +38,7 @@ int dY = 0;
 Bullet bulletFired[300];
 int actual = 0;
 configuration *mainConfiguration;
-
+Explode explode;
 int main(int argc, char *argv[])
 {
 	mainConfiguration = ft_loadConf();
@@ -50,8 +50,9 @@ int main(int argc, char *argv[])
 	create_connection(&_engine);
 	SDL_Rect posText;
 	SDL_Texture *texture;
-	Explode explode;
-	explode.explodeState = 0;
+	explode.Pos.h = 7;
+	explode.Pos.w = 7;
+	explode.Step = 0;
 	while (GetKeyPressEvent())
 	{
 	
@@ -73,9 +74,15 @@ int main(int argc, char *argv[])
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
+
+		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
+	
+
+		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		int i;
 		for (i = 0; i < 15; i++)
 		{
+
 			if (_engine.players[i].Pos.x == 0 && _engine.players[i].Pos.y == 0)
 				continue;
 			ft_GetPlayerOrientation(&_engine.players[i]);
@@ -117,13 +124,13 @@ void ft_getCharactSprite(Player *player, State state, int step)
 
 bool ft_getNextExplodeSprite(Explode *explode)
 {
-	if (explode->explodeState == 36)
+	if (explode->Step == 52)
 		return false;
-	explode->Pos.x = 256 * (explode->explodeState % 8);
-	explode->Pos.y = 256 * (explode->explodeState / 8);
-	explode->Pos.h = 256;
-	explode->Pos.w = 256;
-	explode->explodeState = explode->explodeState +1;
+	explode->Sprite.x = 256 * (explode->Step % 8);
+	explode->Sprite.y = 256 * (explode->Step / 8);
+	explode->Sprite.h = 256;
+	explode->Sprite.w = 256;
+	explode->Step = explode->Step +1;
 	return true;
 }
 
@@ -213,7 +220,7 @@ void FireBullet()
 {
 	if (actual > 299)
 		actual = 0;
-
+	explode.Step = 0;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;
 	bulletFired[actual].Pos = (SDL_Rect) { .x = _engine.pCenter.x + 16, .y = _engine.pCenter.y + 16, .w = 2, .h = 2 };

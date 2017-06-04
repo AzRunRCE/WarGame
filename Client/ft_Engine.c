@@ -19,7 +19,8 @@ void Engine_init()
 	_engine.font = TTF_OpenFont("res/verdana.ttf", 20);
 	_engine.colorWhite = (SDL_Color) { 255, 255, 255 };
 	_engine.colorWarGame = (SDL_Color) { 52, 22, 20 };
-
+	_engine.mousePos.w = 55;
+	_engine.mousePos.h = 55;
 
 	//_engine.enemiPlayer = (Player) {.health = 100,.state = DOWN, .step = 0,.Pos.x = 48,.Pos.y = 48,.Pos.w = 32,.Pos.h = 32};
 	_engine.mainPlayer = (Player) { .health = 100, .state = DOWN, .step = 0, .Pos.x = 48, .Pos.y = 48, .Pos.w = 32, .Pos.h = 32 };
