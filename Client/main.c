@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 
-		_engine.camera.x = _engine.mainPlayer.Pos.x;
-		_engine.camera.y = _engine.mainPlayer.Pos.y;
+		_engine.camera.x = _engine.mainPlayer.Pos.x - _engine.WIDTH;
+		_engine.camera.y = _engine.mainPlayer.Pos.y - _engine.HEIGHT;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
