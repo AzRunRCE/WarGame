@@ -13,7 +13,7 @@ void Engine_init()
 	_engine.explodeSurface = IMG_LoadTexture(_engine.screenRenderer, "res/explode.png");
 	_engine.characterSurface = IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
 	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
-	_engine.mapSurface = IMG_LoadTexture(_engine.screenRenderer, "res/background.png");
+	_engine.mapSurface = IMG_LoadTexture(_engine.screenRenderer, "res/background_dev.png");
 	_engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.font = TTF_OpenFont("res/verdana.ttf", 20);
