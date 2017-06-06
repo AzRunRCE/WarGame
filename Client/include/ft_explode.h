@@ -9,7 +9,7 @@ typedef struct
 
 	int Step;
 	int Delay;
-	
+	int lastAnim;
 }Explode;
 
 
