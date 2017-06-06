@@ -30,8 +30,6 @@ SDL_Surface *text = NULL;
 SDL_Surface *fontSurface = NULL;
 char message[20];
 time_t lastTime = 0, lastTimeAnim = 0;
-int const SleepTime = 30;
-int const SleepTimeAnim = 200;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
 int dX = 0;
 int dY = 0;
@@ -50,8 +48,8 @@ int main(int argc, char *argv[])
 	create_connection(mainConfiguration);
 	SDL_Rect posText;
 	SDL_Texture *texture;
-	explode.Pos.h = 7;
-	explode.Pos.w = 7;
+	explode.Pos.h = 255;
+	explode.Pos.w = 255;
 	explode.Step = 0;
 	while (GetKeyPressEvent())
 	{		
@@ -117,12 +115,16 @@ bool ft_getNextExplodeSprite(Explode *explode)
 {
 	if (explode->Step == 52)
 		return false;
-	explode->Sprite.x = 256 * (explode->Step % 8);
-	explode->Sprite.y = 256 * (explode->Step / 8);
-	explode->Sprite.h = 256;
-	explode->Sprite.w = 256;
-	explode->Step = explode->Step +1;
-	return true;
+	else if (AnimDelay(&explode->lastAnim, 50))
+	{
+		explode->Sprite.x = 256 * (explode->Step % 8);
+		explode->Sprite.y = 256 * (explode->Step / 8);
+		explode->Sprite.h = 256;
+		explode->Sprite.w = 256;
+		explode->Step = explode->Step + 1;
+		return true;
+	}
+
 }
 
 
@@ -226,12 +228,12 @@ void FireBullet()
 	actual++;
 }
 
-bool AnimDelay(Player *player)
+bool AnimDelay(int *lastAnim,int  SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
-	if (ActualTimeAnim - player->lastAnim > SleepTimeAnim)
+	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
 	{
-		player->lastAnim = ActualTimeAnim;
+		*lastAnim = ActualTimeAnim;
 		return true;
 	}
 	else
@@ -239,16 +241,5 @@ bool AnimDelay(Player *player)
 		return false;
 	}
 
-}
-int FrameDelay()
-{
-	time_t ActualTime = time(0); // Get the system time;
-	if (ActualTime - lastTime > SleepTime)
-	{
-		lastTime = ActualTime;
-		return 1;
-	}
-	else
-		return 0;
 }
 
