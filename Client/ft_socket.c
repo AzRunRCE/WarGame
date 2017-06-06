@@ -130,8 +130,8 @@ void *NetworkThreadingListening(void *arg)
 		_engine.players[p.clientNum].walk = p.walk;
 		_engine.players[p.clientNum].Pos.h = 32;
 		_engine.players[p.clientNum].Pos.w = 32;
-		_engine.players[p.clientNum].Pos.x = p.X - _engine.camera.x + _engine.WIDTH / 2 - 16;
-		_engine.players[p.clientNum].Pos.y = p.Y - _engine.camera.y + _engine.HEIGHT / 2 - 16;
+		_engine.players[p.clientNum].Pos.x = p.X - _engine.camera.x - _engine.WIDTH / 2 - 16;
+		_engine.players[p.clientNum].Pos.y = p.Y - _engine.camera.y - _engine.HEIGHT / 2 -  16;
 	}
 	pthread_exit(NULL);
 }
