@@ -141,7 +141,7 @@ void *SreamClientData(void *arg)
 	while (true)
 	{
 		Packet pck = { .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16)
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
 		{
 				pck.X = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
 				pck.Y = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;

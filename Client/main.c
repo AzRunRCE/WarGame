@@ -67,8 +67,11 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
-		printf("pCenter.x=%d\n", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16);
-		printf("pCenter.y=%d\n", _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16);
+		//if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
+		//{
+			printf("pCenter.x=%d\n", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16);
+			printf("pCenter.y=%d\n", _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16);
+		//}
 		int i;
 		for (i = 0; i < 15; i++)
 		{
@@ -154,7 +157,7 @@ int GetKeyPressEvent()
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
 		
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH/2 - 16)
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 16 > _engine.mapSurface->h)
 		{
 			_engine.pCenter.x -= 2;
 		}
@@ -167,10 +170,11 @@ int GetKeyPressEvent()
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT])
 	{
-		if (_engine.pCenter.x <= _engine.WIDTH/2 - 16)
+		if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
 		{
 			_engine.pCenter.x += 2;
 		}
+			
 		else
 		{
 			_engine.mainPlayer.Pos.x += 2;
@@ -183,18 +187,39 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = UP_LEFT;
-			_engine.mainPlayer.Pos.y--;
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y--;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y--;
+			}
 		}
 
 		else if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = UP_RIGHT;
-			_engine.mainPlayer.Pos.y--;
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y--;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y--;
+			}
 		}
 		else
 		{
 			_engine.mainPlayer.state = UP;
-			_engine.mainPlayer.Pos.y -= 2;
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y -= 2;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y -= 2;
+			}
 		}
 
 		_engine.mainPlayer.walk = true;
@@ -204,17 +229,38 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = DOWN_LEFT;
-			_engine.mainPlayer.Pos.y++;
+			if (_engine.pCenter.y <= _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y++;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y++;
+			}
 		}
 		else  if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = DOWN_RIGHT;
-			_engine.mainPlayer.Pos.y++;
+			if (_engine.pCenter.y <= _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y++;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y++;
+			}
 		}
 		else
 		{
 			_engine.mainPlayer.state = DOWN;
-			_engine.mainPlayer.Pos.y += 2;
+			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16)
+			{
+				_engine.pCenter.y += 2;
+			}
+			else
+			{
+				_engine.mainPlayer.Pos.y += 2;
+			}
 		}
 		_engine.mainPlayer.walk = true;
 	}
