@@ -153,7 +153,7 @@ int GetKeyPressEvent()
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
 		
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH)
+		if (_engine.mainPlayer.Pos.x <= _engine.mapSurface->h/2)
 		{
 			_engine.pCenter.x -= 2;
 		}
@@ -166,7 +166,14 @@ int GetKeyPressEvent()
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT])
 	{
-		_engine.mainPlayer.Pos.x += 2;
+		if (_engine.mainPlayer.Pos.x >= _engine.mapSurface->h)
+		{
+			_engine.pCenter.x += 2;
+		}
+		else
+		{
+			_engine.mainPlayer.Pos.x += 2;
+		}
 		_engine.mainPlayer.state = RIGHT;
 		_engine.mainPlayer.walk = true;
 	}
