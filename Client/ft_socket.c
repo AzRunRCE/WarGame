@@ -130,8 +130,8 @@ void *NetworkThreadingListening(void *arg)
 		_engine.players[p.clientNum].walk = p.walk;
 		_engine.players[p.clientNum].Pos.h = 32;
 		_engine.players[p.clientNum].Pos.w = 32;
-		_engine.players[p.clientNum].Pos.x = p.X - _engine.camera.x - _engine.WIDTH / 2 - 16;
-		_engine.players[p.clientNum].Pos.y = p.Y - _engine.camera.y - _engine.HEIGHT / 2 -  16;
+		_engine.players[p.clientNum].Pos.x = p.X - _engine.camera.x;
+		_engine.players[p.clientNum].Pos.y = p.Y - _engine.camera.y;
 	}
 	pthread_exit(NULL);
 }
@@ -140,8 +140,19 @@ void *SreamClientData(void *arg)
 {
 	while (true)
 	{
-		Packet pck = { .X = _engine.mainPlayer.Pos.x,.Y = _engine.mainPlayer.Pos.y,
-		 .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
+		Packet pck = { .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16)
+		{
+				pck.X = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
+				pck.Y = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
+		
+		}
+		else		
+		{
+			pck.X = _engine.mainPlayer.Pos.x;
+			pck.Y = _engine.mainPlayer.Pos.y;
+	
+		}
 		strcpy(pck.name, "Jack");
 		write_server(sock, psin, pck);
 		Sleep(10);

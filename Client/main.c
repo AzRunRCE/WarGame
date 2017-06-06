@@ -59,15 +59,16 @@ int main(int argc, char *argv[])
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
-
-		_engine.camera.x = _engine.mainPlayer.Pos.x - _engine.WIDTH;
-		_engine.camera.y = _engine.mainPlayer.Pos.y - _engine.HEIGHT;
+		_engine.camera.x = _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
+		_engine.camera.y = _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
+		printf("pCenter.x=%d\n", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16);
+		printf("pCenter.y=%d\n", _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16);
 		int i;
 		for (i = 0; i < 15; i++)
 		{
@@ -153,7 +154,7 @@ int GetKeyPressEvent()
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
 		
-		if (_engine.mainPlayer.Pos.x <= _engine.mapSurface->h/2)
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH/2 - 16)
 		{
 			_engine.pCenter.x -= 2;
 		}
@@ -166,7 +167,7 @@ int GetKeyPressEvent()
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT])
 	{
-		if (_engine.mainPlayer.Pos.x >= _engine.mapSurface->h)
+		if (_engine.pCenter.x <= _engine.WIDTH/2 - 16)
 		{
 			_engine.pCenter.x += 2;
 		}
@@ -224,6 +225,7 @@ int GetKeyPressEvent()
 
 	return 1;
 }
+
 void FireBullet()
 {
 	if (actual > 299)
