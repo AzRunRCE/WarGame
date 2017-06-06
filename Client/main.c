@@ -54,30 +54,21 @@ int main(int argc, char *argv[])
 	explode.Pos.w = 7;
 	explode.Step = 0;
 	while (GetKeyPressEvent())
-	{
-	
-		
+	{		
 		ft_getNextExplodeSprite(&explode);
 
 		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
-		
-		
-		
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
-		
-		
+
 		_engine.camera.x = _engine.mainPlayer.Pos.x;
 		_engine.camera.y = _engine.mainPlayer.Pos.y;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
-
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
-	
-
 		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		int i;
 		for (i = 0; i < 15; i++)
@@ -150,7 +141,7 @@ SDL_Texture* SurfaceToTexture(SDL_Surface* surf)
 int GetKeyPressEvent()
 {
 	Uint8 *keystate = SDL_GetKeyboardState(NULL);
-	if (SDL_PollEvent(&_engine.event))//close the window
+	if (SDL_PollEvent(&_engine.event))
 	{
 		if (_engine.event.type == SDL_QUIT)
 			return 0;
