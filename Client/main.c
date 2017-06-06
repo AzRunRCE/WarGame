@@ -152,7 +152,15 @@ int GetKeyPressEvent()
 	_engine.mainPlayer.walk = false;
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
-		_engine.mainPlayer.Pos.x -= 2;
+		
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH)
+		{
+			_engine.pCenter.x -= 2;
+		}
+		else
+		{
+			_engine.mainPlayer.Pos.x -= 2;
+		}
 		_engine.mainPlayer.state = LEFT;
 		_engine.mainPlayer.walk = true;
 	}

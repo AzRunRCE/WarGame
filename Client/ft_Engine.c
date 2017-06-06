@@ -21,7 +21,7 @@ void Engine_init()
 	_engine.colorWarGame = (SDL_Color) { 52, 22, 20 };
 	_engine.mousePos.w = 55;
 	_engine.mousePos.h = 55;
-	_engine.mainPlayer = (Player) { .health = 100, .state = DOWN, .step = 0, .Pos.x = 48, .Pos.y = 48, .Pos.w = 32, .Pos.h = 32 };
+	_engine.mainPlayer = (Player) { .health = 100, .state = DOWN, .step = 0, .Pos.x = 800, .Pos.y = 600, .Pos.w = 32, .Pos.h = 32 };
 	_engine.camera = (SDL_Rect) { .y = 0, .x = 0, .w = _engine.WIDTH, .h = _engine.HEIGHT };
 	_engine.pCenter = (SDL_Rect) { .x = _engine.WIDTH / 2 - 16, .y = _engine.HEIGHT / 2 - 16, .w = 32, .h = 32 };
 }
