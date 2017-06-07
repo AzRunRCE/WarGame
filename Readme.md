@@ -1,6 +1,7 @@
 # WarGame
 
 ## TODO
-- Fix enemy moving 2 pixels when moving main player
-- Fix map walls
 - Continue projectiles implementation
+- Continue wall borders movements
+- Implement Explosions, BOOM !
+- Implement map walls
