@@ -130,8 +130,8 @@ void *NetworkThreadingListening(void *arg)
 		_engine.players[p.clientNum].walk = p.walk;
 		_engine.players[p.clientNum].Pos.h = 32;
 		_engine.players[p.clientNum].Pos.w = 32;
-		_engine.players[p.clientNum].Pos.x = p.X - _engine.camera.x;
-		_engine.players[p.clientNum].Pos.y = p.Y - _engine.camera.y;
+		_engine.players[p.clientNum].Pos.x = p.X;
+		_engine.players[p.clientNum].Pos.y = p.Y;
 	}
 	pthread_exit(NULL);
 }
@@ -155,7 +155,7 @@ void *SreamClientData(void *arg)
 		}
 		strcpy(pck.name, "Jack");
 		write_server(sock, psin, pck);
-		Sleep(10);
+		Sleep(1);
 	}
 	pthread_exit(NULL);
 }
