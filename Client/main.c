@@ -82,8 +82,6 @@ int main(int argc, char *argv[])
 			_engine.players[i].Pos.x -= _engine.camera.x;
 			_engine.players[i].Pos.y -= _engine.camera.y;
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
-			printf("enemy.pos.x=%d\n", _engine.players[i].Pos.x);
-			printf("enemy.pos.y=%d\n", _engine.players[i].Pos.y);
 		}
 		int j = 0;
 		for (j = 0; j < actual; j++)
