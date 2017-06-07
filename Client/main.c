@@ -55,7 +55,10 @@ int main(int argc, char *argv[])
 	{		
 		ft_getNextExplodeSprite(&explode);
 
-		sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+			sprintf(message, "%d,%d %d", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual);
+		else
+			sprintf(message, "%d,%d %d", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
@@ -67,11 +70,6 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
-		//if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
-		//{
-			printf("pCenter.x=%d\n", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16);
-			printf("pCenter.y=%d\n", _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16);
-		//}
 		int i;
 		for (i = 0; i < 15; i++)
 		{
@@ -157,7 +155,7 @@ int GetKeyPressEvent()
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
 		
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 16 > _engine.mapSurface->h)
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
 		{
 			_engine.pCenter.x -= 2;
 		}
@@ -187,7 +185,7 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = UP_LEFT;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y--;
 			}
@@ -200,7 +198,7 @@ int GetKeyPressEvent()
 		else if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = UP_RIGHT;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y--;
 			}
@@ -212,7 +210,7 @@ int GetKeyPressEvent()
 		else
 		{
 			_engine.mainPlayer.state = UP;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16)
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y -= 2;
 			}
@@ -229,7 +227,7 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = DOWN_LEFT;
-			if (_engine.pCenter.y <= _engine.HEIGHT / 2 - 16)
+			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y++;
 			}
@@ -241,7 +239,7 @@ int GetKeyPressEvent()
 		else  if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = DOWN_RIGHT;
-			if (_engine.pCenter.y <= _engine.HEIGHT / 2 - 16)
+			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y++;
 			}
@@ -253,7 +251,7 @@ int GetKeyPressEvent()
 		else
 		{
 			_engine.mainPlayer.state = DOWN;
-			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16)
+			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 			{
 				_engine.pCenter.y += 2;
 			}
