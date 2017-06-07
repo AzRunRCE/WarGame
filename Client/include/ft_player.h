@@ -16,6 +16,7 @@ struct Player {
     int step;
     bool walk;
     int lastAnim;
+	int fireIdle;
     SDL_Rect Pos;
     SDL_Rect sprite;
 };

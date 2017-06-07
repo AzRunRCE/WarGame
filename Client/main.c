@@ -22,6 +22,7 @@
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
 #define MAX_LENGTH 32
+#define FIRE_DELAY 200
 
 Engine _engine;
 void FireBullet();
@@ -40,7 +41,7 @@ Explode explode;
 int main(int argc, char *argv[])
 {
 	mainConfiguration = ft_loadConf();
-	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname,mainConfiguration->server);
+	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname, mainConfiguration->server);
 	SDL_init();
 	Engine_init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 	explode.Pos.w = 255;
 	explode.Step = 0;
 	while (GetKeyPressEvent())
-	{		
+	{
 		ft_getNextExplodeSprite(&explode);
 
 		// If the character is near the wall, show the character position compared to the screen.
@@ -165,29 +166,20 @@ int GetKeyPressEvent()
 	_engine.mainPlayer.walk = false;
 	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0)
 	{
-		
+
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
-		{
 			_engine.pCenter.x -= 2;
-		}
 		else
-		{
 			_engine.mainPlayer.Pos.x -= 2;
-		}
 		_engine.mainPlayer.state = LEFT;
 		_engine.mainPlayer.walk = true;
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h)
 	{
 		if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
-		{
 			_engine.pCenter.x += 2;
-		}
-			
 		else
-		{
 			_engine.mainPlayer.Pos.x += 2;
-		}
 		_engine.mainPlayer.state = RIGHT;
 		_engine.mainPlayer.walk = true;
 	}
@@ -197,38 +189,26 @@ int GetKeyPressEvent()
 		{
 			_engine.mainPlayer.state = UP_LEFT;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y--;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y--;
-			}
 		}
 
 		else if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = UP_RIGHT;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y--;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y--;
-			}
 		}
 		else
 		{
 			_engine.mainPlayer.state = UP;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y -= 2;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y -= 2;
-			}
 		}
 
 		_engine.mainPlayer.walk = true;
@@ -239,41 +219,29 @@ int GetKeyPressEvent()
 		{
 			_engine.mainPlayer.state = DOWN_LEFT;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y++;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y++;
-			}
 		}
 		else  if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = DOWN_RIGHT;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y++;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y++;
-			}
 		}
 		else
 		{
 			_engine.mainPlayer.state = DOWN;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			{
 				_engine.pCenter.y += 2;
-			}
 			else
-			{
 				_engine.mainPlayer.Pos.y += 2;
-			}
 		}
 		_engine.mainPlayer.walk = true;
 	}
-	if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
+	if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && Delay(&_engine.mainPlayer.fireIdle, FIRE_DELAY))
 	{
 		FireBullet();
 	}
@@ -300,7 +268,7 @@ void FireBullet()
 	actual++;
 }
 
-bool Delay(int *lastAnim,int  SleepTimeAnim)
+bool Delay(int *lastAnim, int  SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
 	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
