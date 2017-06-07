@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 	{		
 		ft_getNextExplodeSprite(&explode);
 
+		// If the character is near the wall, show the character position compared to the screen.
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 			sprintf(message, "%d,%d %d", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual);
 		else
@@ -93,6 +94,12 @@ int main(int argc, char *argv[])
 		SDL_RenderPresent(_engine.screenRenderer);
 		SDL_DestroyTexture(texture);
 		SDL_FreeSurface(text);
+		SDL_FreeSurface(_engine.mapSurface);
+		SDL_FreeSurface(_engine.characterSurface);
+		SDL_FreeSurface(_engine.explodeSurface);
+		SDL_FreeSurface(_engine.characterEnnemiSurface);
+		SDL_FreeSurface(_engine.bulletSurface);
+		SDL_FreeSurface(_engine.fogSurface);
 	}
 
 	end();
@@ -152,7 +159,7 @@ int GetKeyPressEvent()
 	}
 	_engine.mainPlayer.fire = false;
 	_engine.mainPlayer.walk = false;
-	if (keystate[SDL_SCANCODE_LEFT])
+	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0)
 	{
 		
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
@@ -166,7 +173,7 @@ int GetKeyPressEvent()
 		_engine.mainPlayer.state = LEFT;
 		_engine.mainPlayer.walk = true;
 	}
-	else if (keystate[SDL_SCANCODE_RIGHT])
+	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h)
 	{
 		if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
 		{
@@ -180,7 +187,7 @@ int GetKeyPressEvent()
 		_engine.mainPlayer.state = RIGHT;
 		_engine.mainPlayer.walk = true;
 	}
-	if (keystate[SDL_SCANCODE_UP])
+	if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0)
 	{
 		if (_engine.mainPlayer.state == LEFT)
 		{
@@ -222,7 +229,7 @@ int GetKeyPressEvent()
 
 		_engine.mainPlayer.walk = true;
 	}
-	else if (keystate[SDL_SCANCODE_DOWN])
+	else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h)
 	{
 		if (_engine.mainPlayer.state == LEFT)
 		{
