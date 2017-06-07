@@ -20,14 +20,14 @@ void ft_GetPlayerOrientation(Player *player)
 	if (player->fire == true)
 	{
 		step = ft_getFirePosition(state);
-		if (AnimDelay(&player->lastAnim, 200))
+		if (Delay(&player->lastAnim, 200))
 			state = 9;
 		else
 			state = 0;
 	}
 	else
 	{
-		if (player->walk &&  player->step < 4 && AnimDelay(&player->lastAnim, 200))
+		if (player->walk &&  player->step < 4 && Delay(&player->lastAnim, 200))
 			player->step++;
 		if (player->walk &&  player->step > 3)
 			player->step = 0;

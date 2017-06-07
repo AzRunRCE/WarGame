@@ -124,7 +124,7 @@ bool ft_getNextExplodeSprite(Explode *explode)
 {
 	if (explode->Step == 52)
 		return false;
-	else if (AnimDelay(&explode->lastAnim, 50))
+	else if (Delay(&explode->lastAnim, 50))
 	{
 		explode->Sprite.x = 256 * (explode->Step % 8);
 		explode->Sprite.y = 256 * (explode->Step / 8);
@@ -284,7 +284,7 @@ void FireBullet()
 	explode.Step = 0;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;
-	bulletFired[actual].Pos = (SDL_Rect) { .x = _engine.pCenter.x + 16, .y = _engine.pCenter.y + 16, .w = 6, .h = 2 };
+	bulletFired[actual].Pos = (SDL_Rect) { .x = _engine.pCenter.x + 16, .y = _engine.pCenter.y + 16, .w = 10, .h = 2 };
 	int tmpX = 0;
 	int tmpyY = 0;
 	tmpX = (_engine.mousePos.x - bulletFired[actual].Pos.x);
@@ -296,7 +296,7 @@ void FireBullet()
 	actual++;
 }
 
-bool AnimDelay(int *lastAnim,int  SleepTimeAnim)
+bool Delay(int *lastAnim,int  SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
 	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
