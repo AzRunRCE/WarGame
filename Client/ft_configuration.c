@@ -42,6 +42,6 @@ bool ft_saveConf(configuration *settings)
 	fprintf(fp, "[game]\nversion=%i\nserver=%s\n[player]\nnickname=%s\n", settings->version, settings->server, settings->nickname);
 
 	fclose(fp);
-	printf("Can't load '%s'\n", path);
+	printf("Settings saved in '%s'\n", path);
 	return true;
 }

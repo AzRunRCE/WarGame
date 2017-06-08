@@ -90,7 +90,15 @@ static void app(void)
 	    Client *client = get_client(clients, &csin, actual);
 	    p.clientNum = get_client_pos(clients, &csin, actual);
 	    if(client == NULL) continue;
-	    send_message_to_all_clients(sock, clients, client, actual,p , 0);
+		if (p.name[0] == '\0')
+		{
+			int pos = get_client_pos(clients, &csin, actual);
+			array_remove(clients, MAX_CLIENTS, pos, 1);
+			printf("player disconnected \n");
+			actual--;
+		}
+		else
+			send_message_to_all_clients(sock, clients, client, actual, p, 0);
 	 }
       }
    }
@@ -130,18 +138,34 @@ static Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual)
 
 static int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
 {
-   int i = 0;
-   for(i = 0; i < actual; i++)
-   {
-      if(clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
-	    && clients[i].sin.sin_port == csin->sin_port)
-      {
-	 return i;
-      }
-   }
+	int i = 0;
+	for (i = 0; i < actual; i++)
+	{
+		if (clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
+			&& clients[i].sin.sin_port == csin->sin_port)
+		{
+			return i;
+		}
+	}
 
-   return NULL;
+	return 0;
 }
+static void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
+{
+	int* begin = arr + index;                        // beginning of segment to remove
+	int* end = arr + index + rem_size;               // end of segment to remove
+	size_t trail_size = size - index - rem_size;       // size of the trailing items after segment
+
+	memcpy(begin,                                  // move data to beginning
+		end,                                    // from end of segment
+		trail_size * sizeof(Client));
+
+	memset(begin + trail_size,                       // from the new end of the array
+		0,                                      // set everything to zero
+		rem_size * sizeof(Client));
+
+}
+
 static void remove_client(Client *clients, int to_remove, int *actual)
 {
    /* we remove the client in the array */

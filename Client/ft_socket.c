@@ -36,7 +36,7 @@ void end()
 {
 	Packet w;
 	strcpy(w.name, "\0");
-	write_server(sock, &sin, w);
+	write_server(sock, psin, w);
 #ifdef WIN32
 	WSACleanup();
 #endif
