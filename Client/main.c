@@ -34,7 +34,7 @@ time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
 int dX = 0;
 int dY = 0;
-Bullet bulletFired[300];
+Bullet *bulletFired[300];
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
@@ -54,11 +54,12 @@ int main(int argc, char *argv[])
 	explode.Pos.h = 255;
 	explode.Pos.w = 255;
 	explode.Step = 0;
+	FireBullet();
 	while (GetKeyPressEvent())
 	{
 		ft_getNextExplodeSprite(&explode);
 
-		// If the character is near the wall, show the character position compared to the screen.
+		// If the character is near the wall, show the character position compared to the screen instead of camera position
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 			sprintf(message, "%d,%d %d", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual);
 		else
@@ -90,11 +91,7 @@ int main(int argc, char *argv[])
 		int j = 0;
 		for (j = 0; j < actual; j++)
 		{
-			if (bulletFired[j].Pos.x > 1000 || bulletFired[j].Pos.y > 1000)
-				continue;
-			bulletFired[j].Pos.x = bulletFired[j].Pos.x + bulletFired[j].dX;
-			bulletFired[j].Pos.y = bulletFired[j].Pos.y + bulletFired[j].dY;
-			SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface, NULL, &bulletFired[j].Pos);
+			drawBullet(bulletFired[j]);
 		}
 		SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 		ft_getHealthSprite(&_engine.mainPlayer);
@@ -288,15 +285,7 @@ void FireBullet()
 	explode.Step = 0;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;
-	bulletFired[actual].Pos = (SDL_Rect) { .x = _engine.pCenter.x + 16, .y = _engine.pCenter.y + 16, .w = 6, .h = 6 };
-	int tmpX = 0;
-	int tmpyY = 0;
-	tmpX = (_engine.mousePos.x - bulletFired[actual].Pos.x);
-	tmpyY = (_engine.mousePos.y - bulletFired[actual].Pos.y);
-	int DI = sqrt(tmpX * tmpX + tmpyY * tmpyY);
-	double T = DI / 6;
-	bulletFired[actual].dX = (_engine.mousePos.x - bulletFired[actual].Pos.x) / T;
-	bulletFired[actual].dY = (_engine.mousePos.y - bulletFired[actual].Pos.y) / T;
+	bulletFired[actual] = initBullet(_engine.pCenter.x + 16, _engine.pCenter.y + 16, 600, 600);
 	actual++;
 }
 
@@ -314,4 +303,3 @@ bool Delay(int *lastAnim, int  SleepTimeAnim)
 	}
 
 }
-
