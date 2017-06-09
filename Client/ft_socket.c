@@ -54,7 +54,14 @@ int create_connection(configuration *settings)
 	sock = init_connection(host, psin);
 	Packet w;
 	strcpy(w.name, settings->nickname);
+	size_t sinsize = sizeof *psin;
+	int n = 0;
 	write_server(sock, psin, w);
+	if ((n = recvfrom(sock, _engine.Map, sizeof(Map), 0, (SOCKADDR *)psin, &sinsize)) < 0)
+	{
+		perror("recvfrom()");
+		exit(errno);
+	}
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;

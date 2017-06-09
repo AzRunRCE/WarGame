@@ -38,6 +38,8 @@ Bullet bulletFired[300];
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
+void ft_getHealthSprite(Player *player);
+void ft_getAmmoSprite(Player *player);
 int main(int argc, char *argv[])
 {
 	mainConfiguration = ft_loadConf();
@@ -46,7 +48,7 @@ int main(int argc, char *argv[])
 	Engine_init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu(mainConfiguration);
-	create_connection(mainConfiguration);
+//	create_connection(mainConfiguration);
 	SDL_Rect posText;
 	SDL_Texture *texture;
 	explode.Pos.h = 255;
@@ -71,7 +73,9 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
-		SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
+	//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
+
+
 		int i;
 		for (i = 0; i < 15; i++)
 		{
@@ -93,6 +97,10 @@ int main(int argc, char *argv[])
 			SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface, NULL, &bulletFired[j].Pos);
 		}
 		SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
+		ft_getHealthSprite(&_engine.mainPlayer);
+		ft_getAmmoSprite(&_engine.mainPlayer);
+		SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
+		SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
 		SDL_RenderPresent(_engine.screenRenderer);
 		SDL_DestroyTexture(texture);
@@ -122,6 +130,25 @@ void ft_getCharactSprite(Player *player, State state, int step)
 	player->sprite.h = 32;
 	player->sprite.w = 32;
 }
+
+void ft_getHealthSprite(Player *player)
+{
+	int nb_life = player->health / 10;
+	_engine.healthRect.x = 0;
+	_engine.healthRect.y = 50 * nb_life;
+	_engine.healthRect.h = 50;
+	_engine.healthRect.w = 300;
+
+}
+void ft_getAmmoSprite(Player *player)
+{
+	_engine.AmmoRect.x = 0;
+	_engine.AmmoRect.y = 100 * player->ammo;
+	_engine.AmmoRect.h = 100;
+	_engine.AmmoRect.w = 404;
+
+}
+
 
 bool ft_getNextExplodeSprite(Explode *explode)
 {
@@ -249,6 +276,13 @@ int GetKeyPressEvent()
 
 void FireBullet()
 {
+
+	if (_engine.mainPlayer.ammo > 0)
+		_engine.mainPlayer.ammo -= 1;
+	else
+	{
+		_engine.mainPlayer.ammo = 30;
+	}
 	if (actual > 299)
 		actual = 0;
 	explode.Step = 0;

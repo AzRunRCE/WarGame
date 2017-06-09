@@ -1,6 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
-
+#include "ft_map.h"
 #ifdef WIN32
 
 #include <winsock2.h>
@@ -34,7 +34,6 @@ typedef struct in_addr IN_ADDR;
 #define BUF_SIZE	1024
 
 #include "client.h"
-
 static void init(void);
 static void end(void);
 static void app(void);
@@ -42,6 +41,7 @@ static int init_connection(void);
 static void end_connection(int sock);
 static Packet read_client(SOCKET sock, SOCKADDR_IN *sin);
 static void write_client(SOCKET sock, SOCKADDR_IN *csin,Packet packet);
+static void write_client_map(SOCKET sock, SOCKADDR_IN *sin, Map *map);
 static void send_message_to_all_clients(int sock, Client *clients, Client *client, int actual, Packet packet, char from_server);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual);

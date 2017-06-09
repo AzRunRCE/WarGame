@@ -11,14 +11,16 @@ typedef struct Player Player;
 struct Player {
     char name[16];
     int health;
+	int ammo;
+	int step;
     bool fire;
     State state;
-    int step;
     bool walk;
     int lastAnim;
 	int fireIdle;
     SDL_Rect Pos;
     SDL_Rect sprite;
+	
 };
 
 
