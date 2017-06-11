@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>${ProjectDir}..\library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Utilisateur\Documents\WarGame\library\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>${ProjectDir}..\..\library\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\library\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
