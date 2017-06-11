@@ -4,7 +4,7 @@
 
 typedef struct
 {
-	int **data;
+	char data[50][50];
 	int heigth;
 	int width;
 }Map;

@@ -1,6 +1,7 @@
 #include "include\ft_engine.h"
 void Engine_init()
 {
+	_engine.map = malloc(sizeof(Map));
 	_engine.fullscreen = 0;
 	_engine.WIDTH = 800;
 	_engine.HEIGHT = 600;

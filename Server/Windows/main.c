@@ -257,7 +257,8 @@ static void write_client(SOCKET sock, SOCKADDR_IN *sin, Packet packet)
 
 static void write_client_map(SOCKET sock, SOCKADDR_IN *sin, Map *map)
 {
-	if (sendto(sock, map, sizeof(Map), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
+	int n;
+	if (n = sendto(sock, map, sizeof(Map), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
 	{
 		perror("send()");
 		exit(errno);

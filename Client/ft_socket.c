@@ -57,11 +57,27 @@ int create_connection(configuration *settings)
 	size_t sinsize = sizeof *psin;
 	int n = 0;
 	write_server(sock, psin, w);
-	if ((n = recvfrom(sock, _engine.Map, sizeof(Map), 0, (SOCKADDR *)psin, &sinsize)) < 0)
+	if ((n = recvfrom(sock, _engine.map, sizeof(Map), 0, (SOCKADDR *)psin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-		exit(errno);
 	}
+	FILE * fp;
+
+	fp = fopen("file.txt", "w+");
+	//int j = 0; j <_engine.map->width; j++)
+	for (int i = 0; i < _engine.map->heigth; i++)
+	{
+		for (int j = 0; j <_engine.map->width; j++)
+		{
+			fprintf(fp, "%c", _engine.map->data[i][j]);
+		}
+		fprintf(fp, "\n");
+	}
+
+	
+
+	fclose(fp);
+
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;

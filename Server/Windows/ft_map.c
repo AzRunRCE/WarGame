@@ -51,29 +51,34 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 Map *ft_LoadMap(char * path, Map *map)
 {
 	SDL_Surface *mapBMP = SDL_LoadBMP(path);
+	map->heigth = mapBMP->h;
 
+	map->width = mapBMP->w;
 
 	int rows, columns;
 	/* initialize rows and columns to the desired value */
 
-	int **arr = (int**)malloc(mapBMP->h * sizeof(int*));
+	/*map->data = (int**)malloc(mapBMP->h * sizeof(int*));
 	for (int i = 0;i<mapBMP->h;i++)
 	{
-		arr[i] = (int*)malloc(mapBMP->w * sizeof(int));
-	}
-	for (int i = 0; i < mapBMP->h; i++)
+		map->data[i] = (int*)malloc(mapBMP->w * sizeof(int));
+	}*/
+//
+//int i = 0; i < mapBMP->h; i++)
+	for (int j = 0; j < mapBMP->w; j++)
 	{
-		for (int j = 0; j < mapBMP->w; j++)
+		for (int i = 0; i < mapBMP->h; i++)
 		{
-			if ((int)obtenirPixel(mapBMP, i, j) == BLACK)
+			if ((int)obtenirPixel(mapBMP, j, i) == BLACK)
 			{
-				arr[i][j] = 1;
+				map->data[i][j] = '1';
 			}
 			else
-				arr[i][j] = 0;
+				map->data[i][j] = '.';
 			
 		}
 	}
+	
 	return map;
 }
 

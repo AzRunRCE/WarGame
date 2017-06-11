@@ -5,7 +5,7 @@
 
 typedef struct
 {
-	int **data;
+	char data[50][50];
 	int heigth;
 	int width;
 }Map;
@@ -20,7 +20,7 @@ typedef struct {
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
     SDL_Window* window;
-	Map *Map;
+	Map *map;
     SDL_Surface *mapSurface;
     SDL_Rect camera;
     TTF_Font *font;
