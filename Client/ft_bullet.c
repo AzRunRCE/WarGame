@@ -27,18 +27,26 @@ void drawBullet(Bullet *bullet) {
 	bullet->Pos.y = bullet->y0;
 	bullet->Pos.x = bullet->x0;
 	SDL_Rect RECT = { .x = 0,.y = 0,.h = 6,.w = 6 };
+	//bullet->Pos.x -= _engine.camera.x;
+	//bullet->Pos.y -= _engine.camera.y;
+
 	SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface, &RECT, &bullet->Pos);
-	if (bullet->x0 == bullet->x1 && bullet->y0 == bullet->y1)
-		return;
-	bullet->e2 = bullet->err;
-	if (bullet->e2 > -bullet->dX)
+	//if (bullet->x0 == bullet->x1 && bullet->y0 == bullet->y1)
+	//	return;
+	for (size_t i = 0; i < 4; i++)
 	{
-		bullet->err -= bullet->dY;
-		bullet->x0 += bullet->sX;
+		bullet->e2 = bullet->err;
+		if (bullet->e2 > -bullet->dX)
+		{
+			bullet->err -= bullet->dY;
+			bullet->x0 += bullet->sX;
+		}
+		if (bullet->e2 < bullet->dY)
+		{
+			bullet->err += bullet->dX;
+			bullet->y0 += bullet->sY;
+		}
 	}
-	if (bullet->e2 < bullet->dY)
-	{
-		bullet->err += bullet->dX;
-		bullet->y0 += bullet->sY;
-	}
+	
+	
 }
