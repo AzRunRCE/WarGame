@@ -23,6 +23,7 @@
 #include "include\ft_explode.h"
 #define MAX_LENGTH 32
 #define FIRE_DELAY 200
+#define BLOCK_SIZE 32
 
 Engine _engine;
 void FireBullet();
@@ -58,18 +59,18 @@ int main(int argc, char *argv[])
 	while (GetKeyPressEvent())
 	{
 		ft_getNextExplodeSprite(&explode);
-		int posX = (_engine.mainPlayer.Pos.x + 16) / 32;
-		int posY = (_engine.mainPlayer.Pos.y + 16) / 32;
+		int posX = (_engine.mainPlayer.Pos.x + 16);
+		int posY = (_engine.mainPlayer.Pos.y + 16);
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-			posX = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 48) / 32;
-			posY = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 48) / 32;
+			posX = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32);
+			posY = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32);
 		}
 		// If the character is near the wall, show the character position compared to the screen instead of camera position
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, posX, posY, _engine.map->data[posY][posX]);
+			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, posX/BLOCK_SIZE, posY/BLOCK_SIZE, _engine.map->data[(int)posY/BLOCK_SIZE][(int)posX/BLOCK_SIZE]);
 		else
-			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, posX, posY, _engine.map->data[posY][posX]);
+			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, posX/BLOCK_SIZE, posY/BLOCK_SIZE, _engine.map->data[(int)posY/BLOCK_SIZE][(int)posX/BLOCK_SIZE]);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
@@ -193,17 +194,17 @@ int GetKeyPressEvent()
 	_engine.mainPlayer.fire = false;
 	_engine.mainPlayer.walk = false;
 
-	int posX = (_engine.mainPlayer.Pos.x + 16) / 32;
-	int posY = (_engine.mainPlayer.Pos.y + 16) /32;
+	int posX = _engine.mainPlayer.Pos.x + 16;
+	int posY = _engine.mainPlayer.Pos.y + 16;
 	if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 	{
 		// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
-		posX = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 48) / 32;
-		posY = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 48) / 32;
+		posX = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32;
+		posY = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32;
 	}
 	
 	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0 
-		&& _engine.map->data[posY][posX - 1] == '.'
+		&& _engine.map->data[(int)posY/BLOCK_SIZE][(int)(posX - 8)/BLOCK_SIZE] == '.'
 		)
 	{
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
@@ -215,7 +216,7 @@ int GetKeyPressEvent()
 		
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h 
-		&& _engine.map->data[posY][posX + 1] == '.'
+		&& _engine.map->data[(int)posY/BLOCK_SIZE][(int)(posX + 8)/BLOCK_SIZE] == '.'
 		)
 	{
 	 
@@ -227,7 +228,7 @@ int GetKeyPressEvent()
 		_engine.mainPlayer.walk = true;
 	}
 	if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0
-		&& _engine.map->data[posY - 1][posX] == '.'
+		&& _engine.map->data[(int)(posY - 8)/BLOCK_SIZE][(int)posX/BLOCK_SIZE] == '.'
 		)
 	{
 		if (_engine.mainPlayer.state == LEFT)
@@ -259,7 +260,7 @@ int GetKeyPressEvent()
 		_engine.mainPlayer.walk = true;
 	}
 	else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h 
-		&& _engine.map->data[posY + 1][posX] == '.'
+		&& _engine.map->data[(int)(posY + 8)/BLOCK_SIZE][(int)posX/BLOCK_SIZE] == '.'
 		)
 	{
 		if (_engine.mainPlayer.state == LEFT)
