@@ -6,6 +6,10 @@
 #include "include\server.h"
 #include "include\client.h"
 #include "include\ft_map.h"
+#include "include\ft_player.h"
+
+
+pthread_t NwkThread;
 
 static void init(void)
 {
@@ -27,18 +31,23 @@ static void end(void)
 #endif
 }
 Client clients[MAX_CLIENTS];
+SDL_Rect Bullets[250];
+Player Players[16];
 int actual = 0;
 Map *map;
-
+SOCKET sock;
 static void app(void)
 {
-	SOCKET sock = init_connection();
+	sock = init_connection();
 	char buffer[BUF_SIZE];
 	/* the index for the array */
 	int max = sock;
 	/* an array for all clients */
 
-
+	if (pthread_create(&NwkThread, NULL, NetworkThreading, NULL) == -1) {
+		perror("pthread_create");
+		return EXIT_FAILURE;
+	}
 	fd_set rdfs;
 
 	while (1)
@@ -70,7 +79,7 @@ static void app(void)
 			SOCKADDR_IN csin = { 0 };
 
 			/* a client is talking */
-			Packet p;
+			ClientPacket p;
 			p = read_client(sock, &csin);
 
 			if (check_if_client_exists(clients, &csin, actual) == 0)
@@ -100,8 +109,7 @@ static void app(void)
 					printf("player disconnected \n");
 					actual--;
 				}
-				else
-					send_message_to_all_clients(sock, clients, client, actual, p, 0);
+				
 			}
 		}
 	}
@@ -177,7 +185,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
 	(*actual)--;
 }
 
-static void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, Packet packet, char from_server)
+static void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, ServerPacket packet, char from_server)
 {
 	int i = 0;
 	char message[BUF_SIZE];
@@ -230,11 +238,11 @@ static void end_connection(int sock)
 	closesocket(sock);
 }
 
-static Packet read_client(SOCKET sock, SOCKADDR_IN *sin)
+static ClientPacket read_client(SOCKET sock, SOCKADDR_IN *sin)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
-	Packet packet;
+	ClientPacket packet;
 	if ((n = recvfrom(sock, &packet, sizeof(packet), 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
@@ -246,7 +254,7 @@ static Packet read_client(SOCKET sock, SOCKADDR_IN *sin)
 	return packet;
 }
 
-static void write_client(SOCKET sock, SOCKADDR_IN *sin, Packet packet)
+static void write_client(SOCKET sock, SOCKADDR_IN *sin, ServerPacket packet)
 {
 	if (sendto(sock, &packet, sizeof(packet), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
 	{
@@ -265,6 +273,20 @@ static void write_client_map(SOCKET sock, SOCKADDR_IN *sin, Map *map)
 	}
 }
 
+void *NetworkThreading(void *arg)
+{
+	while (true)
+	{
+		ServerPacket *packet;
+		packet = malloc(sizeof(ServerPacket));
+
+		memcpy(packet->bullets, Bullets, sizeof Bullets);
+		memcpy(packet->players, Players, sizeof Players);
+		send_message_to_all_clients(sock, clients, NULL, actual, *packet, 0);
+		Sleep(200);
+	}
+	pthread_exit(NULL);
+}
 
 int main(int argc, char **argv)
 {

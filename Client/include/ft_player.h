@@ -20,7 +20,7 @@ struct Player {
 	int fireIdle;
     SDL_Rect Pos;
     SDL_Rect sprite;
-	
+	SDL_Rect bullets[30];
 };
 
 

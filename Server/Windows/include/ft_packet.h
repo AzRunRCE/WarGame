@@ -1,8 +1,11 @@
-#ifndef PACKET_H
-#define PACKET_H
-#include "ft_sprite.h"
-#include "main.h"
-#include "ft_bullet.h"
+#ifndef FT_PACKET_H
+#define FT_PACKET_H
+
+#include "ft_state.h"
+#include "server.h"
+#include "ft_player.h"
+#include <SDL.h>
+
 
 typedef struct
 {
@@ -17,8 +20,8 @@ typedef struct
 
 typedef struct
 {
-	SDL_Rect players[16];
+	Player players[16];
 	SDL_Rect bullets[250];
 }ServerPacket;
 
-#endif // PACKET_H
+#endif /* guard */

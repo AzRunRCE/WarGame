@@ -27,7 +27,7 @@ typedef struct {
     SDL_Color colorWhite;
     SDL_Color colorWarGame;
     SDL_Surface *fogSurface;
-   
+	SDL_Rect bullets[250];
 	SDL_Rect fogRect;
 	SDL_Rect healthRect;
 	SDL_Rect healthPos;
