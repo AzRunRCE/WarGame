@@ -5,18 +5,19 @@
 #include "server.h"
 #include "ft_player.h"
 #include <SDL.h>
-
+#include "ft_map.h"
 
 typedef struct
 {
-	int Y;
-	int X;
-	State state;
-	char name[256];
-	bool walk;
-	bool fire;
-	int clientNum;
+	int clientId;
+	Map map;
+}ServerGame;
+
+typedef struct
+{
+	Player clientPlayer;
 }ClientPacket;
+
 
 typedef struct
 {

@@ -8,6 +8,7 @@
 
 typedef struct Player {
 	char name[16];
+	bool calibred;
 	int health;
 	int ammo;
 	int step;
@@ -16,9 +17,9 @@ typedef struct Player {
 	bool walk;
 	int lastAnim;
 	int fireIdle;
+	int id;
 	SDL_Rect Pos;
 	SDL_Rect sprite;
-	SDL_Rect bullets[30];
 }Player;
 
 

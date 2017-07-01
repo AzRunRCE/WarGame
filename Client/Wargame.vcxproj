@@ -155,6 +155,7 @@
     <ClInclude Include="include\ft_engine.h" />
     <ClInclude Include="include\ft_explode.h" />
     <ClInclude Include="include\ft_item.h" />
+    <ClInclude Include="include\ft_map.h" />
     <ClInclude Include="include\ft_menu.h" />
     <ClInclude Include="include\ft_packet.h" />
     <ClInclude Include="include\ft_player.h" />

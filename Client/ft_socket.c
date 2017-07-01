@@ -11,13 +11,15 @@
 #include <stdlib.h>
 #include "include\ft_socket.h"
 #include "include\ft_client.h"
-#include "include\ft_engine.h"
 #include "include\ft_configuration.h"
-
+#include "include\ft_map.h"
+#include "include\ft_engine.h"
 SOCKADDR_IN *psin;
 SOCKET sock;
 pthread_t NwkThread;
 pthread_t NwkThreadSender;
+
+
 
 static void init(void)
 {
@@ -34,8 +36,8 @@ static void init(void)
 
 void end()
 {
-	Packet w;
-	strcpy(w.name, "\0");
+	ClientPacket w;
+	strcpy(w.clientPlayer.name, "\0");
 	write_server(sock, psin, w);
 #ifdef WIN32
 	WSACleanup();
@@ -52,31 +54,34 @@ int create_connection(configuration *settings)
 	psin = malloc(sizeof(SOCKADDR_IN));
 	psin->sin_family = AF_INET;
 	sock = init_connection(host, psin);
-	Packet w;
-	strcpy(w.name, settings->nickname);
+	ClientPacket w;
+	strcpy(w.clientPlayer.name, settings->nickname);
 	size_t sinsize = sizeof *psin;
 	int n = 0;
 	write_server(sock, psin, w);
-	if ((n = recvfrom(sock, _engine.map, sizeof(Map), 0, (SOCKADDR *)psin, &sinsize)) < 0)
+	_engine.currentGame = malloc(sizeof(ServerGame));
+	if ((n = recvfrom(sock, _engine.currentGame, sizeof(ServerGame), 0, (SOCKADDR *)psin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
 	}
-	FILE * fp;
+	_engine.map = &_engine.currentGame->map;
+	_engine.mainPlayer.id = _engine.currentGame->clientId;
+	//FILE * fp;
 
-	fp = fopen("file.txt", "w+");
-	//int j = 0; j <_engine.map->width; j++)
-	for (int i = 0; i < _engine.map->heigth; i++)
-	{
-		for (int j = 0; j <_engine.map->width; j++)
-		{
-			fprintf(fp, "%c", _engine.map->data[i][j]);
-		}
-		fprintf(fp, "\n");
-	}
+	//fp = fopen("file.txt", "w+");
+	////int j = 0; j <_engine.map->width; j++)
+	//for (int i = 0; i < _engine.map->heigth; i++)
+	//{
+	//	for (int j = 0; j <_engine.map->width; j++)
+	//	{
+	//		fprintf(fp, "%c", _engine.map->data[i][j]);
+	//	}
+	//	fprintf(fp, "\n");
+	//}
 
 	
 
-	fclose(fp);
+	//fclose(fp);
 
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
@@ -119,21 +124,21 @@ static void end_connection(int sock)
 	closesocket(sock);
 }
 
-static Packet read_server(SOCKET sock, SOCKADDR_IN *sin)
+static ServerPacket read_server(SOCKET sock, SOCKADDR_IN *sin)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
-	Packet pck;
+	ServerPacket pck;
 	if ((n = recvfrom(sock, &pck, sizeof(pck), 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-		exit(errno);
+		//exit(errno);
 	}
 	// buffer[n] = 0;
 	return pck;
 }
 
-static void write_server(SOCKET sock, SOCKADDR_IN *sin, Packet pck)
+static void write_server(SOCKET sock, SOCKADDR_IN *sin, ClientPacket pck)
 {
 	if (sendto(sock, &pck, sizeof(pck), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
 	{
@@ -146,10 +151,13 @@ void *NetworkThreadingListening(void *arg)
 {
 	while (true)
 	{
-		Packet p;
-		p = read_server(sock, psin);
-		memccpy(_engine.players, p.players, sizeof p.players);
-		memcpy(_engine.bullets, p.bullets, sizeof p.bullets);
+		ServerPacket packet;
+		packet = read_server(sock, psin);
+		pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
+		pthread_cond_wait(&_engine.condition, &_engine.mutex); /* On attend que la condition soit remplie */
+		memcpy(_engine.bullets, packet.bullets, sizeof _engine.bullets);
+		memcpy(_engine.players, packet.players, sizeof _engine.players);
+		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 	}
 	pthread_exit(NULL);
 }
@@ -158,23 +166,17 @@ void *SreamClientData(void *arg)
 {
 	while (true)
 	{
-	/*	Packet pck = { .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
-
+		ClientPacket pck;
+		pck.clientPlayer = _engine.mainPlayer;
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-				pck.X = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
-				pck.Y = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
+				pck.clientPlayer.Pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
+				pck.clientPlayer.Pos.y += _engine.pCenter.y - _engine.HEIGHT / 2 + 16;
 		
 		}
-		else		
-		{
-			pck.X = _engine.mainPlayer.Pos.x;
-			pck.Y = _engine.mainPlayer.Pos.y;
-	
-		}
-		strcpy(pck.name, "Jack");
+		strcpy(pck.clientPlayer.name, "Jack");
 		write_server(sock, psin, pck);
-		Sleep(1);*/
+		Sleep(20);
 	}
 	pthread_exit(NULL);
 }

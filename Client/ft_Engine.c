@@ -20,7 +20,8 @@ void Engine_init()
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.AmmoSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Ammo.png");
 	_engine.healthSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Life.png");
-
+	_engine.mutex = PTHREAD_MUTEX_INITIALIZER;
+	_engine.condition = PTHREAD_COND_INITIALIZER;
 
 	_engine.font = TTF_OpenFont("res/verdana.ttf", 20);
 	_engine.colorWhite = (SDL_Color) { 255, 255, 255 };
@@ -29,7 +30,7 @@ void Engine_init()
 	_engine.mousePos.w = 55;
 	_engine.mousePos.h = 55;
 	
-	_engine.mainPlayer = (Player) { .health = 100, .state = DOWN,.ammo = 30, .step = 0, .Pos.x = 800, .Pos.y = 800, .Pos.w = 32, .Pos.h = 32 };
+	_engine.mainPlayer = (Player) {.id = -1, .health = 100, .state = DOWN,.ammo = 30, .step = 0, .Pos.x = 800, .Pos.y = 800, .Pos.w = 32, .Pos.h = 32 };
 	
 	_engine.healthPos = (SDL_Rect) { .x =10, .y = _engine.HEIGHT - 25, .w = 150, .h = 30 };
 	

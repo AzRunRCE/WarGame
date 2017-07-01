@@ -83,16 +83,24 @@ int main(int argc, char *argv[])
 		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
 	//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 
+		
+		pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
 
 		int i;
 		for (i = 0; i < 15; i++)
 		{
 
-			if (_engine.players[i].Pos.x == 0 && _engine.players[i].Pos.y == 0)
+			if (_engine.players[i].id == -1 || _engine.players[i].id == _engine.mainPlayer.id)
 				continue;
 			ft_GetPlayerOrientation(&_engine.players[i]);
-			_engine.players[i].Pos.x -= _engine.camera.x;
-			_engine.players[i].Pos.y -= _engine.camera.y;
+			
+			if (!_engine.players[i].calibred)
+			{
+				_engine.players[i].Pos.x -= _engine.camera.x;
+				_engine.players[i].Pos.y -= _engine.camera.y;
+				_engine.players[i].calibred = true;
+			}
+			//printf("%d %d\n", _engine.players[i].Pos.x, _engine.players[i].Pos.y);
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
 		}
 		int j = 0;
@@ -100,6 +108,8 @@ int main(int argc, char *argv[])
 		{
 			drawBullet(bulletFired[j]);
 		}
+		pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 		//SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
@@ -107,14 +117,16 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
 		SDL_RenderPresent(_engine.screenRenderer);
-		SDL_DestroyTexture(texture);
+		/*SDL_DestroyTexture(texture);
 		SDL_FreeSurface(text);
 		SDL_FreeSurface(_engine.mapSurface);
 		SDL_FreeSurface(_engine.characterSurface);
 		SDL_FreeSurface(_engine.explodeSurface);
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
-		SDL_FreeSurface(_engine.fogSurface);
+		SDL_FreeSurface(_engine.fogSurface);*/
+		pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 	}
 
 	end();

@@ -5,7 +5,7 @@
 #include <pthread.h>
 #define CRLF		"\r\n"
 #define PORT	 	1977
-#define MAX_CLIENTS 	100
+#define MAX_CLIENTS 	16
 #define BUF_SIZE	1024
 typedef int bool;
 #define true 1
@@ -21,7 +21,7 @@ static int init_connection(void);
 static void end_connection(int sock);
 static ClientPacket read_client(SOCKET sock, SOCKADDR_IN *sin);
 static void write_client(SOCKET sock, SOCKADDR_IN *csin, ServerPacket packet);
-static void write_client_map(SOCKET sock, SOCKADDR_IN *sin, Map *map);
+static void write_client_GameMode(SOCKET sock, SOCKADDR_IN *sin, ServerGame *Game);
 static void send_message_to_all_clients(int sock, Client *clients, Client *client, int actual, ServerPacket packet, char from_server);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual);

@@ -10,6 +10,7 @@
 
 
 pthread_t NwkThread;
+ServerGame CurrentGame;
 
 static void init(void)
 {
@@ -32,9 +33,8 @@ static void end(void)
 }
 Client clients[MAX_CLIENTS];
 SDL_Rect Bullets[250];
-Player Players[16];
+Player Players[MAX_CLIENTS];
 int actual = 0;
-Map *map;
 SOCKET sock;
 static void app(void)
 {
@@ -87,11 +87,12 @@ static void app(void)
 				if (actual != MAX_CLIENTS)
 				{
 					Client c = { csin };
-					strcpy(c.name, p.name);
+					CurrentGame.clientId = actual;
+					strcpy(c.name, p.clientPlayer.name);
 
 					printf("%s connected", c.name);
 					clients[actual] = c;
-					write_client_map(sock, &c.sin, map);
+					write_client_GameMode(sock, &c.sin, &CurrentGame);
 					actual++;
 					
 				}
@@ -100,16 +101,18 @@ static void app(void)
 			{
 
 				Client *client = get_client(clients, &csin, actual);
-				p.clientNum = get_client_pos(clients, &csin, actual);
+				int clientId = get_client_pos(clients, &csin, actual);
+
 				if (client == NULL) continue;
-				if (p.name[0] == '\0')
+				if (p.clientPlayer.name[0] == '\0')
 				{
 					int pos = get_client_pos(clients, &csin, actual);
 					array_remove(clients, MAX_CLIENTS, pos, 1);
 					printf("player disconnected \n");
 					actual--;
 				}
-				
+				Players[clientId] = p.clientPlayer;
+				Players[clientId].id = clientId;
 			}
 		}
 	}
@@ -263,10 +266,10 @@ static void write_client(SOCKET sock, SOCKADDR_IN *sin, ServerPacket packet)
 	}
 }
 
-static void write_client_map(SOCKET sock, SOCKADDR_IN *sin, Map *map)
+static void write_client_GameMode(SOCKET sock, SOCKADDR_IN *sin, ServerGame *Game)
 {
 	int n;
-	if (n = sendto(sock, map, sizeof(Map), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
+	if (n = sendto(sock, Game, sizeof(ServerGame), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
 	{
 		perror("send()");
 		exit(errno);
@@ -283,15 +286,14 @@ void *NetworkThreading(void *arg)
 		memcpy(packet->bullets, Bullets, sizeof Bullets);
 		memcpy(packet->players, Players, sizeof Players);
 		send_message_to_all_clients(sock, clients, NULL, actual, *packet, 0);
-		Sleep(200);
+		Sleep(10);
 	}
 	pthread_exit(NULL);
 }
 
 int main(int argc, char **argv)
 {
-	map = malloc(sizeof(Map));
-	ft_LoadMap("map/first.bmp", map);
+	ft_LoadMap("map/first.bmp", &CurrentGame.map);
 	
 	init();
 

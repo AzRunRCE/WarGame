@@ -1,16 +1,14 @@
 #ifndef ENGINE_H
 #define ENGINE_H
+#include "ft_map.h"
 #include "ft_player.h"
-
-
-typedef struct
-{
-	char data[50][50];
-	int heigth;
-	int width;
-}Map;
+#include "ft_packet.h"
+#include <pthread.h>
 
 typedef struct {
+	pthread_cond_t condition; 
+	pthread_mutex_t mutex; 
+	ServerGame *currentGame;
     int WIDTH;
     int HEIGHT;
     int fullscreen;
@@ -33,7 +31,6 @@ typedef struct {
 	SDL_Rect healthPos;
 	SDL_Rect AmmoRect;
 	SDL_Rect ammoPos;
-	
 	#pragma region  SDL_Surface
 
 	SDL_Surface *AmmoSurface;
