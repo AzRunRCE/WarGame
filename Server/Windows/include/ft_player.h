@@ -1,12 +1,11 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include "ft_sprite.h"
-#include "main.h"
-
+//#ifndef PLAYER_H
+//#define PLAYER_H
+//#include "ft_state.h"
+//#include "include\server.h"
+//#include <SDL.h>
+//#include <SDL_image.h>
+//#include <SDL_ttf.h>
+//
 //typedef struct Player {
 //	char name[16];
 //	bool calibred;
@@ -22,5 +21,6 @@
 //	SDL_Rect Pos;
 //	SDL_Rect sprite;
 //}Player;
-
-#endif // PLAYER_H
+//
+//
+//#endif // PLAYER_H

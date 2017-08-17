@@ -1,18 +1,26 @@
 #ifndef PACKET_H
 #define PACKET_H
-#include "ft_sprite.h"
-#include "main.h"
 
+#include "ft_player.h"
+#include "ft_map.h"
+#include "unionproto.pb.h"
 
 typedef struct
 {
-    int Y;
-    int X;
-    State state;
-    char name[256];
-    bool walk;
-    bool fire;
-    int clientNum;
-}Packet;
+	int clientId;
+	Map map;
+}ServerGame;
+
+typedef struct
+{
+	Player clientPlayer;
+}ClientPacket;
+
+typedef struct
+{
+	Player players[16];
+	SDL_Rect bullets[250];
+}ServerPacket;
+
 
 #endif // PACKET_H

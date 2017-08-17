@@ -3,7 +3,7 @@
 #include<stdio.h>
 #include<conio.h>
 #include<math.h>
-#include "library\include\SDL.h"
+#include <SDL.h>
 #define BLOCK_SIZE 32
 #define BLACK 255
 #define WHITE 0

@@ -11,32 +11,35 @@
 #include <stdlib.h>
 #include "include\ft_socket.h"
 #include "include\ft_client.h"
-#include "include\ft_engine.h"
 #include "include\ft_configuration.h"
+#include "include\ft_map.h"
+#include "include\ft_engine.h"
+#include "include\pb.h"
+#include "include\pb_common.h"
+#include "include\pb_encode.h"
+#include "include\pb_decode.h"
+#include "include\unionproto.pb.h"
+#include "include\pb_functions.h"
 
-SOCKADDR_IN *psin;
+#define PORT 8080
+#define MAX_BUFFER 1500
+#ifdef _WIN32
+#define SOCKET_ERRNO	WSAGetLastError()
+#else
+#define SOCKET_ERRNO	errno
+#endif
 SOCKET sock;
 pthread_t NwkThread;
 pthread_t NwkThreadSender;
-
-static void init(void)
-{
-#ifdef WIN32
-	WSADATA wsa;
-	int err = WSAStartup(MAKEWORD(2, 2), &wsa);
-	if (err < 0)
-	{
-		puts("WSAStartup failed !");
-		exit(EXIT_FAILURE);
-	}
-#endif
-}
+SOCKADDR_IN *psin;
+int clientId;
+uint8_t buffer[MAX_BUFFER];
 
 void end()
 {
-	Packet w;
-	strcpy(w.name, "\0");
-	write_server(sock, psin, w);
+	/*ClientPacket w;
+	strcpy(w.clientPlayer.name, "\0");
+	write_server(sock, psin, w);*/
 #ifdef WIN32
 	WSACleanup();
 #endif
@@ -44,53 +47,20 @@ void end()
 
 
 
-int create_connection(configuration *settings)
+int init_connection(const char *address, SOCKADDR_IN *sin)
 {
-	char host[] = "127.0.0.1";
-	char pseudo[] = "client";
-	init();
-	psin = malloc(sizeof(SOCKADDR_IN));
-	psin->sin_family = AF_INET;
-	sock = init_connection(host, psin);
-	Packet w;
-	strcpy(w.name, settings->nickname);
-	size_t sinsize = sizeof *psin;
-	int n = 0;
-	write_server(sock, psin, w);
-	if ((n = recvfrom(sock, _engine.map, sizeof(Map), 0, (SOCKADDR *)psin, &sinsize)) < 0)
+#ifdef _WIN32
+	WSADATA WSAData;                    // Contains details of the 
+										// Winsock implementation
+										// Initialize Winsock. 
+	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
 	{
-		perror("recvfrom()");
+		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
+		return FALSE;
 	}
-	FILE * fp;
-
-	fp = fopen("file.txt", "w+");
-	//int j = 0; j <_engine.map->width; j++)
-	for (int i = 0; i < _engine.map->heigth; i++)
-	{
-		for (int j = 0; j <_engine.map->width; j++)
-		{
-			fprintf(fp, "%c", _engine.map->data[i][j]);
-		}
-		fprintf(fp, "\n");
-	}
-
-	
-
-	fclose(fp);
-
-	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
-		perror("pthread_create");
-		return EXIT_FAILURE;
-	}
-	if (pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
-		perror("pthread_create");
-		return EXIT_FAILURE;
-	}
-}
-
-static int init_connection(const char *address, SOCKADDR_IN *sin)
-{
+#endif
 	/* UDP so SOCK_DGRAM */
+	
 	SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct hostent *hostinfo;
 
@@ -109,76 +79,142 @@ static int init_connection(const char *address, SOCKADDR_IN *sin)
 
 	sin->sin_addr = *(IN_ADDR *)hostinfo->h_addr;
 	sin->sin_port = htons(PORT);
-	sin->sin_family = AF_INET;
 
 	return sock;
 }
+
 
 static void end_connection(int sock)
 {
 	closesocket(sock);
 }
 
-static Packet read_server(SOCKET sock, SOCKADDR_IN *sin)
+
+int create_connection(configuration *settings)
+{
+	char host[] = "127.0.0.1";
+	bool status = false;
+	psin = malloc(sizeof(SOCKADDR_IN));
+	psin->sin_family = AF_INET;
+	SOCKET sock = init_connection(host,psin);
+	
+	char s_name[]= "AzRun";
+	uint8_t buffer[MAX_BUFFER];
+	BulletMessage bulletMessage;
+//	strncpy(ConnectionMessage.name, "AzRun", sizeof(ConnectionMessage.name));
+	bulletMessage.Pos.x = 1;
+	bulletMessage.Pos.y = 1;
+	bulletMessage.Pos.h = 2;
+	bulletMessage.Pos.w = 2;
+
+	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
+	status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
+	write_client(sock, psin, buffer,output.bytes_written);
+	/*_engine.map = &_engine.currentGame->map;
+	_engine.mainPlayer.id = _engine.currentGame->clientId;*/
+	
+
+	//FILE * fp;
+
+	//fp = fopen("file.txt", "w+");
+	////int j = 0; j <_engine.map->width; j++)
+	//for (int i = 0; i < _engine.map->heigth; i++)
+	//{
+	//	for (int j = 0; j <_engine.map->width; j++)
+	//	{
+	//		fprintf(fp, "%c", _engine.map->data[i][j]);
+	//	}
+	//	fprintf(fp, "\n");
+	//}
+
+
+
+	//fclose(fp);
+
+	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
+		perror("pthread_create");
+		return EXIT_FAILURE;
+	}
+	if (pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
+		perror("pthread_create");
+		return EXIT_FAILURE;
+	}
+}
+static int read_client(SOCKET sock, SOCKADDR_IN *sin, char *buffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
-	Packet pck;
-	if ((n = recvfrom(sock, &pck, sizeof(pck), 0, (SOCKADDR *)sin, &sinsize)) < 0)
+
+	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
 		exit(errno);
 	}
-	// buffer[n] = 0;
-	return pck;
+
+
+	return n;
 }
 
-static void write_server(SOCKET sock, SOCKADDR_IN *sin, Packet pck)
+static int write_client(SOCKET sock, SOCKADDR_IN *sin, const char *buffer, const int length)
 {
-	if (sendto(sock, &pck, sizeof(pck), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
+	int n = 0;
+	if ((n = sendto(sock, buffer, strlen(buffer), 0, (SOCKADDR *)sin, sizeof *sin))< 0)
 	{
-		perror("sendto()");
+		perror("send()");
 		exit(errno);
 	}
+	return 0;
 }
+
 
 void *NetworkThreadingListening(void *arg)
 {
-	while (true)
+	bool status = true;
+	while (status)
 	{
-		Packet p;
-		p = read_server(sock, psin);
-		_engine.players[p.clientNum].fire = p.fire;
-		_engine.players[p.clientNum].state = p.state;
-		_engine.players[p.clientNum].walk = p.walk;
-		_engine.players[p.clientNum].Pos.h = 32;
-		_engine.players[p.clientNum].Pos.w = 32;
-		_engine.players[p.clientNum].Pos.x = p.X;
-		_engine.players[p.clientNum].Pos.y = p.Y;
+		uint8_t buffer[MAX_BUFFER];
+		int count = read_client(sock, &sin, buffer);
+		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
+		const pb_field_t *type = decode_unionmessage_type(&stream);
+		if (type == ConnectionCallbackMessage_fields)
+		{
+			ConnectionCallbackMessage callback;	
+			status = decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback);
+			if (callback.sucess)
+			{
+				_engine.currentGame->clientId = callback.clentId;
+			}
+		}
+		else if (type = GameDataMessage_fields)
+		{
+			GameDataMessage gameData;
+			gameData.players.funcs.decode = &readPlayers_callback;
+			
+			status = decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
+		}
+	/*	packet = read_server(sock, psin);
+
+		memcpy(_engine.bullets, packet.bullets, sizeof _engine.bullets);
+		memcpy(_engine.players, packet.players, sizeof _engine.players);*/
 	}
 	pthread_exit(NULL);
 }
 
 void *SreamClientData(void *arg)
 {
-	while (true)
+	/*while (true)
 	{
-		Packet pck = { .state = _engine.mainPlayer.state,.fire = _engine.mainPlayer.fire,.walk = _engine.mainPlayer.walk };
+		ClientPacket pck;
+		pck.clientPlayer = _engine.mainPlayer;
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-				pck.X = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
-				pck.Y = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
+				pck.clientPlayer.Pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
+				pck.clientPlayer.Pos.y += _engine.pCenter.y - _engine.HEIGHT / 2 + 16;
 		
 		}
-		else		
-		{
-			pck.X = _engine.mainPlayer.Pos.x;
-			pck.Y = _engine.mainPlayer.Pos.y;
-	
-		}
-		strcpy(pck.name, "Jack");
-		write_server(sock, psin, pck);
-		Sleep(1);
+		strcpy(pck.clientPlayer.name, "Jack");
+		write_client(sock, psin, pck);
+		Sleep(20);
 	}
-	pthread_exit(NULL);
+	pthread_exit(NULL);*/
 }

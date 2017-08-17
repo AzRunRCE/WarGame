@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>${ProjectDir}..\..\library\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\library\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\..\library\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>${ProjectDir}..\library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>${ProjectDir}..\library\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\library\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\library\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -145,13 +145,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common.c" />
     <ClCompile Include="ft_map.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="pb_common.c" />
+    <ClCompile Include="pb_decode.c" />
+    <ClCompile Include="pb_encode.c" />
+    <ClCompile Include="pb_functions.c" />
+    <ClCompile Include="unionproto.pb.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common.h" />
     <ClInclude Include="include\client.h" />
     <ClInclude Include="include\ft_map.h" />
+    <ClInclude Include="include\ft_packet.h" />
+    <ClInclude Include="include\ft_player.h" />
+    <ClInclude Include="include\ft_state.h" />
     <ClInclude Include="include\server.h" />
+    <ClInclude Include="pb.h" />
+    <ClInclude Include="pb_common.h" />
+    <ClInclude Include="pb_decode.h" />
+    <ClInclude Include="pb_encode.h" />
+    <ClInclude Include="pb_functions.h" />
+    <ClInclude Include="unionproto.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
