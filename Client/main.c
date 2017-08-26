@@ -117,14 +117,14 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
 		SDL_RenderPresent(_engine.screenRenderer);
-		/*SDL_DestroyTexture(texture);
+		SDL_DestroyTexture(texture);
 		SDL_FreeSurface(text);
 		SDL_FreeSurface(_engine.mapSurface);
 		SDL_FreeSurface(_engine.characterSurface);
 		SDL_FreeSurface(_engine.explodeSurface);
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
-		SDL_FreeSurface(_engine.fogSurface);*/
+		SDL_FreeSurface(_engine.fogSurface);
 		pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
 		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 	}
