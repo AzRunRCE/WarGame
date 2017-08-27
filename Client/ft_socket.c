@@ -176,7 +176,7 @@ void *SreamClientData(void *arg)
 		}
 		strcpy(pck.clientPlayer.name, "Jack");
 		write_server(sock, psin, pck);
-		Sleep(20);
+		Sleep(15);
 	}
 	pthread_exit(NULL);
 }
