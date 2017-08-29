@@ -4,6 +4,7 @@
 #include "ft_player.h"
 #include "ft_packet.h"
 #include <pthread.h>
+#include "unionproto.pb.h"
 
 typedef struct {
 	pthread_cond_t condition; 
@@ -12,6 +13,7 @@ typedef struct {
     int WIDTH;
     int HEIGHT;
     int fullscreen;
+	int playersCount;
     SDL_Event event;
     SDL_Rect pCenter;
     Player players[16];

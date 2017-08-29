@@ -21,6 +21,7 @@
 #include "include\ft_bullet.h"
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
+#include "include\unionproto.pb.h"
 #define MAX_LENGTH 32
 #define FIRE_DELAY 200
 #define BLOCK_SIZE 32
@@ -41,6 +42,24 @@ configuration *mainConfiguration;
 Explode explode;
 void ft_getHealthSprite(Player *player);
 void ft_getAmmoSprite(Player *player);
+
+bool ft_getNextExplodeSprite(Explode *explode)
+{
+	if (explode->Step == 52)
+		return false;
+	else if (Delay(&explode->lastAnim, 50))
+	{
+		explode->Sprite.x = 256 * (explode->Step % 8);
+		explode->Sprite.y = 256 * (explode->Step / 8);
+		explode->Sprite.h = 256;
+		explode->Sprite.w = 256;
+		explode->Step = explode->Step + 1;
+		return true;
+	}
+
+}
+
+
 int main(int argc, char *argv[])
 {
 	mainConfiguration = ft_loadConf();
@@ -50,6 +69,7 @@ int main(int argc, char *argv[])
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu(mainConfiguration);
 	create_connection(mainConfiguration);
+	ft_LoadMap("map/first.bmp", _engine.map);
 	SDL_Rect posText;
 	SDL_Texture *texture;
 	explode.Pos.h = 255;
@@ -84,14 +104,18 @@ int main(int argc, char *argv[])
 	//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 
 		
-		pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
+		//pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
 
 		int i;
-		for (i = 0; i < 15; i++)
+		for (i = 0; i < _engine.playersCount; i++)
 		{
 
 			if (_engine.players[i].id == -1 || _engine.players[i].id == _engine.mainPlayer.id)
 				continue;
+
+			_engine.players[i].Pos.w = 32;
+			_engine.players[i].Pos.h = 32;
+
 			ft_GetPlayerOrientation(&_engine.players[i]);
 			
 			if (!_engine.players[i].calibred)
@@ -101,6 +125,7 @@ int main(int argc, char *argv[])
 				_engine.players[i].calibred = true;
 			}
 			//printf("%d %d\n", _engine.players[i].Pos.x, _engine.players[i].Pos.y);
+
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
 		}
 		int j = 0;
@@ -108,8 +133,8 @@ int main(int argc, char *argv[])
 		{
 			drawBullet(bulletFired[j]);
 		}
-		pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
-		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
+		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 		//SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
@@ -125,8 +150,8 @@ int main(int argc, char *argv[])
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
 		SDL_FreeSurface(_engine.fogSurface);
-		pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
-		pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
+		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 	}
 
 	end();
@@ -166,21 +191,8 @@ void ft_getAmmoSprite(Player *player)
 }
 
 
-bool ft_getNextExplodeSprite(Explode *explode)
-{
-	if (explode->Step == 52)
-		return false;
-	else if (Delay(&explode->lastAnim, 50))
-	{
-		explode->Sprite.x = 256 * (explode->Step % 8);
-		explode->Sprite.y = 256 * (explode->Step / 8);
-		explode->Sprite.h = 256;
-		explode->Sprite.w = 256;
-		explode->Step = explode->Step + 1;
-		return true;
-	}
 
-}
+
 
 
 
@@ -312,7 +324,7 @@ int GetKeyPressEvent()
 void FireBullet()
 {
 
-	if (_engine.mainPlayer.ammo > 0)
+	/*if (_engine.mainPlayer.ammo > 0)
 		_engine.mainPlayer.ammo -= 1;
 	else
 	{
@@ -324,20 +336,6 @@ void FireBullet()
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;
 	bulletFired[actual] = initBullet(_engine.pCenter.x + 16, _engine.pCenter.y + 16, _engine.mousePos.x, _engine.mousePos.y);
-	actual++;
+	actual++;*/
 }
 
-bool Delay(int *lastAnim, int  SleepTimeAnim)
-{
-	int ActualTimeAnim = SDL_GetTicks();
-	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
-	{
-		*lastAnim = ActualTimeAnim;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-
-}

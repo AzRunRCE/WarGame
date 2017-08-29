@@ -6,7 +6,7 @@
 typedef struct
 {
     SOCKADDR_IN sin;
-    char name[BUF_SIZE];
+	int id;
 }Client;
 
 #endif /* guard */

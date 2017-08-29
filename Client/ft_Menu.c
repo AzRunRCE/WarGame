@@ -8,8 +8,8 @@
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {
-	Menu->textInputIpAddress = strdup(settings->server);
-	Menu->textInputPseudo = strdup(settings->nickname);
+	Menu->textInputIpAddress = _strdup(settings->server);
+	Menu->textInputPseudo = _strdup(settings->nickname);
 	Menu->labelIpAddress = TTF_RenderText_Blended(Menu->WarGameFont, "Server address ", _engine.colorWarGame);
 	Menu->labelPseudo = TTF_RenderText_Blended(Menu->WarGameFont, "Pseudo  ", _engine.colorWarGame);
 	Menu->labelApply = TTF_RenderText_Blended(Menu->WarGameFont, "Apply", _engine.colorWarGame);
@@ -141,8 +141,8 @@ void menu(configuration *settings)
 						endMenuOptions(&Menu, settings);
 						break;
 					case 3:			
-						settings->server = strdup(Menu.textInputIpAddress);
-						settings->nickname = strdup(Menu.textInputPseudo);
+						settings->server = _strdup(Menu.textInputIpAddress);
+						settings->nickname = _strdup(Menu.textInputPseudo);
 						ft_saveConf(settings);
 						break;
 					}

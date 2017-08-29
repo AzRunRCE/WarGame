@@ -12,7 +12,20 @@
 #include "include\ft_SDL.h"
 #include "include\ft_player.h"
 #include "include\ft_sprite.h"
+bool Delay(int *lastAnim, int  SleepTimeAnim)
+{
+	int ActualTimeAnim = SDL_GetTicks();
+	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
+	{
+		*lastAnim = ActualTimeAnim;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 
+}
 void ft_GetPlayerOrientation(Player *player)
 {
 	State state = player->state;

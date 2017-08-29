@@ -3,6 +3,7 @@
 
 #include "ft_player.h"
 #include "ft_map.h"
+#include "unionproto.pb.h"
 
 typedef struct
 {

@@ -138,17 +138,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common.c" />
     <ClCompile Include="ft_bullet.c" />
     <ClCompile Include="ft_configuration.c" />
     <ClCompile Include="ft_Engine.c" />
     <ClCompile Include="ft_explode.c" />
+    <ClCompile Include="ft_map.c" />
     <ClCompile Include="ft_Menu.c" />
     <ClCompile Include="ft_SDL.c" />
     <ClCompile Include="ft_socket.c" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="pb_common.c" />
+    <ClCompile Include="pb_decode.c" />
+    <ClCompile Include="pb_encode.c" />
+    <ClCompile Include="pb_functions.c" />
+    <ClCompile Include="unionproto.pb.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\common.h" />
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_client.h" />
     <ClInclude Include="include\ft_configuration.h" />
@@ -165,6 +173,12 @@
     <ClInclude Include="include\ft_sprite.h" />
     <ClInclude Include="include\ini.h" />
     <ClInclude Include="include\main.h" />
+    <ClInclude Include="include\pb.h" />
+    <ClInclude Include="include\pb_common.h" />
+    <ClInclude Include="include\pb_decode.h" />
+    <ClInclude Include="include\pb_encode.h" />
+    <ClInclude Include="include\pb_functions.h" />
+    <ClInclude Include="include\unionproto.pb.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />

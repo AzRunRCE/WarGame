@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
+#include "include\unionproto.pb.h"
 
-typedef int bool;
 #define true 1
 #define false 0
 

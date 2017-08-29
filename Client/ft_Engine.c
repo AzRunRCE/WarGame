@@ -11,7 +11,7 @@ void Engine_init()
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
+	_engine.playersCount = 0;
 	_engine.explodeSurface = IMG_LoadTexture(_engine.screenRenderer, "res/explode.png");
 	_engine.characterSurface = IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
 	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
