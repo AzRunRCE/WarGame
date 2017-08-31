@@ -128,10 +128,6 @@ static void app(void)
 	int max = sock;
 	/* an array for all clients */
 
-	if (pthread_create(&NwkThread, NULL, NetworkThreading, NULL) == -1) {
-		perror("pthread_create");
-		return EXIT_FAILURE;
-	}
 	while (1)
 	{
 		SOCKADDR_IN csin = { 0 };
@@ -179,16 +175,19 @@ static void app(void)
 		}
 		else if (type == Player_fields)
 		{
-			pthread_mutex_lock(&mutex);
-			pthread_cond_wait(&condition, &mutex); /* On attend que la condition soit remplie */
 			Player PlayerMessage;			
 			status = decode_unionmessage_contents(&stream, Player_fields, &PlayerMessage);
-
-		
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
 			memcpy(&Players[PlayerMessage.id], &PlayerMessage, sizeof(PlayerMessage));
-			pthread_mutex_unlock(&mutex); /* On déverrouille le mutex */
+			GameDataMessage *gameDataMessage = malloc(sizeof(GameDataMessage));
+			gameDataMessage->GameMode = 1;
+			gameDataMessage->playersCount = actual;
+			gameDataMessage->players.funcs.encode = &listPlayers_callback;
+			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, MAX_BUFFER);
+			bool status = encode_unionmessage(&output, GameDataMessage_fields, gameDataMessage);
+			write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+			free(gameDataMessage);
 		}
 
 
@@ -309,26 +308,6 @@ static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, co
 	return n;
 }
 
-void *NetworkThreading(void *arg)
-{
-	while (true)
-	{
-		
-		GameDataMessage *gameDataMessage = malloc(sizeof(GameDataMessage));
-		gameDataMessage->GameMode = 1;
-		gameDataMessage->playersCount = actual;
-		gameDataMessage->players.funcs.encode = &listPlayers_callback;
-		pthread_mutex_lock(&mutex); /* On verrouille le mutex */
-		pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, MAX_BUFFER);
-		bool status = encode_unionmessage(&output, GameDataMessage_fields, gameDataMessage);
-		send_message_to_all_clients(sock, clients, NULL, actual, currentGameBuffer, output.bytes_written);
-		pthread_cond_signal(&condition); /* On délivre le signal : condition remplie */
-		pthread_mutex_unlock(&mutex); /* On déverrouille le mutex */
-		Sleep(5);
-		free(gameDataMessage);
-	}
-	pthread_exit(NULL);
-}
 
 int main(int argc, char **argv)
 {

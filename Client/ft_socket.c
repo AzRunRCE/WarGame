@@ -240,7 +240,7 @@ void *SreamClientData(void *arg)
 		bool status = encode_unionmessage(&output, Player_fields, PlayerMessage);
 		int c = write_client(sock, psin, buffer, output.bytes_written);
 		write_client(sock, psin, buffer, output.bytes_written);
-		Sleep(45);
+		Sleep(15);
 		free(PlayerMessage);
 	}
 	pthread_exit(NULL);
