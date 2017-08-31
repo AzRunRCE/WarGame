@@ -1,7 +1,7 @@
+#include <stdio.h>
 #include "include\ft_Menu.h"
 #include "include\ft_engine.h"
 #include "include\ft_point.h"
-#include <stdio.h>
 #include "main.h"
 #include "include\ft_configuration.h"
 

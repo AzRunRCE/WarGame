@@ -20,6 +20,7 @@
 #include "include\pb_decode.h"
 #include "include\unionproto.pb.h"
 #include "include\pb_functions.h"
+#include "include\ft_configuration.h"
 
 #define PORT 8080
 #define MAX_BUFFER 4096
@@ -92,11 +93,12 @@ static void end_connection(int sock)
 
 int create_connection(configuration *settings)
 {
-	char host[] = "127.0.0.1";
+	configuration *mainConfiguration;
+	mainConfiguration = ft_loadConf();
 	bool status = false;
 	psin = malloc(sizeof(SOCKADDR_IN));
 	psin->sin_family = AF_INET;
-	sock = init_connection(host,psin);
+	sock = init_connection(mainConfiguration->server,psin);
 	
 	uint8_t buffer[MAX_BUFFER];
 

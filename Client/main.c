@@ -22,6 +22,7 @@
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
 #include "include\unionproto.pb.h"
+
 #define MAX_LENGTH 32
 #define FIRE_DELAY 200
 #define BLOCK_SIZE 32
