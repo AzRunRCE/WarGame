@@ -9,6 +9,7 @@ bool encode_unionmessage(pb_ostream_t *stream, const pb_field_t messagetype[], c
 bool decode_unionmessage_contents(pb_istream_t *stream, const pb_field_t fields[], void *dest_struct);
 bool print_string(pb_istream_t *stream, const pb_field_t *field, void **arg);
 bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void * const *arg);
-bool printBullet_callback(pb_istream_t *stream, const pb_field_t *field, void **arg);
-bool printPlayer_callback(pb_istream_t *stream, const pb_field_t *field, void **arg);
+//
+//bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg);
+//bool listBulletForPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg);
 #endif /* guard */

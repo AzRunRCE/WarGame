@@ -4,6 +4,7 @@
 #include "ft_player.h"
 #include "ft_packet.h"
 #include <pthread.h>
+#include "unionproto.pb.h"
 
 typedef struct {
 	pthread_cond_t condition; 
@@ -12,27 +13,32 @@ typedef struct {
     int WIDTH;
     int HEIGHT;
     int fullscreen;
+	int playersCount;
     SDL_Event event;
-    SDL_Rect pCenter;
     Player players[16];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
     SDL_Window* window;
 	Map *map;
-    SDL_Surface *mapSurface;
-    SDL_Rect camera;
+    
     TTF_Font *font;
+
     SDL_Color colorWhite;
     SDL_Color colorWarGame;
-    SDL_Surface *fogSurface;
+	
+	SDL_Rect pCenter;
+	SDL_Rect camera;
 	SDL_Rect bullets[250];
-	SDL_Rect fogRect;
+	SDL_Rect viewRect;
 	SDL_Rect healthRect;
 	SDL_Rect healthPos;
 	SDL_Rect AmmoRect;
 	SDL_Rect ammoPos;
 	#pragma region  SDL_Surface
+	double viewDegrees;
 
+	SDL_Surface *mapSurface;
+	SDL_Surface *viewSurface;
 	SDL_Surface *AmmoSurface;
 	SDL_Surface *healthSurface;
 	SDL_Surface *bulletSurface;

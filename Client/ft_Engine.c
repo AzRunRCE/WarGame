@@ -11,12 +11,12 @@ void Engine_init()
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
+	_engine.playersCount = 0;
 	_engine.explodeSurface = IMG_LoadTexture(_engine.screenRenderer, "res/explode.png");
 	_engine.characterSurface = IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
 	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
 	_engine.mapSurface = IMG_LoadTexture(_engine.screenRenderer, "res/background_dev.png");
-	_engine.fogSurface = IMG_LoadTexture(_engine.screenRenderer, "res/fog.png");
+	_engine.viewSurface = IMG_LoadTexture(_engine.screenRenderer, "res/view.png");
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.AmmoSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Ammo.png");
 	_engine.healthSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Life.png");
@@ -31,11 +31,13 @@ void Engine_init()
 	_engine.mousePos.h = 55;
 	
 	_engine.mainPlayer = (Player) {.id = -1, .health = 100, .state = DOWN,.ammo = 30, .step = 0, .Pos.x = 800, .Pos.y = 800, .Pos.w = 32, .Pos.h = 32 };
-	
+	_engine.mainPlayer.fireIdle = 0;
 	_engine.healthPos = (SDL_Rect) { .x =10, .y = _engine.HEIGHT - 25, .w = 150, .h = 30 };
+	//_engine.fogRect= (SDL_Rect) { .x = -230, .y = -270, .w = 1200, .h = 1200 };
 	
 	_engine.ammoPos = (SDL_Rect) { .x = 0, .y = _engine.HEIGHT - 25 - 50, .w = 400, .h = 100 };
 	
 	_engine.camera = (SDL_Rect) { .y = 0, .x = 0, .w = _engine.WIDTH, .h = _engine.HEIGHT };
+	_engine.viewRect = (SDL_Rect) { .w = 1800, .h = 1800 };
 	_engine.pCenter = (SDL_Rect) { .x = _engine.WIDTH / 2 - 16, .y = _engine.HEIGHT / 2 - 16, .w = 32, .h = 32 };
 }

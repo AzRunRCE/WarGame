@@ -52,9 +52,8 @@ int SDL_Update()
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
-	//            SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
-	SDL_RenderCopy(_engine.screenRenderer, _engine.fogSurface, NULL, NULL);
-	//
+	// SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
+	SDL_RenderCopy(_engine.screenRenderer, _engine.viewSurface, NULL, NULL);
 	SDL_RenderPresent(_engine.screenRenderer);
 }
 int SDL_init()

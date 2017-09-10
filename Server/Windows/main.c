@@ -5,120 +5,247 @@
 #include <winsock2.h>
 #include "include\server.h"
 #include "include\client.h"
-#include "include\ft_map.h"
-#include "include\ft_player.h"
-
-
+#include "pb.h"
+#include "pb_common.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+#include "unionproto.pb.h"
+#include "pb_functions.h"
+#define PORT 8080
+#define MAX_BUFFER 4096
+#define SERVER "127.0.0.1"
+#ifdef _WIN32
+#define SOCKET_ERRNO	WSAGetLastError()
+#else
+#define SOCKET_ERRNO	errno
+#endif
 pthread_t NwkThread;
-ServerGame CurrentGame;
+//ServerGame CurrentGame;
+uint8_t currentGameBuffer[MAX_BUFFER];
+pthread_cond_t condition = PTHREAD_COND_INITIALIZER; /* Création de la condition */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; /* Création du mutex */
 
-static void init(void)
-{
-#ifdef WIN32
-	WSADATA wsa;
-	int err = WSAStartup(MAKEWORD(2, 2), &wsa);
-	if (err < 0)
-	{
-		puts("WSAStartup failed !");
-		exit(EXIT_FAILURE);
-	}
-#endif
-}
-
-static void end(void)
-{
-#ifdef WIN32
-	WSACleanup();
-#endif
-}
 Client clients[MAX_CLIENTS];
-SDL_Rect Bullets[250];
+BulletElm *headBulletList;
 Player Players[MAX_CLIENTS];
 int actual = 0;
 SOCKET sock;
+typedef void(*callback)(BulletElm* head_bulletList);
+bool list_bullet;
+static int init_connection(void)
+{
+#ifdef _WIN32
+	WSADATA WSAData;                    // Contains details of the 
+										// Winsock implementation
+										// Initialize Winsock. 
+	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
+	{
+		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
+		return FALSE;
+	}
+#endif
+	/* UDP so SOCK_DGRAM */
+	SOCKET sock;
+	SOCKADDR_IN sin = { 0 };
+	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
+	{
+		printf("Allocating socket failed! Error: %d\n", SOCKET_ERRNO);
+		return FALSE;
+	}
+
+
+	if (sock == INVALID_SOCKET)
+	{
+		perror("socket()");
+		exit(errno);
+	}
+
+	sin.sin_addr.s_addr = htonl(INADDR_ANY);
+	sin.sin_port = htons(PORT);
+	sin.sin_family = AF_INET;
+
+	if (bind(sock, (SOCKADDR *)&sin, sizeof sin) == SOCKET_ERROR)
+	{
+		perror("bind()");
+		exit(errno);
+	}
+
+	return sock;
+}
+
+
+
+bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
+		BulletElm* cursor = headBulletList;
+		int count = 0;
+		while (cursor != NULL)
+		{
+			if (!pb_encode_tag_for_field(stream, field))
+				return false;
+			BulletMessage* tmpBulletMsg = malloc(sizeof(BulletMessage));
+			tmpBulletMsg->dest = cursor->dest;
+			tmpBulletMsg->pos = cursor->pos;
+			tmpBulletMsg->id = count;
+			tmpBulletMsg->ownerId = cursor->ownerId;
+			if (!pb_encode_submessage(stream, BulletMessage_fields, tmpBulletMsg))
+				return false;
+			free(tmpBulletMsg);
+			count++;
+			cursor = cursor->next;
+		}
+	return true;
+}
+
+bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
+	list_bullet = true;
+	for (int i =0; i < actual;i++)
+	{	
+	
+		
+		/* This encodes the header for the field, based on the constant info
+		* from pb_field_t. */
+		if (!pb_encode_tag_for_field(stream, field))
+			return false;
+
+		/* This encodes the data for the field, based on our FileInfo structure. */
+		if (!pb_encode_submessage(stream, Player_fields, &Players[i]))
+			return false;
+	}
+
+	return true;
+}
+
+BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
+{
+	BulletElm* new_node = (BulletElm*)malloc(sizeof(BulletElm));
+	if (new_node == NULL)
+	{
+		printf("Error creating a new node.\n");
+		exit(0);
+	}
+	new_node->next = next;
+	new_node->ownerId = bulletMsg->ownerId;
+	new_node->pos = bulletMsg->pos;
+	new_node->dest = bulletMsg->dest;
+	return new_node;
+}
+
+void traverse(BulletElm* head, callback f)
+{
+	BulletElm* cursor = head;
+	while (cursor != NULL)
+	{
+		f(cursor);
+		cursor = cursor->next;
+	}
+}
+BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
+{
+	if (head == NULL)	{
+		head = create(bulletMsg, NULL);
+		return head;
+	}
+	/* go to the last node */
+	BulletElm *cursor = head;
+	int count = 0;
+	while (cursor->next != NULL)
+	{
+		cursor = cursor->next;
+		count++;
+	}
+		
+	printf(" %d", count);
+	/* create a new node */
+	BulletElm* new_node = create(bulletMsg, NULL);
+	cursor->next = new_node;
+
+	return head;
+}
+
 static void app(void)
 {
+	bool status = true;
 	sock = init_connection();
 	char buffer[BUF_SIZE];
 	/* the index for the array */
 	int max = sock;
 	/* an array for all clients */
 
-	if (pthread_create(&NwkThread, NULL, NetworkThreading, NULL) == -1) {
-		perror("pthread_create");
-		return EXIT_FAILURE;
-	}
-	fd_set rdfs;
-
 	while (1)
 	{
-		FD_ZERO(&rdfs);
+		SOCKADDR_IN csin = { 0 };
+		/* a client is talking */
+		uint8_t buffer[MAX_BUFFER];
+		int count = read_client(sock, &csin, buffer);
+		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
+		const pb_field_t *type = decode_unionmessage_type(&stream);
 
-		/* add STDIN_FILENO
-		FD_SET(STDIN_FILENO, &rdfs);*/
-
-		/* add the connection socket */
-		FD_SET(sock, &rdfs);
-
-		if (select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
+		if (type == ConnectionMessage_fields && check_if_client_exists(clients, &csin, actual) == 0)
 		{
-			perror("select()");
-			exit(errno);
-		}
-
-		/* something from standard input : i.e keyboard
-		if(FD_ISSET(STDIN_FILENO, &rdfs))
-		{
-	   stop process when type on keyboard
-	   break;
-		}
-		else  */
-		if (FD_ISSET(sock, &rdfs))
-		{
-			/* new client */
-			SOCKADDR_IN csin = { 0 };
-
-			/* a client is talking */
-			ClientPacket p;
-			p = read_client(sock, &csin);
-
-			if (check_if_client_exists(clients, &csin, actual) == 0)
+			ConnectionMessage connectionMessage;
+			status = decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage);
+			if (actual != MAX_CLIENTS && status)
 			{
-				if (actual != MAX_CLIENTS)
-				{
-					Client c = { csin };
-					CurrentGame.clientId = actual;
-					strcpy(c.name, p.clientPlayer.name);
+				Client c = { csin };
+				c.id = actual;
+				clients[actual] = c;
+				strncpy(Players[actual].name, connectionMessage.name, sizeof(Players[actual].name));
+				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
+				ConnectionCallbackMessage callBackMessage;
+				callBackMessage.clientId = actual;
+				strncpy(callBackMessage.motd, "Bienvenue sur mon serveur", sizeof(callBackMessage.motd));
+				callBackMessage.motd[sizeof(callBackMessage.motd) - 1] = '\0';
+				callBackMessage.sucess = true;
+				uint8_t callback_buffer[ConnectionCallbackMessage_size];
+				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
+				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, &callBackMessage);
+				write_client(sock, &csin, callback_buffer, output.bytes_written);
+				printf("%s connected", connectionMessage.name);
+				actual++;
 
-					printf("%s connected", c.name);
-					clients[actual] = c;
-					write_client_GameMode(sock, &c.sin, &CurrentGame);
-					actual++;
-					
-				}
 			}
-			else
-			{
 
-				Client *client = get_client(clients, &csin, actual);
-				int clientId = get_client_pos(clients, &csin, actual);
-
-				if (client == NULL) continue;
-				if (p.clientPlayer.name[0] == '\0')
-				{
-					int pos = get_client_pos(clients, &csin, actual);
-					array_remove(clients, MAX_CLIENTS, pos, 1);
-					printf("player disconnected \n");
-					actual--;
-				}
-				Players[clientId] = p.clientPlayer;
-				Players[clientId].id = clientId;
-			}
+			/*	int pos = get_client_pos(clients, &csin, actual);
+				array_remove(clients, MAX_CLIENTS, pos, 1);
+				printf("player disconnected \n");
+				actual--;*/
 		}
+		else if (type == BulletMessage_fields)
+		{
+			BulletMessage *bulletMsg = malloc(sizeof(BulletMessage));
+			status = decode_unionmessage_contents(&stream, BulletMessage_fields, bulletMsg);
+			printf("BulletMessage name:%s x:%d y:%d\n",Players[bulletMsg->ownerId].name, bulletMsg->pos.x, bulletMsg->pos.y);
+			headBulletList = pushBullet(headBulletList, bulletMsg);
+			free(bulletMsg);
+	
+		}
+		else if (type == Player_fields)
+		{
+			Player PlayerMessage;			
+			status = decode_unionmessage_contents(&stream, Player_fields, &PlayerMessage);
+			Client *client = get_client(clients, &csin, actual);
+			if (client == NULL) continue;
+			memcpy(&Players[PlayerMessage.id], &PlayerMessage, sizeof(PlayerMessage));
+			GameDataMessage *gameDataMessage = malloc(sizeof(GameDataMessage));
+			gameDataMessage->GameMode = 1;
+			gameDataMessage->playersCount = actual;
+			gameDataMessage->players.funcs.encode = &listPlayers_callback;
+			gameDataMessage->bullets.funcs.encode = &listBullets_callback;
+			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, MAX_BUFFER);
+			bool status = encode_unionmessage(&output, GameDataMessage_fields, gameDataMessage);
+			int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+			free(gameDataMessage);
+		}
+
+
+	
 	}
-
 	end_connection(sock);
 }
+
+
 
 static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
 {
@@ -188,118 +315,59 @@ static void remove_client(Client *clients, int to_remove, int *actual)
 	(*actual)--;
 }
 
-static void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, ServerPacket packet, char from_server)
+static void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, uint8_t *buffer,int length)
 {
-	int i = 0;
-	char message[BUF_SIZE];
-	message[0] = 0;
-
-	for (i = 0; i < actual; i++)
+	for (int i = 0; i < actual; i++)
 	{
-		/* we don't send message to the sender */
 		if (sender != &clients[i])
 		{
-			if (from_server == 0)
-			{
-				//  strncpy(message, sender->name, BUF_SIZE - 1);
-				 // strncat(message, " : ", sizeof message - strlen(message) - 1);
-			}
-			// strncat(message, buffer, sizeof message - strlen(message) - 1);
-			write_client(sock, &clients[i].sin, packet);
+			write_client(sock, &clients[i].sin, buffer,length);
 		}
 	}
 
 }
 
-static int init_connection(void)
-{
-	/* UDP so SOCK_DGRAM */
-	SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-	SOCKADDR_IN sin = { 0 };
-
-	if (sock == INVALID_SOCKET)
-	{
-		perror("socket()");
-		exit(errno);
-	}
-
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);
-	sin.sin_port = htons(PORT);
-	sin.sin_family = AF_INET;
-
-	if (bind(sock, (SOCKADDR *)&sin, sizeof sin) == SOCKET_ERROR)
-	{
-		perror("bind()");
-		exit(errno);
-	}
-
-	return sock;
-}
 
 static void end_connection(int sock)
 {
 	closesocket(sock);
 }
 
-static ClientPacket read_client(SOCKET sock, SOCKADDR_IN *sin)
+static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
-	ClientPacket packet;
-	if ((n = recvfrom(sock, &packet, sizeof(packet), 0, (SOCKADDR *)sin, &sinsize)) < 0)
+
+	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-
+		
 	}
-	//printf("%s %d %d",packet.name,packet.X,packet.Y);
-   //buffer[n] = 0;
 
-	return packet;
+
+	return n;
 }
 
-static void write_client(SOCKET sock, SOCKADDR_IN *sin, ServerPacket packet)
+static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length)
 {
-	if (sendto(sock, &packet, sizeof(packet), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
+	int n = 0;
+	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin))< 0)
 	{
 		perror("send()");
-		exit(errno);
+		
 	}
+	return n;
 }
 
-static void write_client_GameMode(SOCKET sock, SOCKADDR_IN *sin, ServerGame *Game)
-{
-	int n;
-	if (n = sendto(sock, Game, sizeof(ServerGame), 0, (SOCKADDR *)sin, sizeof *sin) < 0)
-	{
-		perror("send()");
-		exit(errno);
-	}
-}
-
-void *NetworkThreading(void *arg)
-{
-	while (true)
-	{
-		ServerPacket *packet;
-		packet = malloc(sizeof(ServerPacket));
-
-		memcpy(packet->bullets, Bullets, sizeof Bullets);
-		memcpy(packet->players, Players, sizeof Players);
-		send_message_to_all_clients(sock, clients, NULL, actual, *packet, 0);
-		Sleep(10);
-	}
-	pthread_exit(NULL);
-}
 
 int main(int argc, char **argv)
 {
-	ft_LoadMap("map/first.bmp", &CurrentGame.map);
-	
-	init();
+	//ft_LoadMap("map/first.bmp", &CurrentGame.map);
+
 
 	app();
 
-	end();
+	//end();
 
 	return EXIT_SUCCESS;
 }

@@ -13,7 +13,6 @@ void end();
 static void app(const char *address, const char *name);
 static int init_connection(const char *address, SOCKADDR_IN *sin);
 static void end_connection(int sock);
-static ServerPacket read_server(SOCKET sock, SOCKADDR_IN *sin);
-static void write_server(SOCKET sock, SOCKADDR_IN *sin,ClientPacket pck);
+
 
 #endif /* guard */

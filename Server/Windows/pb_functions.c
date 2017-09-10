@@ -97,28 +97,29 @@ bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void *
 	//}
 	return true;
 }
-bool printBullet_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
-{
-	BulletMessage Bullet;
-
-	if (!pb_decode(stream, BulletMessage_fields, &Bullet))
-		return false;
-
-	printf("%d %d\n", Bullet.Pos.x, Bullet.Pos.y);
-
-	return true;
-}
-
-bool printPlayer_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
-{
-	Player Player;
-	Player.bullets.funcs.decode = &printBullet_callback;
-	if (!pb_decode(stream, Player_fields, &Player))
-		return false;
-
-	printf("%s %d %d\n", Player.name, Player.Pos.x, Player.Pos.y);
-
-	return true;
-}
 
 
+//bool printBullet_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+//{
+//	BulletMessage Bullet;
+//
+//	if (!pb_decode(stream, BulletMessage_fields, &Bullet))
+//		return false;
+//
+//	printf("%d %d\n", Bullet.Pos.x, Bullet.Pos.y);
+//
+//	return true;
+//}
+//
+//bool printPlayer_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+//{
+//	Player Player;
+//	Player.bullets.funcs.decode = &printBullet_callback;
+//	if (!pb_decode(stream, Player_fields, &Player))
+//		return false;
+//
+//	printf("%s %d %d\n", Player.name, Player.Pos.x, Player.Pos.y);
+//
+//	return true;
+//}
+//

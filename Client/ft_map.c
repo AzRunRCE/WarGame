@@ -55,10 +55,10 @@ Map *ft_LoadMap(char * path, Map *map)
 	/*map->data = (int**)malloc(mapBMP->h * sizeof(int*));
 	for (int i = 0;i<mapBMP->h;i++)
 	{
-		map->data[i] = (int*)malloc(mapBMP->w * sizeof(int));
+	map->data[i] = (int*)malloc(mapBMP->w * sizeof(int));
 	}*/
-//
-//int i = 0; i < mapBMP->h; i++)
+	//
+	//int i = 0; i < mapBMP->h; i++)
 	for (int j = 0; j < mapBMP->w; j++)
 	{
 		for (int i = 0; i < mapBMP->h; i++)
@@ -69,10 +69,10 @@ Map *ft_LoadMap(char * path, Map *map)
 			}
 			else
 				map->data[i][j] = '.';
-			
+
 		}
 	}
-	
+
 	return map;
 }
 
