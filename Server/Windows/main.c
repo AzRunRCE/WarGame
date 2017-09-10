@@ -5,8 +5,6 @@
 #include <winsock2.h>
 #include "include\server.h"
 #include "include\client.h"
-#include "include\ft_map.h"
-#include "include\ft_player.h"
 #include "pb.h"
 #include "pb_common.h"
 #include "pb_encode.h"
@@ -28,11 +26,12 @@ pthread_cond_t condition = PTHREAD_COND_INITIALIZER; /* Création de la condition
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; /* Création du mutex */
 
 Client clients[MAX_CLIENTS];
-SDL_Rect Bullets[250];
+BulletElm *headBulletList;
 Player Players[MAX_CLIENTS];
 int actual = 0;
 SOCKET sock;
-
+typedef void(*callback)(BulletElm* head_bulletList);
+bool list_bullet;
 static int init_connection(void)
 {
 #ifdef _WIN32
@@ -76,37 +75,35 @@ static int init_connection(void)
 
 
 
-bool listBulletForPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-
-
-	SDL_Rect BulletInfo;
-
-	for (int i = 0; i < 4;i++)
-	{
-
-		BulletInfo.x = 0;
-		BulletInfo.y = 42;
-
-		/* This encodes the header for the field, based on the constant info
-		* from pb_field_t. */
-		if (!pb_encode_tag_for_field(stream, field))
-			return false;
-
-		/* This encodes the data for the field, based on our FileInfo structure. */
-		if (!pb_encode_submessage(stream, BulletMessage_fields, &BulletInfo))
-			return false;
-	}
-
+		BulletElm* cursor = headBulletList;
+		int count = 0;
+		while (cursor != NULL)
+		{
+			if (!pb_encode_tag_for_field(stream, field))
+				return false;
+			BulletMessage* tmpBulletMsg = malloc(sizeof(BulletMessage));
+			tmpBulletMsg->dest = cursor->dest;
+			tmpBulletMsg->pos = cursor->pos;
+			tmpBulletMsg->id = count;
+			tmpBulletMsg->ownerId = cursor->ownerId;
+			if (!pb_encode_submessage(stream, BulletMessage_fields, tmpBulletMsg))
+				return false;
+			free(tmpBulletMsg);
+			count++;
+			cursor = cursor->next;
+		}
 	return true;
 }
 
 bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
+	list_bullet = true;
 	for (int i =0; i < actual;i++)
 	{	
 	
-		Players[i].bullets.funcs.encode = &listBulletForPlayers_callback;
+		
 		/* This encodes the header for the field, based on the constant info
 		* from pb_field_t. */
 		if (!pb_encode_tag_for_field(stream, field))
@@ -119,6 +116,54 @@ bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 
 	return true;
 }
+
+BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
+{
+	BulletElm* new_node = (BulletElm*)malloc(sizeof(BulletElm));
+	if (new_node == NULL)
+	{
+		printf("Error creating a new node.\n");
+		exit(0);
+	}
+	new_node->next = next;
+	new_node->ownerId = bulletMsg->ownerId;
+	new_node->pos = bulletMsg->pos;
+	new_node->dest = bulletMsg->dest;
+	return new_node;
+}
+
+void traverse(BulletElm* head, callback f)
+{
+	BulletElm* cursor = head;
+	while (cursor != NULL)
+	{
+		f(cursor);
+		cursor = cursor->next;
+	}
+}
+BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
+{
+	if (head == NULL)	{
+		head = create(bulletMsg, NULL);
+		return head;
+	}
+	/* go to the last node */
+	BulletElm *cursor = head;
+	int count = 0;
+	while (cursor->next != NULL)
+	{
+		cursor = cursor->next;
+		count++;
+	}
+		
+	printf(" %d", count);
+	/* create a new node */
+	BulletElm* new_node = create(bulletMsg, NULL);
+	cursor->next = new_node;
+
+	return head;
+}
+
 static void app(void)
 {
 	bool status = true;
@@ -169,9 +214,12 @@ static void app(void)
 		}
 		else if (type == BulletMessage_fields)
 		{
-			BulletMessage bullet;
-			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bullet);
-			printf("BulletMessage x:%d y:%d", bullet.Pos.x, bullet.Pos.y);
+			BulletMessage *bulletMsg = malloc(sizeof(BulletMessage));
+			status = decode_unionmessage_contents(&stream, BulletMessage_fields, bulletMsg);
+			printf("BulletMessage name:%s x:%d y:%d\n",Players[bulletMsg->ownerId].name, bulletMsg->pos.x, bulletMsg->pos.y);
+			headBulletList = pushBullet(headBulletList, bulletMsg);
+			free(bulletMsg);
+	
 		}
 		else if (type == Player_fields)
 		{
@@ -184,9 +232,10 @@ static void app(void)
 			gameDataMessage->GameMode = 1;
 			gameDataMessage->playersCount = actual;
 			gameDataMessage->players.funcs.encode = &listPlayers_callback;
+			gameDataMessage->bullets.funcs.encode = &listBullets_callback;
 			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, MAX_BUFFER);
 			bool status = encode_unionmessage(&output, GameDataMessage_fields, gameDataMessage);
-			write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+			int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			free(gameDataMessage);
 		}
 
@@ -195,6 +244,8 @@ static void app(void)
 	}
 	end_connection(sock);
 }
+
+
 
 static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
 {

@@ -5,6 +5,7 @@
 #include "include\pb_encode.h"
 #include "include\pb_decode.h"
 #include "include\unionproto.pb.h"
+#include "include\ft_socket.h"
 
 const pb_field_t* decode_unionmessage_type(pb_istream_t *stream)
 {
@@ -97,15 +98,28 @@ bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void *
 	//}
 	return true;
 }
-bool readPlayerBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-	SDL_Rect Bullet;
+	BulletMessage bullet;
 
-	if (!pb_decode(stream, SDL_Rect_fields, &Bullet))
+	if (!pb_decode(stream, BulletMessage_fields, &bullet))
 		return false;
-
-
+	
+	printf("x:%d %d \n", bullet.pos.x, bullet.pos.y);
 	return true;
 }
 
 
+BulletElm* createOrUpdate(BulletMessage *bulletMessage , BulletElm* next)
+{
+	BulletElm* new_node = (BulletElm*)malloc(sizeof(BulletElm));
+	if (new_node == NULL)
+	{
+		printf("Error creating a new node.\n");
+		exit(0);
+	}
+	new_node->pos = bulletMessage->pos;
+	new_node->next = next;
+
+	return new_node;
+}

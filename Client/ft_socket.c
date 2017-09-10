@@ -85,7 +85,7 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 }
 
 
-static void end_connection(int sock)
+void end_connection(int sock)
 {
 	closesocket(sock);
 }
@@ -110,7 +110,7 @@ int create_connection(configuration *settings)
 
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	status = encode_unionmessage(&output, ConnectionMessage_fields, &connectionMessage);
-	int c = write_client(sock, psin, buffer,output.bytes_written);
+	int c = write_client(buffer,output.bytes_written);
 	
 	/*_engine.map = &_engine.currentGame->map;
 	_engine.mainPlayer.id = _engine.currentGame->clientId;*/
@@ -139,7 +139,7 @@ int create_connection(configuration *settings)
 	}
 	
 }
-static int read_client(SOCKET sock, SOCKADDR_IN *sin, char *buffer)
+int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
@@ -147,27 +147,31 @@ static int read_client(SOCKET sock, SOCKADDR_IN *sin, char *buffer)
 	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-	/*	exit(errno);*/
+
 	}
 
 
 	return n;
 }
-
-static int write_client(SOCKET sock, SOCKADDR_IN *sin, const char *buffer, const int length)
+ int write_client(const char *buffer, const int length)
 {
 	int n = 0;
-	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin))< 0)
+	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)psin, sizeof *psin))< 0)
 	{
 		perror("send()");
 		exit(errno);
 	}
 	return n;
 }
+
+int sendMessage(const char *buffer, const int length)
+{
+	return write_client(buffer, length);
+}
+
 bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
 	Player PlayerInfo;
-	PlayerInfo.bullets.funcs.decode = &readPlayerBullets_callback;
 	if (!pb_decode(stream, Player_fields, &PlayerInfo))
 		return false;
 	
@@ -209,6 +213,7 @@ void *NetworkThreadingListening(void *arg)
 		{
 			GameDataMessage gameData;
 			gameData.players.funcs.decode = &readPlayers_callback;
+			gameData.bullets.funcs.decode = &readBullets_callback;
 			status = decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
 
 			_engine.playersCount = gameData.playersCount;
@@ -240,8 +245,8 @@ void *SreamClientData(void *arg)
 
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 		bool status = encode_unionmessage(&output, Player_fields, PlayerMessage);
-		int c = write_client(sock, psin, buffer, output.bytes_written);
-		write_client(sock, psin, buffer, output.bytes_written);
+		int c = write_client(buffer, output.bytes_written);
+		write_client(buffer, output.bytes_written);
 		Sleep(15);
 		free(PlayerMessage);
 	}

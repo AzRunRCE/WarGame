@@ -10,9 +10,7 @@
 typedef int bool;
 #define true 1
 #define false 0
-#include "ft_map.h"
 #include "client.h"
-#include "ft_packet.h"
 void *NetworkThreading(void *arg);
 static void init(void);
 static void end(void);

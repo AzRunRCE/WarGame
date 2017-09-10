@@ -10,5 +10,5 @@ bool decode_unionmessage_contents(pb_istream_t *stream, const pb_field_t fields[
 bool print_string(pb_istream_t *stream, const pb_field_t *field, void **arg);
 bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void * const *arg);
 bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg);
-bool readPlayerBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg);
+bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg);
 #endif /* guard */

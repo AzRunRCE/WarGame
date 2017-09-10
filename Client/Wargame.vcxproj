@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\library\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)..\library\lib\x86</LibraryPath>
+    <IncludePath>C:\Users\Utilisateur\Desktop\WarGame-refactoring - Copy\library\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\library\include</IncludePath>
+    <LibraryPath>C:\Users\Utilisateur\Desktop\WarGame-refactoring - Copy\library\lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(ProjectDir)..\library\lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(WindowsSDK_includePath);$(VC_IncludePath);$(ProjectDir)..\library\include;$(IncludePath)</IncludePath>
