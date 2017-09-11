@@ -11,7 +11,6 @@
 #include "include\ft_player.h"
 #include "include\ft_socket.h"
 #include "include\ft_sprite.h"
-#include "include\ft_packet.h"
 #include "include\ft_socket.h"
 #include "include\ft_engine.h"
 #include "include\ft_menu.h"
@@ -99,7 +98,7 @@ int main(int argc, char *argv[])
 			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, posX / BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
-		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
+//		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 		_engine.camera.x = _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
 		_engine.camera.y = _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
@@ -147,9 +146,9 @@ int main(int argc, char *argv[])
 		ft_getAmmoSprite(&_engine.mainPlayer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
-		SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
+	//	SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
 		SDL_RenderPresent(_engine.screenRenderer);
-		SDL_DestroyTexture(texture);
+	//	SDL_DestroyTexture(texture);
 		SDL_FreeSurface(text);
 		SDL_FreeSurface(_engine.mapSurface);
 		SDL_FreeSurface(_engine.characterSurface);

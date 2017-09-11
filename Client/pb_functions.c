@@ -65,61 +65,6 @@ bool decode_unionmessage_contents(pb_istream_t *stream, const pb_field_t fields[
 	return status;
 }
 
-bool print_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
-{
-	uint8_t buffer[1024] = { 0 };
-
-	/* We could read block-by-block to avoid the large buffer... */
-	if (stream->bytes_left > sizeof(buffer) - 1)
-		return false;
-
-	if (!pb_read(stream, buffer, stream->bytes_left))
-		return false;
-
-	/* Print the string, in format comparable with protoc --decode.
-	* Format comes from the arg defined in main().
-	*/
-	printf((char*)*arg, buffer);
-	return true;
-}
-
-bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
-{
-	//char *str[6] = { "Hello world!", "Hi", "Bonjour", "Salut" , "Bonjour", "Salut" };
-	char str[7] = "coucou\0";
-
-	/*for (i = 0; i < 6; i++)
-	{*/
-	if (!pb_encode_tag_for_field(stream, field))
-		return false;
-
-	if (!pb_encode_string(stream, (uint8_t*)str, strlen(str)))
-		return false;
-	//}
-	return true;
-}
-bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
-{
-	BulletMessage bullet;
-
-	if (!pb_decode(stream, BulletMessage_fields, &bullet))
-		return false;
-	
-	printf("x:%d %d \n", bullet.pos.x, bullet.pos.y);
-	return true;
-}
 
 
-BulletElm* createOrUpdate(BulletMessage *bulletMessage , BulletElm* next)
-{
-	BulletElm* new_node = (BulletElm*)malloc(sizeof(BulletElm));
-	if (new_node == NULL)
-	{
-		printf("Error creating a new node.\n");
-		exit(0);
-	}
-	new_node->pos = bulletMessage->pos;
-	new_node->next = next;
 
-	return new_node;
-}

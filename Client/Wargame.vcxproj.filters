@@ -83,9 +83,6 @@
     <ClInclude Include="include\ft_menu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\ft_packet.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\ft_player.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

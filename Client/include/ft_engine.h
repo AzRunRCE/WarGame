@@ -2,14 +2,12 @@
 #define ENGINE_H
 #include "ft_map.h"
 #include "ft_player.h"
-#include "ft_packet.h"
 #include <pthread.h>
 #include "unionproto.pb.h"
-
+#include "ft_socket.h"
 typedef struct {
 	pthread_cond_t condition; 
 	pthread_mutex_t mutex; 
-	ServerGame *currentGame;
     int WIDTH;
     int HEIGHT;
     int fullscreen;
@@ -54,6 +52,6 @@ typedef struct {
     SDL_Rect spriteRect;
     SDL_Rect mousePos;
 }Engine;
-
 extern Engine _engine;
+BulletElm* headBullets;
 #endif // ENGINE_H

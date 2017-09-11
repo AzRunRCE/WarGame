@@ -1,6 +1,5 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-#include "ft_packet.h"
 #include <Winsock2.h>
 
 

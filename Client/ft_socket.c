@@ -35,6 +35,8 @@ pthread_t NwkThreadSender;
 SOCKADDR_IN *psin;
 int clientId;
 uint8_t buffer[MAX_BUFFER];
+BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
+BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
 
 void end()
 {
@@ -45,8 +47,6 @@ void end()
 	WSACleanup();
 #endif
 }
-
-
 
 int init_connection(const char *address, SOCKADDR_IN *sin)
 {
@@ -84,12 +84,70 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	return sock;
 }
 
+bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+{
+	BulletMessage *bullet = malloc(sizeof(BulletMessage));
+
+	if (!pb_decode(stream, BulletMessage_fields, bullet))
+		return false;
+
+	headBullets = appendBullet(headBullets, bullet);
+	free(bullet);
+	return true;
+}
 
 void end_connection(int sock)
 {
 	closesocket(sock);
 }
 
+void dispose(BulletElm *head)
+{
+	BulletElm *cursor, *tmp;
+
+	if (head != NULL)
+	{
+		cursor = head->next;
+		head->next = NULL;
+		while (cursor != NULL)
+		{
+			tmp = cursor->next;
+			free(cursor);
+			cursor = tmp;
+		}
+	}
+}
+
+BulletElm* create(BulletMessage *bulletMessage, BulletElm* next)
+{
+
+		BulletElm* new_node = (BulletElm*)malloc(sizeof(BulletElm));
+		if (new_node == NULL)
+		{
+			printf("Error creating a new node.\n");
+			exit(0);
+		}
+		new_node->pos = bulletMessage->pos;
+		new_node->next = next;
+
+		return new_node;
+}
+
+BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage)
+{
+	/* go to the last node */
+	if (head == NULL)
+		return create(bulletMessage, NULL);
+	BulletElm *cursor = head;
+	while (cursor->next != NULL)
+		cursor = cursor->next;
+
+	/* create a new node */
+	BulletElm* new_node = create(bulletMessage, NULL);
+	cursor->next = new_node;
+
+	return head;
+}
 
 int create_connection(configuration *settings)
 {
@@ -215,7 +273,7 @@ void *NetworkThreadingListening(void *arg)
 			gameData.players.funcs.decode = &readPlayers_callback;
 			gameData.bullets.funcs.decode = &readBullets_callback;
 			status = decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
-
+			
 			_engine.playersCount = gameData.playersCount;
 		}
 		/*else if (type == Player_fields)
