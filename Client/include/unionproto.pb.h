@@ -109,8 +109,7 @@ extern "C" {
 #define SDL_Rect_init_default                    {0, 0, 0, 0}
 #define Player_init_default                      {"", 0, false, 0, 0, 0, false, false, 0, 0, 0, SDL_Rect_init_default, SDL_Rect_init_default}
 #define BulletMessage_init_default               {0, 0, SDL_Rect_init_default, SDL_Rect_init_default}
-#define UnionMessage_init_default                {false, ConnectionMessage_init_default, false, ConnectionCallbackMessage_init_default, false, BulletMessage_init_default, false, GameDataMessage_init_default, false, 
-Player_init_default}
+#define UnionMessage_init_default                {false, ConnectionMessage_init_default, false, ConnectionCallbackMessage_init_default, false, BulletMessage_init_default, false, GameDataMessage_init_default, false, Player_init_default}
 #define ConnectionCallbackMessage_init_zero      {0, "", 0, 0}
 #define ConnectionMessage_init_zero              {""}
 #define GameDataMessage_init_zero                {0, 0, {{NULL}, NULL}, {{NULL}, NULL}}

@@ -1,10 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -22,6 +19,7 @@
 #include "include\ft_bullet.h"
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
+#include "include/ft_View.h"
 #include "include\pb.h"
 #include "include\pb_common.h"
 #include "include\pb_encode.h"
@@ -89,17 +87,14 @@ int main(int argc, char *argv[])
 		ft_getNextExplodeSprite(&explode);
 		int posX = (_engine.mainPlayer.Pos.x + 16);
 		int posY = (_engine.mainPlayer.Pos.y + 16);
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || 
-_engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
 			posX = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32);
 			posY = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32);
 		}
 		// If the character is near the wall, show the character position compared to the screen instead of camera position
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || 
-_engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, posX / 
-BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, posX / BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
 		else
 			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, posX / BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
@@ -111,43 +106,11 @@ BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)po
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
-		_engine.viewRect.x = ((_engine.pCenter.x + 16) * 2 - _engine.viewRect.w) / 2;
-		_engine.viewRect.y = ((_engine.pCenter.y + 16) * 2 - _engine.viewRect.h) / 2;
-		SDL_GetMouseState(&explode.Pos.x, &explode.Pos.y);
-		double a, b;
-		a = explode.Pos.y - _engine.pCenter.y;
-		b = explode.Pos.x - _engine.pCenter.x;
-		if (a != 0 && b != 0)
-		{
-			double tangente;	
-			if (b < 0)
-				_engine.viewRect.x = ((_engine.pCenter.x + 16) * 2 - _engine.viewRect.w) / 2 + 32;
-			if (a > 0)
-				_engine.viewRect.y = ((_engine.pCenter.y + 16) * 2 - _engine.viewRect.h) / 2 - 32;
-			if (b > 0)
-			{
-				_engine.viewRect.x = ((_engine.pCenter.x + 16) * 2 - _engine.viewRect.w) / 2 - 32;
-				tangente = a / b;
-				_engine.viewDegrees = atan(tangente); // En radians
-			}
-			else if (a < 0)
-			{
-				_engine.viewRect.y = ((_engine.pCenter.y + 16) * 2 - _engine.viewRect.h) / 2 + 32;
-				tangente = b / a;
-				tangente = -tangente;
-				_engine.viewDegrees = atan(tangente) - M_PI / 2; // En radians
-			}
-			else
-			{
-				tangente = b / a;
-				tangente = -tangente;
-				_engine.viewDegrees = atan(tangente) + M_PI / 2; // En radians
-			}
-			_engine.viewDegrees = _engine.viewDegrees * 180 / M_PI; // Conversion en degrÃ©s
-		}
-	//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
-
 		
+		SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
+		ft_GetViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
+		
+		//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		//pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
 
 		int i;
@@ -177,8 +140,8 @@ BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)po
 		{
 			drawBullet(bulletFired[j]);
 		}*/
-		//pthread_cond_signal(&_engine.condition); /* On dÃ©livre le signal : condition remplie */
-		//pthread_mutex_unlock(&_engine.mutex); /* On dÃ©verrouille le mutex */
+		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
@@ -194,8 +157,8 @@ BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)po
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
 		SDL_FreeSurface(_engine.viewSurface);
-		//pthread_cond_signal(&_engine.condition); /* On dÃ©livre le signal : condition remplie */
-		//pthread_mutex_unlock(&_engine.mutex); /* On dÃ©verrouille le mutex */
+		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
+		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
 	}
 
 	end();
@@ -279,10 +242,9 @@ int GetKeyPressEvent()
 
 	int posX = _engine.mainPlayer.Pos.x + 16;
 	int posY = _engine.mainPlayer.Pos.y + 16;
-	if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + 
-_engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+	if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 	{
-		// DÃ©calage car la map 50x50 commence (tableau char) a 0 et la position a 1
+		// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
 		posX = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32;
 		posY = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32;
 	}
@@ -424,3 +386,4 @@ void FireBullet()
 	int c = sendMessage(buffer, output.bytes_written);
 	
 }
+

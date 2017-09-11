@@ -153,6 +153,7 @@
     <ClCompile Include="pb_decode.c" />
     <ClCompile Include="pb_encode.c" />
     <ClCompile Include="pb_functions.c" />
+    <ClCompile Include="src\ft_View.c" />
     <ClCompile Include="unionproto.pb.c" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +172,7 @@
     <ClInclude Include="include\ft_sdl.h" />
     <ClInclude Include="include\ft_socket.h" />
     <ClInclude Include="include\ft_sprite.h" />
+    <ClInclude Include="include\ft_View.h" />
     <ClInclude Include="include\ini.h" />
     <ClInclude Include="include\main.h" />
     <ClInclude Include="include\pb.h" />

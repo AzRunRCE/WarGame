@@ -120,4 +120,6 @@ PB_STATIC_ASSERT((pb_membersize(Player, Pos) < 65536 && pb_membersize(Player, sp
 	*/
 	PB_STATIC_ASSERT((pb_membersize(Player, Pos) < 256 && pb_membersize(Player, sprite) < 256 && pb_membersize(BulletMessage, pos) < 256 && pb_membersize(BulletMessage, dest) < 256 && pb_membersize(UnionMessage, connCallbackMessage) < 256 && pb_membersize(UnionMessage, connMessage) < 256 && pb_membersize(UnionMessage, bulletMessage) < 256 && pb_membersize(UnionMessage, gameData) < 256 && pb_membersize(UnionMessage, playerMessage) < 256), YOU_MUST_DEFINE_PB_FIELD_16BIT_FOR_MESSAGES_ConnectionCallbackMessage_ConnectionMessage_GameDataMessage_SDL_Rect_Player_BulletMessage_UnionMessage)
 #endif
+
+
 	/* @@protoc_insertion_point(eof) */
