@@ -269,6 +269,7 @@ void *NetworkThreadingListening(void *arg)
 		
 		else if (type == GameDataMessage_fields)
 		{
+			dispose(headBullets);
 			GameDataMessage gameData;
 			gameData.players.funcs.decode = &readPlayers_callback;
 			gameData.bullets.funcs.decode = &readBullets_callback;
