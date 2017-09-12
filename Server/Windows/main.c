@@ -239,7 +239,7 @@ static void app(void)
 	int max = sock;
 	/* an array for all clients */
 
-	while (1)
+	while (true)
 	{
 		SOCKADDR_IN csin = { 0 };
 		/* a client is talking */
