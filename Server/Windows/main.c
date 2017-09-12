@@ -111,6 +111,19 @@ void incrementBullet(BulletElm *bullet) {
 
 
 }
+
+void checkbulletExceed(BulletElm *bullet)
+{
+	if (bullet !=NULL && bullet->next != NULL)
+	{
+		BulletElm* bulletNext = bullet->next;
+		if (bulletNext->x0 > 1600 || bulletNext->x0 < 0 || bulletNext->y0 > 1600 || bulletNext->y0 < 0)
+		{
+			bullet->next = bulletNext->next;
+			free(bulletNext);
+		}
+	}
+}
 bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 		BulletElm* cursor = headBulletList;
@@ -130,6 +143,7 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 			count++;
 			cursor = cursor->next;
 		}
+		printf("cursorCount: %d\n", count);
 	return true;
 }
 
@@ -172,9 +186,25 @@ BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
 	return new_node;
 }
 
-void traverse(BulletElm* head, callback f)
+void browse(BulletElm* head, callback f)
 {
 	BulletElm* cursor = head;
+	if (cursor != NULL && (cursor->x0 > 1600 || cursor->x0 < 0 || cursor->y0 > 1600 || cursor->y0 < 0))
+	{
+		if (cursor->next != NULL)
+		{
+			headBulletList = cursor->next;
+			free(cursor);
+			cursor = NULL;
+		}
+		else
+		{
+			free(cursor);
+			cursor = NULL;
+			headBulletList = NULL;
+		}
+
+	}
 	while (cursor != NULL)
 	{
 		f(cursor);
@@ -275,8 +305,9 @@ static void app(void)
 			free(gameDataMessage);
 		}
 
-
-		traverse(headBulletList, &incrementBullet);
+		browse(headBulletList, &checkbulletExceed);
+		browse(headBulletList, &incrementBullet);
+		
 		
 	}
 	end_connection(sock);
