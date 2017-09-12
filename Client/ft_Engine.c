@@ -40,4 +40,6 @@ void Engine_init()
 	_engine.camera = (SDL_Rect) { .y = 0, .x = 0, .w = _engine.WIDTH, .h = _engine.HEIGHT };
 	_engine.viewRect = (SDL_Rect) { .w = 1800, .h = 1800 };
 	_engine.pCenter = (SDL_Rect) { .x = _engine.WIDTH / 2 - 16, .y = _engine.HEIGHT / 2 - 16, .w = 32, .h = 32 };
+	_engine.PlayerRealPos.h = 32;
+	_engine.PlayerRealPos.w = 32;
 }

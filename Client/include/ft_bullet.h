@@ -4,20 +4,12 @@
 
 typedef struct
 {
-    int dY;
-    int dX;
-	int x0;
-	int x1;
-	int y0;
-	int y1;
-	int sX;
-	int sY;
-    SDL_Rect Pos;
-	int err;
-	int e2;
-}Bullet;
+	SDL_Rect pos;
+	struct BulletElm *next;
+//	struct BulletElm *previous;
+}BulletElm;
 
-
-Bullet *initBullet(int x0, int y0, int x1, int y1);
-void drawBullet(Bullet *bullet);
+typedef void(*callback)(BulletElm* bullet);
+void browserBullets(BulletElm* head, callback f);
+void drawBullet(BulletElm *bullet);
 #endif // FT_BULLET_H

@@ -237,6 +237,9 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 	if (_engine.mainPlayer.id != PlayerInfo.id)
 	{
 		_engine.players[PlayerInfo.id] = PlayerInfo;
+		_engine.players[PlayerInfo.id].Pos.x -= _engine.camera.x;
+		_engine.players[PlayerInfo.id].Pos.y -= _engine.camera.y;
+
 	}
 	return true;
 }

@@ -37,17 +37,15 @@ SDL_Surface *fontSurface = NULL;
 char message[20];
 time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
-int dX = 0;
-int dY = 0;
-Bullet *bulletFired[300];
+
+
+SDL_Event *event;
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
 void ft_getHealthSprite(Player *player);
 void ft_getAmmoSprite(Player *player);
 bool ft_delay(int *lastAnim, int  SleepTimeAnim); 
-typedef void(*callback)(BulletElm* head_bulletList);
-BulletElm *headBulletList;
 bool ft_getNextExplodeSprite(Explode *explode)
 {
 	if (explode->Step == 52)
@@ -67,6 +65,7 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 int main(int argc, char *argv[])
 {
+	event = malloc(sizeof(SDL_Event));
 	mainConfiguration = ft_loadConf();
 	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname, mainConfiguration->server);
 	SDL_init();
@@ -84,18 +83,18 @@ int main(int argc, char *argv[])
 	while (GetKeyPressEvent())
 	{
 		ft_getNextExplodeSprite(&explode);
-		int posX = (_engine.mainPlayer.Pos.x + 16);
-		int posY = (_engine.mainPlayer.Pos.y + 16);
+		_engine.PlayerRealPos.x = (_engine.mainPlayer.Pos.x + 16);
+		_engine.PlayerRealPos.y = (_engine.mainPlayer.Pos.y + 16);
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-			posX = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32);
-			posY = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32);
+			_engine.PlayerRealPos.x = (_engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32);
+			_engine.PlayerRealPos.y = (_engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32);
 		}
 		// If the character is near the wall, show the character position compared to the screen instead of camera position
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, posX / BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
+			sprintf(message, "%d,%d %d %d %d %c", _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16, _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16, actual, _engine.PlayerRealPos.x / BLOCK_SIZE, _engine.PlayerRealPos.y / BLOCK_SIZE, _engine.map->data[(int)_engine.PlayerRealPos.y / BLOCK_SIZE][(int)_engine.PlayerRealPos.x / BLOCK_SIZE]);
 		else
-			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, posX / BLOCK_SIZE, posY / BLOCK_SIZE, _engine.map->data[(int)posY / BLOCK_SIZE][(int)posX / BLOCK_SIZE]);
+			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, _engine.PlayerRealPos.x / BLOCK_SIZE, _engine.PlayerRealPos.y / BLOCK_SIZE, _engine.map->data[(int)_engine.PlayerRealPos.y / BLOCK_SIZE][(int)_engine.PlayerRealPos.x / BLOCK_SIZE]);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
 //		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
@@ -110,8 +109,7 @@ int main(int argc, char *argv[])
 		ft_GetViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 		
 		//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
-		//pthread_mutex_lock(&_engine.mutex); /* On verrouille le mutex */
-
+		browserBullets(headBullets, &drawBullet);
 		int i;
 		for (i = 0; i < _engine.playersCount; i++)
 		{
@@ -123,25 +121,12 @@ int main(int argc, char *argv[])
 			_engine.players[i].Pos.h = 32;
 
 			ft_GetPlayerOrientation(&_engine.players[i]);
-			
-			if (!_engine.players[i].calibred)
-			{
-				_engine.players[i].Pos.x -= _engine.camera.x;
-				_engine.players[i].Pos.y -= _engine.camera.y;
-				_engine.players[i].calibred = true;
-			}
+			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
 			//printf("%d %d\n", _engine.players[i].Pos.x, _engine.players[i].Pos.y);
-
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
 		}
-	/*	int j = 0;
-		for (j = 0; j < actual; j++)
-		{
-			drawBullet(bulletFired[j]);
-		}*/
-		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
-		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
-		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+	
+		//SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
@@ -156,12 +141,11 @@ int main(int argc, char *argv[])
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
 		SDL_FreeSurface(_engine.viewSurface);
-		//pthread_cond_signal(&_engine.condition); /* On délivre le signal : condition remplie */
-		//pthread_mutex_unlock(&_engine.mutex); /* On déverrouille le mutex */
+		
 	}
 
 	end();
-
+	free(event);
 
 	return EXIT_SUCCESS;
 
@@ -229,11 +213,12 @@ SDL_Texture* SurfaceToTexture(SDL_Surface* surf)
 
 int GetKeyPressEvent()
 {
+	
 	Uint8 *keystate = SDL_GetKeyboardState(NULL);
 	
-	if (SDL_PollEvent(&_engine.event))
+	if (SDL_PollEvent(event))
 	{
-		if (_engine.event.type == SDL_QUIT)
+		if (event->type == SDL_QUIT)
 			return 0;
 	}
 	_engine.mainPlayer.fire = false;
@@ -347,20 +332,10 @@ int GetKeyPressEvent()
 	
 		FireBullet();
 	}
-
 	return 1;
 }
 
 
-void traverse(BulletElm* head, callback f)
-{
-	BulletElm* cursor = head;
-	while (cursor != NULL)
-	{
-		f(cursor);
-		cursor = cursor->next;
-	}
-}
 
 
 void FireBullet()
@@ -378,7 +353,16 @@ void FireBullet()
 	uint8_t buffer[BulletMessage_size];
 
 	BulletMessage bulletMessage;
-	bulletMessage.pos = _engine.mainPlayer.Pos;
+	bulletMessage.pos.x = _engine.PlayerRealPos.x;
+	bulletMessage.pos.y = _engine.PlayerRealPos.y;
+	bulletMessage.pos.w = 6;
+	bulletMessage.pos.h = 6;
+
+	bulletMessage.pos.h = bulletMessage.pos.w = 6;
+	bulletMessage.dest = _engine.mousePos;
+	bulletMessage.dest.x += _engine.camera.x;
+	bulletMessage.dest.y += _engine.camera.y;
+
 	bulletMessage.ownerId = _engine.mainPlayer.id;
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	bool status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);

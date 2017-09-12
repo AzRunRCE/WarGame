@@ -74,7 +74,43 @@ static int init_connection(void)
 }
 
 
+BulletElm *initBullet(BulletElm* bullet)
+{
+	bullet->x0 = bullet->pos.x;
+	bullet->y0 = bullet->pos.y;
+	bullet->x1 = bullet->dest.x;
+	bullet->y1 = bullet->dest.y;
+	bullet->dX = abs(bullet->x1 - bullet->x0), bullet->sX = bullet->x0 < bullet->x1 ? 1 : -1;
+	bullet->dY = abs(bullet->y1 - bullet->y0), bullet->sY = bullet->y0< bullet->y1 ? 1 : -1;
+	bullet->err = (bullet->dX>bullet->dY ? bullet->dX : -bullet->dY) / 2;
+	bullet->pos.h = 6;
+	bullet->pos.w = 6;
 
+	return bullet;
+}
+void incrementBullet(BulletElm *bullet) {
+	
+
+	bullet->pos.y = bullet->y0;
+	bullet->pos.x = bullet->x0;
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		bullet->e2 = bullet->err;
+		if (bullet->e2 > -bullet->dX)
+		{
+			bullet->err -= bullet->dY;
+			bullet->x0 += bullet->sX;
+		}
+		if (bullet->e2 < bullet->dY)
+		{
+			bullet->err += bullet->dX;
+			bullet->y0 += bullet->sY;
+		}
+	}
+
+
+}
 bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 		BulletElm* cursor = headBulletList;
@@ -125,10 +161,14 @@ BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
 		printf("Error creating a new node.\n");
 		exit(0);
 	}
+	
 	new_node->next = next;
 	new_node->ownerId = bulletMsg->ownerId;
 	new_node->pos = bulletMsg->pos;
 	new_node->dest = bulletMsg->dest;
+	new_node->dest.h = new_node->dest.w = new_node->pos.h = new_node->pos.w = 0;
+
+	new_node = initBullet(new_node);
 	return new_node;
 }
 
@@ -149,14 +189,10 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 	}
 	/* go to the last node */
 	BulletElm *cursor = head;
-	int count = 0;
 	while (cursor->next != NULL)
-	{
 		cursor = cursor->next;
-		count++;
-	}
+
 		
-	printf(" %d", count);
 	/* create a new node */
 	BulletElm* new_node = create(bulletMsg, NULL);
 	cursor->next = new_node;
@@ -240,7 +276,8 @@ static void app(void)
 		}
 
 
-	
+		traverse(headBulletList, &incrementBullet);
+		
 	}
 	end_connection(sock);
 }

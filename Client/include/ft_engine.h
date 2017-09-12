@@ -12,7 +12,6 @@ typedef struct {
     int HEIGHT;
     int fullscreen;
 	int playersCount;
-    SDL_Event event;
     Player players[16];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
@@ -24,6 +23,7 @@ typedef struct {
     SDL_Color colorWhite;
     SDL_Color colorWarGame;
 	
+	SDL_Rect PlayerRealPos;
 	SDL_Rect pCenter;
 	SDL_Rect camera;
 	SDL_Rect bullets[250];
@@ -53,5 +53,5 @@ typedef struct {
     SDL_Rect mousePos;
 }Engine;
 extern Engine _engine;
-BulletElm* headBullets;
+
 #endif // ENGINE_H
