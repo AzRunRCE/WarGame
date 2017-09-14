@@ -18,7 +18,7 @@
 #include "include\ft_bullet.h"
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
-#include "include/ft_View.h"
+#include "include\ft_View.h"
 #include "include\pb.h"
 #include "include\pb_common.h"
 #include "include\pb_encode.h"
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		
 		SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
-		ft_GetViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
+		ft_ViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 		
 		//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		browserBullets(headBullets, &drawBullet);
@@ -242,7 +242,6 @@ int GetKeyPressEvent()
 		else
 			_engine.mainPlayer.Pos.x -= 2;
 		_engine.mainPlayer.state = LEFT;
-		//_engine.viewDegrees = 180;
 		_engine.mainPlayer.walk = true;
 		
 	}
@@ -256,7 +255,6 @@ int GetKeyPressEvent()
 		else
 			_engine.mainPlayer.Pos.x += 2;
 		_engine.mainPlayer.state = RIGHT;
-		//_engine.viewDegrees = 0;
 		_engine.mainPlayer.walk = true;
 	}
 	if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0
@@ -266,7 +264,6 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = UP_LEFT;
-			//_engine.viewDegrees = 225;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h )
 				_engine.pCenter.y--;
 			else
@@ -276,7 +273,6 @@ int GetKeyPressEvent()
 		else if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = UP_RIGHT;
-			//_engine.viewDegrees = 315;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 				_engine.pCenter.y--;
 			else 
@@ -285,7 +281,6 @@ int GetKeyPressEvent()
 		else
 		{
 			_engine.mainPlayer.state = UP;
-			//_engine.viewDegrees = 270;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h) 
 				_engine.pCenter.y-=2;
 			else 
@@ -301,7 +296,6 @@ int GetKeyPressEvent()
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = DOWN_LEFT;
-			//_engine.viewDegrees = 135;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 				_engine.pCenter.y++;
 			else
@@ -310,7 +304,6 @@ int GetKeyPressEvent()
 		else  if (_engine.mainPlayer.state == RIGHT)
 		{
 			_engine.mainPlayer.state = DOWN_RIGHT;
-			//_engine.viewDegrees = 45;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 				_engine.pCenter.y++;
 			else
@@ -319,7 +312,6 @@ int GetKeyPressEvent()
 		else
 		{
 			_engine.mainPlayer.state = DOWN;
-			//_engine.viewDegrees = 90;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 				_engine.pCenter.y +=2;
 			else
@@ -349,7 +341,6 @@ void FireBullet()
 	}
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;
-	//bulletFired[actual] = initBullet(_engine.pCenter.x + 16, _engine.pCenter.y + 16, _engine.mousePos.x, _engine.mousePos.y);
 	uint8_t buffer[BulletMessage_size];
 
 	BulletMessage bulletMessage;

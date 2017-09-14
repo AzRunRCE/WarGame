@@ -143,7 +143,7 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 			count++;
 			cursor = cursor->next;
 		}
-		printf("cursorCount: %d\n", count);
+		//printf("cursorCount: %d\n", count); // Debug print for count
 	return true;
 }
 

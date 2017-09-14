@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-double ft_GetViewGetDegrees(double a, double b)
+double ft_ViewGetDegrees(double a, double b)
 {
 	a = _engine.mousePos.y - _engine.pCenter.y;
 	b = _engine.mousePos.x - _engine.pCenter.x;
