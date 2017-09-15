@@ -2,28 +2,47 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <winsock2.h>
-#include "include\server.h"
-#include "include\client.h"
+#ifdef WIN32 /* si vous êtes sous Windows */
+
+#include <winsock2.h> 
+
+#elif defined (linux) /* si vous êtes sous Linux */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h> /* close */
+#include <netdb.h> /* gethostbyname */
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define closesocket(s) close(s)
+typedef int SOCKET;
+typedef struct sockaddr_in SOCKADDR_IN;
+typedef struct sockaddr SOCKADDR;
+typedef struct in_addr IN_ADDR;
+#else /* sinon vous êtes sur une plateforme non supportée */
+
+#error not defined for this platform
+
+#endif
+#include "include/server.h"
+#include "include/client.h"
 #include "pb.h"
 #include "pb_common.h"
 #include "pb_encode.h"
 #include "pb_decode.h"
 #include "unionproto.pb.h"
 #include "pb_functions.h"
-#define PORT 8080
 #define MAX_BUFFER 4096
 #define SERVER "127.0.0.1"
-#ifdef _WIN32
+#ifdef WIN32
 #define SOCKET_ERRNO	WSAGetLastError()
 #else
 #define SOCKET_ERRNO	errno
 #endif
-pthread_t NwkThread;
 //ServerGame CurrentGame;
 uint8_t currentGameBuffer[MAX_BUFFER];
-pthread_cond_t condition = PTHREAD_COND_INITIALIZER; /* Création de la condition */
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; /* Création du mutex */
 
 Client clients[MAX_CLIENTS];
 BulletElm *headBulletList;
@@ -41,7 +60,7 @@ static int init_connection(void)
 	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
 	{
 		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
-		return FALSE;
+		return false;
 	}
 #endif
 	/* UDP so SOCK_DGRAM */
@@ -50,7 +69,7 @@ static int init_connection(void)
 	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
 	{
 		printf("Allocating socket failed! Error: %d\n", SOCKET_ERRNO);
-		return FALSE;
+		return false;
 	}
 
 
@@ -400,7 +419,6 @@ static void end_connection(int sock)
 {
 	closesocket(sock);
 }
-
 static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
