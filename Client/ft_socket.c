@@ -22,7 +22,7 @@
 #include "include\pb_functions.h"
 #include "include\ft_configuration.h"
 
-#define PORT 8080
+#define PORT 1977
 #define MAX_BUFFER 4096
 #ifdef _WIN32
 #define SOCKET_ERRNO	WSAGetLastError()

@@ -18,7 +18,7 @@
 #include "include\ft_bullet.h"
 #include "include\ft_configuration.h"
 #include "include\ft_explode.h"
-#include "include\ft_View.h"
+#include "include/ft_View.h"
 #include "include\pb.h"
 #include "include\pb_common.h"
 #include "include\pb_encode.h"
@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
 		
 		SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
-		ft_ViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
+		ft_ViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de 
+la torche au milieu du joueur.
 		
 		//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		browserBullets(headBullets, &drawBullet);
