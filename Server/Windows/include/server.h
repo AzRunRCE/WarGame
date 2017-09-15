@@ -38,7 +38,7 @@ static void end(void);
 static void app(void);
 static int init_connection(void);
 static void end_connection(int sock);
-static int read_client(SOCKET sock, SOCKADDR_IN *sin, char *buffer);
+static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer);
 static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual);
