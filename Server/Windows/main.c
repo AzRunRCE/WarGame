@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#ifdef WIN32 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 
 #include <winsock2.h> 
 

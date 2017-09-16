@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 #define HAVE_STRUCT_TIMESPEC
-#ifdef WIN32 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 
 #include <winsock2.h> 
 

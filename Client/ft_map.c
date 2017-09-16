@@ -65,10 +65,10 @@ Map *ft_LoadMap(char * path, Map *map)
 		{
 			if ((int)obtenirPixel(mapBMP, j, i) == BLACK)
 			{
-				map->data[i][j] = '1';
+				map->data[i][j] = 0;
 			}
 			else
-				map->data[i][j] = '.';
+				map->data[i][j] = 1;
 
 		}
 	}

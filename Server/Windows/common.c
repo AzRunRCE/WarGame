@@ -1,7 +1,7 @@
 /* Simple binding of nanopb streams to TCP sockets.
  */
 
-#ifdef WIN32 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 
 #include <winsock2.h> 
 
