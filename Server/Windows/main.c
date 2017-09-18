@@ -521,7 +521,6 @@ int main(int argc, char **argv)
 {
 	map = malloc(sizeof(Map));
 	//ft_LoadMap("map/first.bmp", &map);
-	Sleep(1);
 
 
 	app();
