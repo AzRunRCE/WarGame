@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
+    <ClCompile Include="ft_Map.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="pb_common.c" />
     <ClCompile Include="pb_decode.c" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="include\client.h" />
+    <ClInclude Include="include\ft_Map.h" />
     <ClInclude Include="include\ft_state.h" />
     <ClInclude Include="include\server.h" />
     <ClInclude Include="pb.h" />

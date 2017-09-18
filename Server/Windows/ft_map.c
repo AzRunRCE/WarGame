@@ -1,9 +1,8 @@
-#include "include\ft_map.h"
+#include "include\ft_Map.h"
 #include <stdlib.h>
-#include<stdio.h>
-#include<conio.h>
-#include<math.h>
-#include <SDL.h>
+#include <stdio.h>
+#include <conio.h>
+#include <math.h>
 #define BLOCK_SIZE 32
 #define BLACK 255
 #define WHITE 0
@@ -50,25 +49,17 @@ Map *ft_LoadMap(char * path, Map *map)
 	map->width = mapBMP->w;
 
 	int rows, columns;
-	/* initialize rows and columns to the desired value */
 
-	/*map->data = (int**)malloc(mapBMP->h * sizeof(int*));
-	for (int i = 0;i<mapBMP->h;i++)
-	{
-		map->data[i] = (int*)malloc(mapBMP->w * sizeof(int));
-	}*/
-//
-//int i = 0; i < mapBMP->h; i++)
 	for (int j = 0; j < mapBMP->w; j++)
 	{
 		for (int i = 0; i < mapBMP->h; i++)
 		{
 			if ((int)obtenirPixel(mapBMP, j, i) == BLACK)
 			{
-				map->data[i][j] = '1';
+				map->data[i][j] = 0;
 			}
 			else
-				map->data[i][j] = '.';
+				map->data[i][j] = 1;
 			
 		}
 	}

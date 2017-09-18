@@ -6,7 +6,7 @@ void Engine_init()
 	_engine.WIDTH = 800;
 	_engine.HEIGHT = 600;
 	_engine.window = SDL_CreateWindow("Wargame #AFTEC", SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED, _engine.WIDTH, _engine.HEIGHT, 0);
+		SDL_WINDOWPOS_CENTERED, _engine.WIDTH, _engine.HEIGHT, SDL_WINDOW_SHOWN);
 	_engine.screenRenderer = SDL_CreateRenderer(_engine.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <Windows.h>
 #include "include\ft_item.h"
 #include "include\ft_engine.h"
 #include "include\ft_SDL.h"
@@ -25,6 +26,8 @@
 #include "include\pb_decode.h"
 #include "include\unionproto.pb.h"
 #include "include\pb_functions.h"
+#include <Windows.h>
+#include <SDL_syswm.h> 
 #define MAX_LENGTH 32
 #define FIRE_DELAY 200
 #define BLOCK_SIZE 32
@@ -39,7 +42,7 @@ time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
 
 
-SDL_Event *event;
+
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
@@ -65,7 +68,7 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 int main(int argc, char *argv[])
 {
-	event = malloc(sizeof(SDL_Event));
+	
 	mainConfiguration = ft_loadConf();
 	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname, mainConfiguration->server);
 	SDL_init();
@@ -79,9 +82,32 @@ int main(int argc, char *argv[])
 	explode.Pos.h = 255;
 	explode.Pos.w = 255;
 	explode.Step = 0;
-
+	
+	
+	struct SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
+	SDL_GetWindowWMInfo(_engine.window, &wmInfo);
+	bool ok  = false;
+	int last = 0;
 	while (GetKeyPressEvent())
-	{
+	{	
+		SDL_Event event;
+		if (wmInfo.info.win.window == GetForegroundWindow() || ok) {	
+			SDL_PollEvent(&event);
+			if (event.type == SDL_QUIT) {
+				exit(0);
+			}
+		}
+		else
+		{
+			ok = false;
+			last = SDL_GetTicks();
+		}
+		if (ft_delay(&last, 100)) {
+			ok = true;
+		}
+		
+
 		ft_getNextExplodeSprite(&explode);
 		_engine.PlayerRealPos.x = (_engine.mainPlayer.Pos.x + 16);
 		_engine.PlayerRealPos.y = (_engine.mainPlayer.Pos.y + 16);
@@ -145,7 +171,7 @@ int main(int argc, char *argv[])
 	}
 
 	end();
-	free(event);
+	
 
 	return EXIT_SUCCESS;
 
@@ -216,11 +242,8 @@ int GetKeyPressEvent()
 	
 	Uint8 *keystate = SDL_GetKeyboardState(NULL);
 	
-	if (SDL_PollEvent(event))
-	{
-		if (event->type == SDL_QUIT)
-			return 0;
-	}
+	
+
 	_engine.mainPlayer.fire = false;
 	_engine.mainPlayer.walk = false;
 
@@ -358,6 +381,7 @@ void FireBullet()
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	bool status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
 	int c = sendMessage(buffer, output.bytes_written);
+	PlaySound(TEXT("res/fire.wav"), NULL, SND_ASYNC);
 	
 }
 

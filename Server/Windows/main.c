@@ -28,6 +28,7 @@ typedef struct in_addr IN_ADDR;
 #endif
 #include "include/server.h"
 #include "include/client.h"
+#include "include/ft_Map.h"
 #include "pb.h"
 #include "pb_common.h"
 #include "pb_encode.h"
@@ -36,6 +37,7 @@ typedef struct in_addr IN_ADDR;
 #include "pb_functions.h"
 #define MAX_BUFFER 4096
 #define SERVER "127.0.0.1"
+#define BLOCK_SIZE 32
 #ifdef WIN32
 #define SOCKET_ERRNO	WSAGetLastError()
 #else
@@ -50,7 +52,10 @@ Player Players[MAX_CLIENTS];
 int actual = 0;
 SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
+
 bool list_bullet;
+Map *map;
+
 static int init_connection(void)
 {
 #ifdef _WIN32
@@ -107,42 +112,107 @@ BulletElm *initBullet(BulletElm* bullet)
 
 	return bullet;
 }
-void incrementBullet(BulletElm *bullet) {
-	
-
-	bullet->pos.y = bullet->y0;
-	bullet->pos.x = bullet->x0;
-
-	for (size_t i = 0; i < 3; i++)
-	{
-		bullet->e2 = bullet->err;
-		if (bullet->e2 > -bullet->dX)
-		{
-			bullet->err -= bullet->dY;
-			bullet->x0 += bullet->sX;
-		}
-		if (bullet->e2 < bullet->dY)
-		{
-			bullet->err += bullet->dX;
-			bullet->y0 += bullet->sY;
-		}
-	}
-
-
-}
-
-void checkbulletExceed(BulletElm *bullet)
+BulletElm* remove_front(BulletElm* head)
 {
-	if (bullet !=NULL && bullet->next != NULL)
-	{
-		BulletElm* bulletNext = bullet->next;
-		if (bulletNext->x0 > 1600 || bulletNext->x0 < 0 || bulletNext->y0 > 1600 || bulletNext->y0 < 0)
-		{
-			bullet->next = bulletNext->next;
-			free(bulletNext);
-		}
-	}
+	if (head == NULL)
+		return NULL;
+	BulletElm *front = head;
+	head = head->next;
+	front->next = NULL;
+	/* is this the last node in the list */
+	if (front == head)
+		head = NULL;
+	free(front);
+	return head;
 }
+BulletElm* remove_back(BulletElm* head)
+{
+	if (head == NULL)
+		return NULL;
+
+	BulletElm *cursor = head;
+	BulletElm *back = NULL;
+	while (cursor->next != NULL)
+	{
+		back = cursor;
+		cursor = cursor->next;
+	}
+	if (back != NULL)
+		back->next = NULL;
+
+	/* if this is the last node in the list*/
+	if (cursor == head)
+		head = NULL;
+
+	free(cursor);
+
+	return head;
+}
+BulletElm* remove_any(BulletElm* head, BulletElm* nd)
+{
+	BulletElm* cursor = head;
+	/* if the node is the first node */
+	if (nd == head)
+	{
+		head = remove_front(head);
+		return head;
+	}
+
+	/* if the node is the last node */
+	if (nd->next == NULL)
+	{
+		head = remove_back(head);
+		return head;
+	}
+	while (cursor != NULL)
+	{
+		if (cursor->next == nd)
+			break;
+		cursor = cursor->next;
+	}
+	if (cursor != NULL)
+	{
+		BulletElm* tmp = cursor->next;
+		cursor->next = tmp->next;
+		tmp->next = NULL;
+		free(tmp);
+	}
+	return head;
+}
+void incrementBullet(BulletElm* headBullets)
+{
+	BulletElm* bullet = headBullets;
+	while (bullet != NULL)
+	{
+		BulletElm* next = bullet->next;
+		if (bullet->pos.x > 1600 || bullet->pos.y > 1600 || bullet->pos.x < 0 || bullet->pos.y < 0)
+		{
+			headBulletList = remove_any(headBulletList, bullet);
+		
+		}
+		else
+		{
+			bullet->pos.y = bullet->y0;
+			bullet->pos.x = bullet->x0;
+			bullet->e2 = bullet->err;
+			if (bullet->e2 > -bullet->dX)
+			{
+				bullet->err -= bullet->dY;
+				bullet->x0 += bullet->sX;
+			}
+			if (bullet->e2 < bullet->dY)
+			{
+				bullet->err += bullet->dX;
+				bullet->y0 += bullet->sY;
+			}
+
+		}
+	
+		bullet = next;
+	}
+	
+}
+
 bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 		BulletElm* cursor = headBulletList;
@@ -230,6 +300,8 @@ void browse(BulletElm* head, callback f)
 		cursor = cursor->next;
 	}
 }
+
+
 BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 {
 	if (head == NULL)	{
@@ -324,9 +396,8 @@ static void app(void)
 			free(gameDataMessage);
 		}
 
-		browse(headBulletList, &checkbulletExceed);
-		browse(headBulletList, &incrementBullet);
-		
+
+		incrementBullet(headBulletList);
 		
 	}
 	end_connection(sock);
@@ -448,7 +519,9 @@ static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, co
 
 int main(int argc, char **argv)
 {
-	//ft_LoadMap("map/first.bmp", &CurrentGame.map);
+	map = malloc(sizeof(Map));
+	//ft_LoadMap("map/first.bmp", &map);
+	Sleep(1);
 
 
 	app();
