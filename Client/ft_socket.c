@@ -57,7 +57,7 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
 	{
 		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
-		return FALSE;
+		return false;
 	}
 #endif
 	/* UDP so SOCK_DGRAM */
@@ -68,14 +68,14 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	if (sock == INVALID_SOCKET)
 	{
 		perror("socket()");
-		exit(errno);
+		return false;
 	}
 
 	hostinfo = gethostbyname(address);
 	if (hostinfo == NULL)
 	{
 		fprintf(stderr, "Unknown host %s.\n", address);
-		exit(EXIT_FAILURE);
+		return false;
 	}
 
 	sin->sin_addr = *(IN_ADDR *)hostinfo->h_addr;
@@ -156,8 +156,10 @@ int create_connection(configuration *settings)
 	bool status = false;
 	psin = malloc(sizeof(SOCKADDR_IN));
 	psin->sin_family = AF_INET;
-	sock = init_connection(mainConfiguration->server,psin);
 	
+	if ((sock = init_connection(mainConfiguration->server, psin)) == false)
+		return false;
+
 	uint8_t buffer[MAX_BUFFER];
 
 	ConnectionMessage connectionMessage;
@@ -168,34 +170,13 @@ int create_connection(configuration *settings)
 
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	status = encode_unionmessage(&output, ConnectionMessage_fields, &connectionMessage);
+
 	int c = write_client(buffer,output.bytes_written);
-	
-	/*_engine.map = &_engine.currentGame->map;
-	_engine.mainPlayer.id = _engine.currentGame->clientId;*/
-	
-
-	//FILE * fp;
-
-	//fp = fopen("file.txt", "w+");
-	////int j = 0; j <_engine.map->width; j++)
-	//for (int i = 0; i < _engine.map->heigth; i++)
-	//{
-	//	for (int j = 0; j <_engine.map->width; j++)
-	//	{
-	//		fprintf(fp, "%c", _engine.map->data[i][j]);
-	//	}
-	//	fprintf(fp, "\n");
-	//}
-
-
-
-	//fclose(fp);
-
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
-		return EXIT_FAILURE;
+		return false;
 	}
-	
+	return true;
 }
 int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
@@ -215,10 +196,7 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
 	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)psin, sizeof *psin))< 0)
-	{
 		perror("send()");
-		exit(errno);
-	}
 	return n;
 }
 

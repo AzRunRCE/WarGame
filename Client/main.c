@@ -29,7 +29,7 @@
 #include <Windows.h>
 #include <SDL_syswm.h> 
 #define MAX_LENGTH 32
-#define FIRE_DELAY 200
+#define FIRE_DELAY 150
 #define BLOCK_SIZE 32
 
 Engine _engine;
@@ -40,15 +40,13 @@ SDL_Surface *fontSurface = NULL;
 char message[20];
 time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
-
+bool ok = false;
 
 
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
-void ft_getHealthSprite(Player *player);
-void ft_getAmmoSprite(Player *player);
-bool ft_delay(int *lastAnim, int  SleepTimeAnim); 
+
 bool ft_getNextExplodeSprite(Explode *explode)
 {
 	if (explode->Step == 52)
@@ -68,45 +66,44 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 int main(int argc, char *argv[])
 {
-	
+
 	mainConfiguration = ft_loadConf();
 	printf("Version: %d\nNickname: %s\nServer: %s\n", mainConfiguration->version, mainConfiguration->nickname, mainConfiguration->server);
 	SDL_init();
 	Engine_init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
-	menu(mainConfiguration);
-	create_connection(mainConfiguration);
+	do
+	{
+		menu(mainConfiguration);
+	} while (!create_connection(mainConfiguration));
+
 	ft_LoadMap("map/first.bmp", _engine.map);
 	SDL_Rect posText;
-	SDL_Texture *texture;
+	//SDL_Texture *texture;
 	explode.Pos.h = 255;
 	explode.Pos.w = 255;
 	explode.Step = 0;
-	
-	
+
+
 	struct SDL_SysWMinfo wmInfo;
 	SDL_VERSION(&wmInfo.version);
 	SDL_GetWindowWMInfo(_engine.window, &wmInfo);
-	bool ok  = false;
 	int last = 0;
 	while (GetKeyPressEvent())
-	{	
+	{
 		SDL_Event event;
-		if (wmInfo.info.win.window == GetForegroundWindow() || ok) {	
+		if (wmInfo.info.win.window == GetForegroundWindow()) {
+			if (ft_delay(&last, 100))
+				ok = true;
 			SDL_PollEvent(&event);
-			if (event.type == SDL_QUIT) {
+			if (event.type == SDL_QUIT)
 				exit(0);
-			}
 		}
 		else
 		{
 			ok = false;
 			last = SDL_GetTicks();
 		}
-		if (ft_delay(&last, 100)) {
-			ok = true;
-		}
-		
 
 		ft_getNextExplodeSprite(&explode);
 		_engine.PlayerRealPos.x = (_engine.mainPlayer.Pos.x + 16);
@@ -123,18 +120,18 @@ int main(int argc, char *argv[])
 			sprintf(message, "%d,%d %d %d %d %c", _engine.mainPlayer.Pos.x, _engine.mainPlayer.Pos.y, actual, _engine.PlayerRealPos.x / BLOCK_SIZE, _engine.PlayerRealPos.y / BLOCK_SIZE, _engine.map->data[(int)_engine.PlayerRealPos.y / BLOCK_SIZE][(int)_engine.PlayerRealPos.x / BLOCK_SIZE]);
 		text = TTF_RenderText_Blended(_engine.font, message, colorWhite);
 		posText = (SDL_Rect) { 0, 0, text->w, text->h };
-//		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
+		//		texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, text);
 		_engine.camera.x = _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16;
 		_engine.camera.y = _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16;
 		ft_GetPlayerOrientation(&_engine.mainPlayer);
 		SDL_RenderClear(_engine.screenRenderer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
-		
+
 		SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 		ft_ViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
-		
-		//	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
+
+																										   //	SDL_RenderCopy(_engine.screenRenderer, _engine.explodeSurface, &explode.Sprite, &explode.Pos);
 		browserBullets(headBullets, &drawBullet);
 		int i;
 		for (i = 0; i < _engine.playersCount; i++)
@@ -151,15 +148,15 @@ int main(int argc, char *argv[])
 			//printf("%d %d\n", _engine.players[i].Pos.x, _engine.players[i].Pos.y);
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &_engine.players[i].Pos);
 		}
-	
+
 		//SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
-	//	SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
+		//	SDL_RenderCopy(_engine.screenRenderer, texture, NULL, &posText);
 		SDL_RenderPresent(_engine.screenRenderer);
-	//	SDL_DestroyTexture(texture);
+		//	SDL_DestroyTexture(texture);
 		SDL_FreeSurface(text);
 		SDL_FreeSurface(_engine.mapSurface);
 		SDL_FreeSurface(_engine.characterSurface);
@@ -167,11 +164,11 @@ int main(int argc, char *argv[])
 		SDL_FreeSurface(_engine.characterEnnemiSurface);
 		SDL_FreeSurface(_engine.bulletSurface);
 		SDL_FreeSurface(_engine.viewSurface);
-		
+
 	}
 
 	end();
-	
+
 
 	return EXIT_SUCCESS;
 
@@ -239,10 +236,10 @@ SDL_Texture* SurfaceToTexture(SDL_Surface* surf)
 
 int GetKeyPressEvent()
 {
-	
+
 	Uint8 *keystate = SDL_GetKeyboardState(NULL);
-	
-	
+
+
 
 	_engine.mainPlayer.fire = false;
 	_engine.mainPlayer.walk = false;
@@ -255,9 +252,9 @@ int GetKeyPressEvent()
 		posX = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32;
 		posY = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32;
 	}
-	
-	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0 
-		&& _engine.map->data[(int)posY/BLOCK_SIZE][(int)(posX - 8)/BLOCK_SIZE]
+
+	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0
+		&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
 		)
 	{
 		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
@@ -266,13 +263,13 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.Pos.x -= 2;
 		_engine.mainPlayer.state = LEFT;
 		_engine.mainPlayer.walk = true;
-		
+
 	}
-	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h 
-		&& _engine.map->data[(int)posY/BLOCK_SIZE][(int)(posX + 8)/BLOCK_SIZE]
+	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
+		&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX + 8) / BLOCK_SIZE]
 		)
 	{
-	 
+
 		if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
 			_engine.pCenter.x += 2;
 		else
@@ -281,13 +278,13 @@ int GetKeyPressEvent()
 		_engine.mainPlayer.walk = true;
 	}
 	if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0
-		&& _engine.map->data[(int)(posY - 8)/BLOCK_SIZE][(int)posX/BLOCK_SIZE]
+		&& _engine.map->data[(int)(posY - 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
 		)
 	{
 		if (_engine.mainPlayer.state == LEFT)
 		{
 			_engine.mainPlayer.state = UP_LEFT;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h )
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 				_engine.pCenter.y--;
 			else
 				_engine.mainPlayer.Pos.y--;
@@ -298,22 +295,22 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.state = UP_RIGHT;
 			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
 				_engine.pCenter.y--;
-			else 
+			else
 				_engine.mainPlayer.Pos.y--;
 		}
 		else
 		{
 			_engine.mainPlayer.state = UP;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h) 
-				_engine.pCenter.y-=2;
-			else 
-				_engine.mainPlayer.Pos.y -=2;
+			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
+				_engine.pCenter.y -= 2;
+			else
+				_engine.mainPlayer.Pos.y -= 2;
 		}
 
 		_engine.mainPlayer.walk = true;
 	}
-	else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h 
-		&& _engine.map->data[(int)(posY + 8)/BLOCK_SIZE][(int)posX/BLOCK_SIZE]
+	else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
+		&& _engine.map->data[(int)(posY + 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
 		)
 	{
 		if (_engine.mainPlayer.state == LEFT)
@@ -336,15 +333,15 @@ int GetKeyPressEvent()
 		{
 			_engine.mainPlayer.state = DOWN;
 			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-				_engine.pCenter.y +=2;
+				_engine.pCenter.y += 2;
 			else
-				_engine.mainPlayer.Pos.y+=2;
+				_engine.mainPlayer.Pos.y += 2;
 		}
 		_engine.mainPlayer.walk = true;
 	}
 	if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&_engine.mainPlayer.fireIdle, FIRE_DELAY))
 	{
-	
+
 		FireBullet();
 	}
 	return 1;
@@ -381,7 +378,7 @@ void FireBullet()
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	bool status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
 	int c = sendMessage(buffer, output.bytes_written);
-	PlaySound(TEXT("res/fire.wav"), NULL, SND_ASYNC);
-	
+	//PlaySound(TEXT("res/fire.wav"), NULL, SND_ASYNC);
+
 }
 

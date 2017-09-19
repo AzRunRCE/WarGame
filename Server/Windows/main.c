@@ -28,7 +28,7 @@ typedef struct in_addr IN_ADDR;
 #endif
 #include "include/server.h"
 #include "include/client.h"
-#include "include/ft_Map.h"
+#include "include/ft_map.h"
 #include "pb.h"
 #include "pb_common.h"
 #include "pb_encode.h"
@@ -55,8 +55,9 @@ typedef void(*callback)(BulletElm* head_bulletList);
 
 bool list_bullet;
 Map *map;
-
-static int init_connection(void)
+int lastInc = 0;
+bool ft_delay(int *lastAnim, int  SleepTimeAnim);
+ int init_connection(void)
 {
 #ifdef _WIN32
 	WSADATA WSAData;                    // Contains details of the 
@@ -96,7 +97,6 @@ static int init_connection(void)
 
 	return sock;
 }
-
 
 BulletElm *initBullet(BulletElm* bullet)
 {
@@ -179,13 +179,14 @@ BulletElm* remove_any(BulletElm* head, BulletElm* nd)
 	}
 	return head;
 }
+
 void incrementBullet(BulletElm* headBullets)
 {
 	BulletElm* bullet = headBullets;
 	while (bullet != NULL)
 	{
 		BulletElm* next = bullet->next;
-		if (bullet->pos.x > 1600 || bullet->pos.y > 1600 || bullet->pos.x < 0 || bullet->pos.y < 0)
+		if (!map->data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE])
 		{
 			headBulletList = remove_any(headBulletList, bullet);
 		
@@ -195,16 +196,20 @@ void incrementBullet(BulletElm* headBullets)
 			bullet->pos.y = bullet->y0;
 			bullet->pos.x = bullet->x0;
 			bullet->e2 = bullet->err;
-			if (bullet->e2 > -bullet->dX)
+			for (size_t i = 0; i < 2; i++)
 			{
-				bullet->err -= bullet->dY;
-				bullet->x0 += bullet->sX;
+				if (bullet->e2 > -bullet->dX)
+				{
+					bullet->err -= bullet->dY;
+					bullet->x0 += bullet->sX;
+				}
+				if (bullet->e2 < bullet->dY)
+				{
+					bullet->err += bullet->dX;
+					bullet->y0 += bullet->sY;
+				}
 			}
-			if (bullet->e2 < bullet->dY)
-			{
-				bullet->err += bullet->dX;
-				bullet->y0 += bullet->sY;
-			}
+			
 
 		}
 	
@@ -238,7 +243,6 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 
 bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	list_bullet = true;
 	for (int i =0; i < actual;i++)
 	{	
 	
@@ -321,7 +325,7 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 	return head;
 }
 
-static void app(void)
+void app(void)
 {
 	bool status = true;
 	sock = init_connection();
@@ -396,16 +400,17 @@ static void app(void)
 			free(gameDataMessage);
 		}
 
-
-		incrementBullet(headBulletList);
-		
+		if (ft_delay(&lastInc, 10))
+		{
+			incrementBullet(headBulletList);
+		}
 	}
 	end_connection(sock);
 }
 
 
 
-static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
+ int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
 {
 	int i = 0;
 	for (i = 0; i < actual; i++)
@@ -420,7 +425,7 @@ static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual
 	return 0;
 }
 
-static Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual)
+Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual)
 {
 	int i = 0;
 	for (i = 0; i < actual; i++)
@@ -435,7 +440,7 @@ static Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual)
 	return NULL;
 }
 
-static int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
+int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
 {
 	int i = 0;
 	for (i = 0; i < actual; i++)
@@ -449,7 +454,7 @@ static int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
 
 	return 0;
 }
-static void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
+void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 {
 	int* begin = arr + index;                        // beginning of segment to remove
 	int* end = arr + index + rem_size;               // end of segment to remove
@@ -465,7 +470,7 @@ static void array_remove(Client* arr, size_t size, size_t index, size_t rem_size
 
 }
 
-static void remove_client(Client *clients, int to_remove, int *actual)
+ void remove_client(Client *clients, int to_remove, int *actual)
 {
 	/* we remove the client in the array */
 	memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove) * sizeof(Client));
@@ -473,7 +478,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
 	(*actual)--;
 }
 
-static void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, uint8_t *buffer,int length)
+ void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, uint8_t *buffer,int length)
 {
 	for (int i = 0; i < actual; i++)
 	{
@@ -486,11 +491,11 @@ static void send_message_to_all_clients(int sock, Client *clients, Client *sende
 }
 
 
-static void end_connection(int sock)
+ void end_connection(int sock)
 {
 	closesocket(sock);
 }
-static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
+int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
@@ -505,7 +510,7 @@ static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 	return n;
 }
 
-static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length)
+ int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length)
 {
 	int n = 0;
 	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin))< 0)
@@ -516,11 +521,22 @@ static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, co
 	return n;
 }
 
-
+ bool ft_delay(int *last, int  SleepTimeAnim)
+{
+	int ActualTimeAnim = SDL_GetTicks();
+	if (ActualTimeAnim - *last > SleepTimeAnim)
+	{
+		*last = ActualTimeAnim;
+		return true;
+	}
+	else
+		return false;
+}
 int main(int argc, char **argv)
 {
 	map = malloc(sizeof(Map));
-	//ft_LoadMap("map/first.bmp", &map);
+	ft_LoadMap("map/first.bmp", map);
+
 
 
 	app();

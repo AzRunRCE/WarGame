@@ -34,15 +34,15 @@ typedef int bool;
 #define true 1
 #define false 0
 #include "client.h"
-static void end(void);
-static void app(void);
-static int init_connection(void);
-static void end_connection(int sock);
-static int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer);
-static int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length);
-static void remove_client(Client *clients, int to_remove, int *actual);
-static int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual);
-static Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual);
-static void array_remove(Client* arr, size_t size, size_t index, size_t rem_size);
-static int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual);
+ void end(void);
+ void app(void);
+ int init_connection(void);
+ void end_connection(int sock);
+ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer);
+ int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length);
+ void remove_client(Client *clients, int to_remove, int *actual);
+ int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual);
+ Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual);
+ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size);
+ int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual);
 #endif /* guard */
