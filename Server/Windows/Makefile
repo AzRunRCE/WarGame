@@ -1,10 +1,11 @@
 CC=gcc
-CFLAGS=-W -Wall -pedantic
-LDFLAGS=-Ilibrary/include
+CFLAGS=-W -Wall -pedantic 
+LDFLAGS=-Ilibrary/include -Llibrary/lib/x64 -lSDL2
 EXEC=WarGameServer
-SRC=main.c common.c pb_common.c pb_decode.c pb_encode.c pb_functions.c unionproto.pb.c
+#SRC=main.c common.c pb_common.c pb_decode.c pb_encode.c pb_functions.c unionproto.pb.c ft_map.c
+SRC=main.c common.c ft_map.c pb_common.c pb_decode.c pb_encode.c pb_functions.c unionproto.pb.c
 OBJDIR=obj
-OBJ := $(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
+OBJ=$(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 
 all: $(EXEC)
 

@@ -3,7 +3,7 @@
 
 #include "server.h"
 #include <SDL.h>
-#include "../unionproto.pb.h"
+#include "unionproto.pb.h"
 typedef struct
 {
     SOCKADDR_IN sin;

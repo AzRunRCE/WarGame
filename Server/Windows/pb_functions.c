@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "common.h"
-#include "pb_encode.h"
-#include "pb_decode.h"
-#include "unionproto.pb.h"
+#include "include/common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
 
 const pb_field_t* decode_unionmessage_type(pb_istream_t *stream)
 {

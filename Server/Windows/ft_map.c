@@ -1,7 +1,6 @@
-#include "include\ft_Map.h"
+#include "include/ft_map.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <conio.h>
 #include <math.h>
 #define BLOCK_SIZE 32
 #define BLACK 255
@@ -48,7 +47,6 @@ Map *ft_LoadMap(char * path, Map *map)
 
 	map->width = mapBMP->w;
 
-	int rows, columns;
 
 	for (int j = 0; j < mapBMP->w; j++)
 	{
@@ -56,10 +54,10 @@ Map *ft_LoadMap(char * path, Map *map)
 		{
 			if ((int)obtenirPixel(mapBMP, j, i) == BLACK)
 			{
-				map->data[i][j] = 0;
+				map->data[i][j].type = WALL;
 			}
 			else
-				map->data[i][j] = 1;
+				map->data[i][j].type = BLANK;
 			
 		}
 	}

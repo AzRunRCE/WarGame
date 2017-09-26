@@ -31,6 +31,8 @@ configuration *ft_loadConf()
 		printf("Can't load '%s'\n", path);
 		settings = NULL;
 	}
+	printf("Version: %d\nNickname: %s\nServer: %s\n", settings->version, settings->nickname, settings->server);
+
 	return settings;
 }
 

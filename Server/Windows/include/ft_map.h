@@ -1,10 +1,10 @@
 #ifndef FT_MAP_H
 #define FT_MAP_H
 #include <SDL.h>
-
+#include "ft_item.h"
 typedef struct
 {
-	char data[50][50];
+	Item data[50][50];
 	int heigth;
 	int width;
 }Map;

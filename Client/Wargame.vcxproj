@@ -141,25 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="common.c" />
-    <ClCompile Include="ft_bullet.c" />
-    <ClCompile Include="ft_configuration.c" />
-    <ClCompile Include="ft_Engine.c" />
-    <ClCompile Include="ft_explode.c" />
-    <ClCompile Include="ft_map.c" />
-    <ClCompile Include="ft_Menu.c" />
-    <ClCompile Include="ft_SDL.c" />
-    <ClCompile Include="ft_socket.c" />
-    <ClCompile Include="ini.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="pb_common.c" />
-    <ClCompile Include="pb_decode.c" />
-    <ClCompile Include="pb_encode.c" />
-    <ClCompile Include="pb_functions.c" />
-    <ClCompile Include="src\ft_View.c" />
-    <ClCompile Include="unionproto.pb.c" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="ft_item.h" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_client.h" />
@@ -186,6 +168,25 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common.c" />
+    <ClCompile Include="ft_bullet.c" />
+    <ClCompile Include="ft_configuration.c" />
+    <ClCompile Include="ft_engine.c" />
+    <ClCompile Include="ft_explode.c" />
+    <ClCompile Include="ft_map.c" />
+    <ClCompile Include="ft_menu.c" />
+    <ClCompile Include="ft_sdl.c" />
+    <ClCompile Include="ft_socket.c" />
+    <ClCompile Include="ft_view.c" />
+    <ClCompile Include="ini.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="pb_common.c" />
+    <ClCompile Include="pb_decode.c" />
+    <ClCompile Include="pb_encode.c" />
+    <ClCompile Include="pb_functions.c" />
+    <ClCompile Include="unionproto.pb.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

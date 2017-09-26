@@ -17,7 +17,8 @@ void browserBullets(BulletElm* head, callback f)
 void drawBullet(BulletElm *bullet) {
 
 	bullet->pos.h = bullet->pos.w = 6;
-	bullet->pos.x -= _engine.camera.x;
-	bullet->pos.y -= _engine.camera.y;
-	SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface, &RECT, &bullet->pos);
+	SDL_Rect obj = { .x = 0,.y = 0,.h = 6,.w = 6 };
+	obj.x = bullet->pos.x - _engine.camera.x;
+	obj.y = bullet->pos.y - _engine.camera.y;
+	SDL_RenderCopy(_engine.screenRenderer, _engine.bulletSurface, &RECT, &obj);
 }

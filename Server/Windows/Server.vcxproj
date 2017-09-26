@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
-    <ClCompile Include="ft_Map.c" />
+    <ClCompile Include="ft_map.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="pb_common.c" />
     <ClCompile Include="pb_decode.c" />
@@ -161,15 +161,21 @@
     <ClCompile Include="unionproto.pb.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common.h" />
     <ClInclude Include="include\client.h" />
-    <ClInclude Include="include\ft_Map.h" />
+    <ClInclude Include="include\common.h" />
+    <ClInclude Include="include\ft_item.h" />
+    <ClInclude Include="include\ft_map.h" />
     <ClInclude Include="include\ft_state.h" />
+    <ClInclude Include="include\pb.h" />
+    <ClInclude Include="include\pb_common.h" />
+    <ClInclude Include="include\pb_decode.h" />
+    <ClInclude Include="include\pb_functions.h" />
     <ClInclude Include="include\server.h" />
+    <ClInclude Include="include\unionproto.pb.h" />
     <ClInclude Include="pb.h" />
     <ClInclude Include="pb_common.h" />
     <ClInclude Include="pb_decode.h" />
-    <ClInclude Include="pb_encode.h" />
+    <ClInclude Include="include\pb_encode.h" />
     <ClInclude Include="pb_functions.h" />
     <ClInclude Include="unionproto.pb.h" />
   </ItemGroup>

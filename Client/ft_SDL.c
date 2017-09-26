@@ -47,18 +47,10 @@ void ft_GetPlayerOrientation(Player *player)
 	}
 	ft_getCharactSprite(player, state, step);
 }
-int SDL_Update()
+
+void SDL_init()
 {
-	SDL_RenderClear(_engine.screenRenderer);
-	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-	SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
-	// SDL_RenderCopy(_engine.screenRenderer,  _engine.characterEnnemiSurface , &_engine.enemiPlayer.sprite, &_engine.enemiPlayer.Pos);
-	SDL_RenderCopy(_engine.screenRenderer, _engine.viewSurface, NULL, NULL);
-	SDL_RenderPresent(_engine.screenRenderer);
-}
-int SDL_init()
-{
-	if (SDL_Init(SDL_INIT_VIDEO) == -1)
+	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
 		fprintf(stderr, "Erreur d'initialisation de SDL_Init : %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
@@ -103,4 +95,64 @@ int ft_getFirePosition(State characterState)
 
 
 	return step;
+}
+
+int ft_drawPlayers()
+{
+	for (int i = 0; i < _engine.playersCount; i++)
+	{
+
+		if (_engine.players[i].id == -1 || _engine.players[i].id == _engine.mainPlayer.id)
+			continue;
+
+		_engine.players[i].Pos.w = 32;
+		_engine.players[i].Pos.h = 32;
+		SDL_Rect rect = _engine.players[i].Pos;
+		rect.x = _engine.players[i].Pos.x - _engine.camera.x;
+		rect.y = _engine.players[i].Pos.y - _engine.camera.y;
+		ft_GetPlayerOrientation(&_engine.players[i]);
+		SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
+	}
+	return 1;
+}
+
+void ft_freeAllSurfaces()
+{
+	SDL_FreeSurface(_engine.mapSurface);
+	SDL_FreeSurface(_engine.characterSurface);
+	SDL_FreeSurface(_engine.explodeSurface);
+	SDL_FreeSurface(_engine.characterEnnemiSurface);
+	SDL_FreeSurface(_engine.bulletSurface);
+	SDL_FreeSurface(_engine.viewSurface);
+}
+void ft_drawGame()
+{
+	SDL_RenderClear(_engine.screenRenderer);
+	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
+	
+	if (_engine.mainPlayer.health > 0)
+	{
+		_engine.AnimKillEx.Step = 0;
+		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
+	}
+	else
+	{
+		SDL_Rect rect = _engine.pCenter;
+		rect.x -= 12;
+		rect.y -= 6;
+		rect.h = 41;
+		rect.w = 56;
+		SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
+		ft_getNextDyingSprite(&_engine.AnimKillEx);
+	}
+		
+	
+	ft_drawPlayers();
+	browserBullets(headBullets, &drawBullet);
+	//SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+
+	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
+	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
+	SDL_RenderPresent(_engine.screenRenderer);
+	ft_freeAllSurfaces();
 }

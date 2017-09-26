@@ -26,15 +26,17 @@ typedef struct in_addr IN_ADDR;
 #error not defined for this platform
 
 #endif
+#include <SDL_timer.h>
 #include "include/server.h"
 #include "include/client.h"
 #include "include/ft_map.h"
-#include "pb.h"
-#include "pb_common.h"
-#include "pb_encode.h"
-#include "pb_decode.h"
-#include "unionproto.pb.h"
-#include "pb_functions.h"
+#include "include/pb.h"
+#include "include/pb_common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
+#include "include/pb_functions.h"
+#include "include/ft_item.h"
 #define MAX_BUFFER 4096
 #define SERVER "127.0.0.1"
 #define BLOCK_SIZE 32
@@ -43,8 +45,7 @@ typedef struct in_addr IN_ADDR;
 #else
 #define SOCKET_ERRNO	errno
 #endif
-//ServerGame CurrentGame;
-uint8_t currentGameBuffer[MAX_BUFFER];
+
 
 Client clients[MAX_CLIENTS];
 BulletElm *headBulletList;
@@ -56,7 +57,7 @@ typedef void(*callback)(BulletElm* head_bulletList);
 bool list_bullet;
 Map *map;
 int lastInc = 0;
-bool ft_delay(int *lastAnim, int  SleepTimeAnim);
+
  int init_connection(void)
 {
 #ifdef _WIN32
@@ -177,6 +178,7 @@ BulletElm* remove_any(BulletElm* head, BulletElm* nd)
 		tmp->next = NULL;
 		free(tmp);
 	}
+	
 	return head;
 }
 
@@ -185,18 +187,28 @@ void incrementBullet(BulletElm* headBullets)
 	BulletElm* bullet = headBullets;
 	while (bullet != NULL)
 	{
+		Item *currentItem = &map->data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE];
 		BulletElm* next = bullet->next;
-		if (!map->data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE])
-		{
+
+		if (currentItem->type == WALL)
 			headBulletList = remove_any(headBulletList, bullet);
-		
-		}
-		else
+		else if (currentItem->type == PLAYER)
 		{
+			Player *player = (Player*)currentItem->data;
+			
+			if (player->id != bullet->ownerId)
+			{
+				player->health -= 10;
+				headBulletList = remove_any(headBulletList, bullet);
+			}
+		}
+		if (bullet != NULL)
+		{
+
 			bullet->pos.y = bullet->y0;
 			bullet->pos.x = bullet->x0;
 			bullet->e2 = bullet->err;
-			for (size_t i = 0; i < 2; i++)
+			for (size_t i = 0; i < 3; i++)
 			{
 				if (bullet->e2 > -bullet->dX)
 				{
@@ -226,18 +238,17 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 		{
 			if (!pb_encode_tag_for_field(stream, field))
 				return false;
-			BulletMessage* tmpBulletMsg = malloc(sizeof(BulletMessage));
-			tmpBulletMsg->dest = cursor->dest;
-			tmpBulletMsg->pos = cursor->pos;
-			tmpBulletMsg->id = count;
-			tmpBulletMsg->ownerId = cursor->ownerId;
-			if (!pb_encode_submessage(stream, BulletMessage_fields, tmpBulletMsg))
+			BulletMessage tmpBulletMsg;
+			tmpBulletMsg.dest = cursor->dest;
+			tmpBulletMsg.pos = cursor->pos;
+			tmpBulletMsg.id = count;
+			tmpBulletMsg.ownerId = cursor->ownerId;
+			if (!pb_encode_submessage(stream, BulletMessage_fields, &tmpBulletMsg))
 				return false;
-			free(tmpBulletMsg);
 			count++;
 			cursor = cursor->next;
 		}
-		//printf("cursorCount: %d\n", count); // Debug print for count
+		printf("cursorCount: %d\n", count); // Debug print for count
 	return true;
 }
 
@@ -329,10 +340,15 @@ void app(void)
 {
 	bool status = true;
 	sock = init_connection();
-	char buffer[BUF_SIZE];
 	/* the index for the array */
 	int max = sock;
 	/* an array for all clients */
+	ConnectionCallbackMessage *callBackMessage = calloc(1, sizeof(ConnectionCallbackMessage));
+	strncpy(callBackMessage->motd, "Bienvenue sur mon serveur", sizeof(callBackMessage->motd));
+	callBackMessage->motd[sizeof(callBackMessage->motd) - 1] = '\0';
+	callBackMessage->sucess = true;
+
+
 
 	while (true)
 	{
@@ -354,14 +370,12 @@ void app(void)
 				clients[actual] = c;
 				strncpy(Players[actual].name, connectionMessage.name, sizeof(Players[actual].name));
 				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
-				ConnectionCallbackMessage callBackMessage;
-				callBackMessage.clientId = actual;
-				strncpy(callBackMessage.motd, "Bienvenue sur mon serveur", sizeof(callBackMessage.motd));
-				callBackMessage.motd[sizeof(callBackMessage.motd) - 1] = '\0';
-				callBackMessage.sucess = true;
+				Players[actual].health = 100;
+				callBackMessage->clientId = actual;
+				
 				uint8_t callback_buffer[ConnectionCallbackMessage_size];
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
-				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, &callBackMessage);
+				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage);
 				write_client(sock, &csin, callback_buffer, output.bytes_written);
 				printf("%s connected", connectionMessage.name);
 				actual++;
@@ -375,32 +389,41 @@ void app(void)
 		}
 		else if (type == BulletMessage_fields)
 		{
-			BulletMessage *bulletMsg = malloc(sizeof(BulletMessage));
-			status = decode_unionmessage_contents(&stream, BulletMessage_fields, bulletMsg);
-			printf("BulletMessage name:%s x:%d y:%d\n",Players[bulletMsg->ownerId].name, bulletMsg->pos.x, bulletMsg->pos.y);
-			headBulletList = pushBullet(headBulletList, bulletMsg);
-			free(bulletMsg);
-	
+			BulletMessage bulletMsg;
+			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bulletMsg);
+			printf("BulletMessage name:%s x:%d y:%d\n",Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
+			headBulletList = pushBullet(headBulletList, &bulletMsg);
+			
 		}
 		else if (type == Player_fields)
 		{
-			Player PlayerMessage;			
+			Player PlayerMessage;
 			status = decode_unionmessage_contents(&stream, Player_fields, &PlayerMessage);
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
-			memcpy(&Players[PlayerMessage.id], &PlayerMessage, sizeof(PlayerMessage));
-			GameDataMessage *gameDataMessage = malloc(sizeof(GameDataMessage));
-			gameDataMessage->GameMode = 1;
-			gameDataMessage->playersCount = actual;
-			gameDataMessage->players.funcs.encode = &listPlayers_callback;
-			gameDataMessage->bullets.funcs.encode = &listBullets_callback;
-			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, MAX_BUFFER);
-			bool status = encode_unionmessage(&output, GameDataMessage_fields, gameDataMessage);
-			int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
-			free(gameDataMessage);
+			map->data[(int)Players[PlayerMessage.id].Pos.y / BLOCK_SIZE][(int)(Players[PlayerMessage.id].Pos.x) / BLOCK_SIZE].type = BLANK;
+			map->data[(int)Players[PlayerMessage.id].Pos.y / BLOCK_SIZE][(int)(Players[PlayerMessage.id].Pos.x) / BLOCK_SIZE].data = NULL;
+
+			int health = Players[PlayerMessage.id].health;
+			Players[PlayerMessage.id] =  PlayerMessage;
+			Players[PlayerMessage.id].health = health;
+			
+			map->data[(int)PlayerMessage.Pos.y / BLOCK_SIZE][(int)(PlayerMessage.Pos.x) / BLOCK_SIZE].type = PLAYER;
+			map->data[(int)PlayerMessage.Pos.y / BLOCK_SIZE][(int)(PlayerMessage.Pos.x) / BLOCK_SIZE].data = &Players[PlayerMessage.id];
+			
+			GameDataMessage gameDataMessage;
+			uint8_t currentGameBuffer[MAX_BUFFER];
+			gameDataMessage.GameMode = 1;
+			gameDataMessage.playersCount = actual;
+			gameDataMessage.players.funcs.encode = &listPlayers_callback;
+			gameDataMessage.bullets.funcs.encode = &listBullets_callback;
+			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
+			encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
+			write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+			
 		}
 
-		if (ft_delay(&lastInc, 10))
+		if (ft_delay(&lastInc, 5))
 		{
 			incrementBullet(headBulletList);
 		}
@@ -489,13 +512,13 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 	}
 
 }
-
-
+ 
  void end_connection(int sock)
 {
 	closesocket(sock);
 }
-int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
+
+ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *sin;
@@ -521,7 +544,7 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 	return n;
 }
 
- bool ft_delay(int *last, int  SleepTimeAnim)
+ bool ft_delay(int *last, int SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
 	if (ActualTimeAnim - *last > SleepTimeAnim)
@@ -532,12 +555,11 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 	else
 		return false;
 }
-int main(int argc, char **argv)
+
+ int main(int argc, char **argv)
 {
 	map = malloc(sizeof(Map));
-	ft_LoadMap("map/first.bmp", map);
-
-
+	ft_LoadMap("map/first.bmp", map);;
 
 	app();
 

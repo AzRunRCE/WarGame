@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "unionproto.pb.h"
 #include "ft_socket.h"
+#include "ft_explode.h"
 typedef struct {
 	pthread_cond_t condition; 
 	pthread_mutex_t mutex; 
@@ -29,6 +30,7 @@ typedef struct {
 	SDL_Rect bullets[250];
 	SDL_Rect viewRect;
 	SDL_Rect healthRect;
+	Explode AnimKillEx;
 	SDL_Rect healthPos;
 	SDL_Rect AmmoRect;
 	SDL_Rect ammoPos;
@@ -41,6 +43,7 @@ typedef struct {
 	SDL_Surface *healthSurface;
 	SDL_Surface *bulletSurface;
 	SDL_Surface *explodeSurface;
+	SDL_Surface *AnimKill;
 	SDL_Surface *bombSurface;
 	SDL_Surface *characterSurface;
 	SDL_Surface *characterEnnemiSurface;
@@ -53,5 +56,7 @@ typedef struct {
     SDL_Rect mousePos;
 }Engine;
 extern Engine _engine;
+
+void Engine_init();
 
 #endif // ENGINE_H
