@@ -1,9 +1,11 @@
+#include <stdio.h>
+#include <SDL_image.h>
+#include "main.h"
 #include "include\ft_Menu.h"
 #include "include\ft_engine.h"
 #include "include\ft_point.h"
-#include <stdio.h>
-#include "main.h"
 #include "include\ft_configuration.h"
+
 
 
 void initMenuOptions(Menu *Menu, configuration *settings)
@@ -251,4 +253,12 @@ void menu(configuration *settings)
 	SDL_FreeSurface(Menu.menuBackground);
 	SDL_FreeSurface(Menu.selectionLeft);
 	SDL_FreeSurface(Menu.selectionRight);
+}
+
+void menuDeath()
+{
+		gameoverBackground = IMG_Load("res/gameover.png");
+		SDL_Texture* monImage = SDL_CreateTextureFromSurface(_engine.screenRenderer, gameoverBackground);
+		SDL_RenderCopy(_engine.screenRenderer, monImage, NULL, NULL);
+		SDL_FreeSurface(gameoverBackground);
 }

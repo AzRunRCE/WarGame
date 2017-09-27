@@ -12,6 +12,8 @@
 #include "include\ft_SDL.h"
 #include "include\ft_player.h"
 #include "include\ft_sprite.h"
+#include "include/ft_menu.h"
+
 bool Delay(int *lastAnim, int  SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
@@ -144,12 +146,13 @@ void ft_drawGame()
 		rect.w = 56;
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
 		ft_getNextDyingSprite(&_engine.AnimKillEx);
+		menuDeath();
 	}
 		
 	
 	ft_drawPlayers();
 	browserBullets(headBullets, &drawBullet);
-	//SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);

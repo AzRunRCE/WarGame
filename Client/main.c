@@ -42,7 +42,6 @@ time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
 
 Uint8 *keystate;
-SDL_Event event;
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;
@@ -68,6 +67,7 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 bool ft_checkEvent()
 {
+	SDL_Event event;
 	SDL_PollEvent(&event);
 	if (event.type == SDL_QUIT)
 		return false;
@@ -113,8 +113,6 @@ int main(int argc, char *argv[])
 		ft_getAmmoSprite(&_engine.mainPlayer);
 //	ft_getNextExplodeSprite(&explode);	
 		ft_drawGame();
-		
-
 	}
 
 	end();

@@ -2,11 +2,8 @@
 #define SERVER_H
 #define HAVE_STRUCT_TIMESPEC
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
-
 #include <winsock2.h> 
-
 #elif defined (linux) /* si vous êtes sous Linux */
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -22,7 +19,6 @@ typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
 
 #else /* sinon vous êtes sur une plateforme non supportée */
-
 #error not defined for this platform
 
 #endif

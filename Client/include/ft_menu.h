@@ -47,5 +47,8 @@ struct Menu {
 
 };
 
+SDL_Surface *gameoverBackground;
+
 void menu(configuration *settings);
+void menuDeath();
 #endif // FT_MENU_H
