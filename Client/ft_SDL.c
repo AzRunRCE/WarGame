@@ -157,5 +157,5 @@ void ft_drawGame()
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
 	SDL_RenderPresent(_engine.screenRenderer);
-	ft_freeAllSurfaces();
+	//ft_freeAllSurfaces();
 }

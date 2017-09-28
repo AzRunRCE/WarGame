@@ -38,17 +38,17 @@ typedef struct {
 	double viewDegrees;
 
 	SDL_Surface *mapSurface;
-	SDL_Surface *viewSurface;
-	SDL_Surface *AmmoSurface;
-	SDL_Surface *healthSurface;
-	SDL_Surface *bulletSurface;
-	SDL_Surface *explodeSurface;
-	SDL_Surface *AnimKill;
-	SDL_Surface *bombSurface;
-	SDL_Surface *characterSurface;
-	SDL_Surface *characterEnnemiSurface;
-	SDL_Surface *menuSurface;
-	SDL_Surface *selectionSurface;
+	SDL_Texture *viewSurface;
+	SDL_Texture *AmmoSurface;
+	SDL_Texture *healthSurface;
+	SDL_Texture *bulletSurface;
+	SDL_Texture *explodeSurface;
+	SDL_Texture *AnimKill;
+	SDL_Texture *bombSurface;
+	SDL_Texture *characterSurface;
+	SDL_Texture *characterEnnemiSurface;
+	SDL_Texture *menuSurface;
+	SDL_Texture *selectionSurface;
 
 #pragma endregion
 

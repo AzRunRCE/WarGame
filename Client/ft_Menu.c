@@ -257,8 +257,5 @@ void menu(configuration *settings)
 
 void menuDeath()
 {
-		gameoverBackground = IMG_Load("res/gameover.png");
-		SDL_Texture* monImage = SDL_CreateTextureFromSurface(_engine.screenRenderer, gameoverBackground);
-		SDL_RenderCopy(_engine.screenRenderer, monImage, NULL, NULL);
-		SDL_FreeSurface(gameoverBackground);
+		SDL_RenderCopy(_engine.screenRenderer, gameoverBackground, NULL, NULL);
 }
