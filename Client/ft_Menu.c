@@ -197,7 +197,7 @@ void menu(configuration *settings)
 		}
 		if (Menu.textInputIpAddress[0] != '\0' && Menu.selectionOptionsDone) {
 			Menu.ipAddress = TTF_RenderText_Blended(Menu.WarGameFont, Menu.textInputIpAddress, _engine.colorWarGame);
-			Menu.posIpAddress = (SDL_Rect) { _engine.WIDTH / 2, _engine.HEIGHT / 2.2 + Menu.ipAddress->h / 2, Menu.ipAddress->w, Menu.ipAddress->h };
+			Menu.posIpAddress = (SDL_Rect) {(int32_t) _engine.WIDTH / 2, (int32_t)_engine.HEIGHT / 2.2 + Menu.ipAddress->h / 2, (int32_t)Menu.ipAddress->w, (int32_t)Menu.ipAddress->h };
 			Menu.textureTextIpAdress = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.ipAddress);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextIpAdress, NULL, &Menu.posIpAddress);
 		}

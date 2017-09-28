@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +27,7 @@
 #include "include\pb_functions.h"
 #include <Windows.h>
 #include <SDL_syswm.h> 
+
 #define MAX_LENGTH 32
 #define FIRE_DELAY 150
 #define BLOCK_SIZE 32
@@ -41,7 +41,7 @@ char message[20];
 time_t lastTime = 0, lastTimeAnim = 0;
 SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
 
-Uint8 *keystate;
+const Uint8 *keystate;
 int actual = 0;
 configuration *mainConfiguration;
 Explode explode;

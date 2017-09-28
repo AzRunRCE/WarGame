@@ -14,8 +14,8 @@ struct Menu {
 	int selectionMenuOptionsDone;
     int countBlink;
 	int confirmOptionsForm;
-    SDL_Surface *menuBackground;
-    SDL_Surface *menuOptionsBackground;
+	SDL_Texture *menuBackground;
+	SDL_Texture *menuOptionsBackground;
     SDL_Surface *selectionLeft;
 	SDL_Surface *selectionRight;
     SDL_Surface *ipAddress;

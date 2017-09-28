@@ -2,10 +2,10 @@
 #define FT_BULLET_H
 #include <SDL.h>
 
-typedef struct
+typedef struct _BulletElm
 {
 	SDL_Rect pos;
-	struct BulletElm *next;
+	struct _BulletElm *next;
 //	struct BulletElm *previous;
 }BulletElm;
 
