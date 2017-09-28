@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
+    <ClCompile Include="ft_checkcollision.c" />
     <ClCompile Include="ft_map.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="pb_common.c" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="include\client.h" />
     <ClInclude Include="include\common.h" />
+    <ClInclude Include="include\ft_checkcollision.h" />
     <ClInclude Include="include\ft_item.h" />
     <ClInclude Include="include\ft_map.h" />
     <ClInclude Include="include\ft_state.h" />

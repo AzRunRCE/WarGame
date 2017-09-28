@@ -189,14 +189,13 @@ void incrementBullet(BulletElm* headBullets)
 
 		if (currentItem->type == WALL)
 			headBulletList = remove_any(headBulletList, bullet);
-		else if (currentItem->type == PLAYER)
+		else if (currentItem->type != BLANK)
 		{
 			Player *player = (Player*)currentItem->data;
-			
-			if (player->id != bullet->ownerId)
+			if (player->id != bullet->ownerId && checkCollision(&bullet->pos, &player->Pos))
 			{
-				player->health -= 10;
-				headBulletList = remove_any(headBulletList, bullet);
+					player->health -= 10;
+					headBulletList = remove_any(headBulletList, bullet);
 			}
 		}
 		if (bullet != NULL)
