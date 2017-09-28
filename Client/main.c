@@ -184,109 +184,120 @@ bool ft_delay(int *lastAnim, int  SleepTimeAnim)
 
 int GetKeyPressEvent()
 {
-
-	_engine.mainPlayer.fire = false;
-	_engine.mainPlayer.walk = false;
-
-	int posX = _engine.mainPlayer.Pos.x + 16;
-	int posY = _engine.mainPlayer.Pos.y + 16;
-	if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+	if (_engine.mainPlayer.health >= 0)
 	{
-		// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
-		posX = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32;
-		posY = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32;
+		_engine.mainPlayer.fire = false;
+		_engine.mainPlayer.walk = false;
+
+		int posX = _engine.mainPlayer.Pos.x + 16;
+		int posY = _engine.mainPlayer.Pos.y + 16;
+		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+		{
+			// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
+			posX = _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32;
+			posY = _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32;
+		}
+
+		if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0
+			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
+			)
+		{
+			if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
+				_engine.pCenter.x -= 2;
+			else
+				_engine.mainPlayer.Pos.x -= 2;
+			_engine.mainPlayer.state = LEFT;
+			_engine.mainPlayer.walk = true;
+
+		}
+		else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
+			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX + 8) / BLOCK_SIZE]
+			)
+		{
+
+			if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
+				_engine.pCenter.x += 2;
+			else
+				_engine.mainPlayer.Pos.x += 2;
+			_engine.mainPlayer.state = RIGHT;
+			_engine.mainPlayer.walk = true;
+		}
+		if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0
+			&& _engine.map->data[(int)(posY - 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
+			)
+		{
+			if (_engine.mainPlayer.state == LEFT)
+			{
+				_engine.mainPlayer.state = UP_LEFT;
+				if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
+					_engine.pCenter.y--;
+				else
+					_engine.mainPlayer.Pos.y--;
+			}
+
+			else if (_engine.mainPlayer.state == RIGHT)
+			{
+				_engine.mainPlayer.state = UP_RIGHT;
+				if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
+					_engine.pCenter.y--;
+				else
+					_engine.mainPlayer.Pos.y--;
+			}
+			else
+			{
+				_engine.mainPlayer.state = UP;
+				if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
+					_engine.pCenter.y -= 2;
+				else
+					_engine.mainPlayer.Pos.y -= 2;
+			}
+
+			_engine.mainPlayer.walk = true;
+		}
+		else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
+			&& _engine.map->data[(int)(posY + 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
+			)
+		{
+			if (_engine.mainPlayer.state == LEFT)
+			{
+				_engine.mainPlayer.state = DOWN_LEFT;
+				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+					_engine.pCenter.y++;
+				else
+					_engine.mainPlayer.Pos.y++;
+			}
+			else  if (_engine.mainPlayer.state == RIGHT)
+			{
+				_engine.mainPlayer.state = DOWN_RIGHT;
+				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+					_engine.pCenter.y++;
+				else
+					_engine.mainPlayer.Pos.y++;
+			}
+			else
+			{
+				_engine.mainPlayer.state = DOWN;
+				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+					_engine.pCenter.y += 2;
+				else
+					_engine.mainPlayer.Pos.y += 2;
+			}
+			_engine.mainPlayer.walk = true;
+		}
+		if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&_engine.mainPlayer.fireIdle, FIRE_DELAY))
+		{
+
+			FireBullet();
+		}
 	}
-
-	if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 16 > 0
-		&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
-		)
+	else
 	{
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.Pos.x + 32 > _engine.mapSurface->h)
-			_engine.pCenter.x -= 2;
-		else
-			_engine.mainPlayer.Pos.x -= 2;
-		_engine.mainPlayer.state = LEFT;
-		_engine.mainPlayer.walk = true;
-
-	}
-	else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.Pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
-		&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX + 8) / BLOCK_SIZE]
-		)
-	{
-
-		if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
-			_engine.pCenter.x += 2;
-		else
-			_engine.mainPlayer.Pos.x += 2;
-		_engine.mainPlayer.state = RIGHT;
-		_engine.mainPlayer.walk = true;
-	}
-	if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 16 > 0
-		&& _engine.map->data[(int)(posY - 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
-		)
-	{
-		if (_engine.mainPlayer.state == LEFT)
+		if (keystate[SDL_SCANCODE_R])
 		{
-			_engine.mainPlayer.state = UP_LEFT;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-				_engine.pCenter.y--;
-			else
-				_engine.mainPlayer.Pos.y--;
+			_engine.mainPlayer.Pos.x = 800;
+			_engine.mainPlayer.Pos.y = 800;
+			_engine.mainPlayer.health = 100;
 		}
-
-		else if (_engine.mainPlayer.state == RIGHT)
-		{
-			_engine.mainPlayer.state = UP_RIGHT;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-				_engine.pCenter.y--;
-			else
-				_engine.mainPlayer.Pos.y--;
-		}
-		else
-		{
-			_engine.mainPlayer.state = UP;
-			if (_engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.Pos.y + 32 >= _engine.mapSurface->h)
-				_engine.pCenter.y -= 2;
-			else
-				_engine.mainPlayer.Pos.y -= 2;
-		}
-
-		_engine.mainPlayer.walk = true;
-	}
-	else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.Pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
-		&& _engine.map->data[(int)(posY + 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
-		)
-	{
-		if (_engine.mainPlayer.state == LEFT)
-		{
-			_engine.mainPlayer.state = DOWN_LEFT;
-			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-				_engine.pCenter.y++;
-			else
-				_engine.mainPlayer.Pos.y++;
-		}
-		else  if (_engine.mainPlayer.state == RIGHT)
-		{
-			_engine.mainPlayer.state = DOWN_RIGHT;
-			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-				_engine.pCenter.y++;
-			else
-				_engine.mainPlayer.Pos.y++;
-		}
-		else
-		{
-			_engine.mainPlayer.state = DOWN;
-			if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-				_engine.pCenter.y += 2;
-			else
-				_engine.mainPlayer.Pos.y += 2;
-		}
-		_engine.mainPlayer.walk = true;
-	}
-	if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&_engine.mainPlayer.fireIdle, FIRE_DELAY))
-	{
-
-		FireBullet();
 	}
 	return 1;
 }
@@ -304,13 +315,6 @@ void FireBullet()
 		_engine.mainPlayer.ammo = 30;
 	}
 
-	if (_engine.mainPlayer.health > 0)
-		_engine.mainPlayer.health -= 10;
-	else
-	{
-		_engine.mainPlayer.health = 100;
-		_engine.mainPlayer.health = 100;
-	}
 	
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.fire = true;

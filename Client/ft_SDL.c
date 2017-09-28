@@ -14,20 +14,6 @@
 #include "include\ft_sprite.h"
 #include "include/ft_menu.h"
 
-bool Delay(int *lastAnim, int  SleepTimeAnim)
-{
-	int ActualTimeAnim = SDL_GetTicks();
-	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
-	{
-		*lastAnim = ActualTimeAnim;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-
-}
 void ft_GetPlayerOrientation(Player *player)
 {
 	State state = player->state;
@@ -35,14 +21,14 @@ void ft_GetPlayerOrientation(Player *player)
 	if (player->fire == true)
 	{
 		step = ft_getFirePosition(state);
-		if (Delay(&player->lastAnim, 200))
+		if (ft_delay(&player->lastAnim, 200))
 			state = 9;
 		else
 			state = 0;
 	}
 	else
 	{
-		if (player->walk &&  player->step < 4 && Delay(&player->lastAnim, 200))
+		if (player->walk &&  player->step < 4 && ft_delay(&player->lastAnim, 200))
 			player->step++;
 		if (player->walk &&  player->step > 3)
 			player->step = 0;
@@ -113,7 +99,22 @@ int ft_drawPlayers()
 		rect.x = _engine.players[i].Pos.x - _engine.camera.x;
 		rect.y = _engine.players[i].Pos.y - _engine.camera.y;
 		ft_GetPlayerOrientation(&_engine.players[i]);
-		SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
+		if (_engine.players[i].health > 0)
+		{
+			_engine.AnimKillEx.Step = 0;
+			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
+		}
+		else
+		{
+			rect.x -= 12;
+			rect.y -= 6;
+			rect.h = 41;
+			rect.w = 56;
+			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
+			ft_getNextDyingSprite(&_engine.AnimKillEx);
+		}
+
+
 	}
 	return 1;
 }

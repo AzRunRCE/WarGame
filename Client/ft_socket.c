@@ -216,7 +216,7 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 	}
 	else
 	{
-	//	_engine.mainPlayer.health = PlayerInfo.health;
+		_engine.mainPlayer.health = PlayerInfo.health;
 	}
 	return true;
 }
