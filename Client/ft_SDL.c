@@ -14,27 +14,7 @@
 #include "include\ft_sprite.h"
 #include "include/ft_menu.h"
 
-void ft_GetPlayerOrientation(Player *player)
-{
-	State state = player->state;
-	int step = player->step;
-	if (player->fire == true)
-	{
-		step = ft_getFirePosition(state);
-		if (ft_delay(&player->lastAnim, 200))
-			state = 9;
-		else
-			state = 0;
-	}
-	else
-	{
-		if (player->walk &&  player->step < 4 && ft_delay(&player->lastAnim, 200))
-			player->step++;
-		if (player->walk &&  player->step > 3)
-			player->step = 0;
-	}
-	ft_getCharactSprite(player, state, step);
-}
+
 
 void SDL_init()
 {
@@ -50,56 +30,22 @@ void SDL_init()
 	}
 }
 
-int ft_getFirePosition(State characterState)
-{
-	int step;
-	switch (characterState)
-	{
-	case UP:
-		step = 0;
-		break;
-	case UP_RIGHT:
-		step = 1;
-		break;
-	case RIGHT:
-		step = 2;
-		break;
-	case DOWN_RIGHT:
-		step = 3;
-		break;
-	case DOWN:
-		step = 4;
-		break;
-	case DOWN_LEFT:
-		step = 5;
-		break;
-	case LEFT:
-		step = 6;
-		break;
-	case UP_LEFT:
-		step = 7;
-		break;
-	}
-
-
-	return step;
-}
 
 int ft_drawPlayers()
 {
 	for (int i = 0; i < _engine.playersCount; i++)
 	{
 
-		if (_engine.players[i].id == -1 || _engine.players[i].id == _engine.mainPlayer.id)
+		if (_engine.players[i].playerBase.id == -1 || _engine.players[i].playerBase.id == _engine.mainPlayer.playerBase.id)
 			continue;
 
-		_engine.players[i].Pos.w = 32;
-		_engine.players[i].Pos.h = 32;
-		SDL_Rect rect = _engine.players[i].Pos;
-		rect.x = _engine.players[i].Pos.x - _engine.camera.x;
-		rect.y = _engine.players[i].Pos.y - _engine.camera.y;
-		ft_GetPlayerOrientation(&_engine.players[i]);
-		if (_engine.players[i].health > 0)
+		_engine.players[i].playerBase.pos.w = 32;
+		_engine.players[i].playerBase.pos.h = 32;
+		SDL_Rect rect = _engine.players[i].playerBase.pos;
+		rect.x = _engine.players[i].playerBase.pos.x - _engine.camera.x;
+		rect.y = _engine.players[i].playerBase.pos.y - _engine.camera.y;
+		
+		if (_engine.players[i].playerBase.health > 0)
 		{
 			_engine.AnimKillEx.Step = 0;
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
@@ -111,7 +57,7 @@ int ft_drawPlayers()
 			rect.h = 41;
 			rect.w = 56;
 			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
-			ft_getNextDyingSprite(&_engine.AnimKillEx);
+		
 		}
 
 
@@ -133,7 +79,7 @@ void ft_drawGame()
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 	
-	if (_engine.mainPlayer.health > 0)
+	if (_engine.mainPlayer.playerBase.health > 0)
 	{
 		_engine.AnimKillEx.Step = 0;
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);

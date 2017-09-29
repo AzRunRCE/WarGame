@@ -6,6 +6,8 @@
 #include <SDL_ttf.h>
 #include "ft_sprite.h"
 #include "main.h"
+
+
 //
 //typedef struct Player {
 //	char name[16];

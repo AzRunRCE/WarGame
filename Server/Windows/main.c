@@ -192,9 +192,9 @@ void incrementBullet(BulletElm* headBullets)
 		else if (currentItem->type != BLANK)
 		{
 			Player *player = (Player*)currentItem->data;
-			if (player->id != bullet->ownerId && checkCollision(&bullet->pos, &player->Pos))
+			if (player->playerBase.id != bullet->ownerId && checkCollision(&bullet->pos, &player->playerBase.pos))
 			{
-					player->health -= 10;
+					player->playerBase.health -= 10;
 					headBulletList = remove_any(headBulletList, bullet);
 			}
 		}
@@ -259,7 +259,7 @@ bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 			return false;
 
 		/* This encodes the data for the field, based on our FileInfo structure. */
-		if (!pb_encode_submessage(stream, Player_fields, &Players[i]))
+		if (!pb_encode_submessage(stream, PlayerBase_fields, &Players[i].playerBase))
 			return false;
 	}
 
@@ -365,7 +365,7 @@ void app(void)
 				clients[actual] = c;
 				strncpy(Players[actual].name, connectionMessage.name, sizeof(Players[actual].name));
 				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
-				Players[actual].health = 100;
+				Players[actual].playerBase.health = 100;
 				callBackMessage->clientId = actual;
 				
 				uint8_t callback_buffer[ConnectionCallbackMessage_size];
@@ -390,25 +390,25 @@ void app(void)
 			headBulletList = pushBullet(headBulletList, &bulletMsg);
 			
 		}
-		else if (type == Player_fields)
+		else if (type == PlayerBase_fields)
 		{
-			Player PlayerMessage;
-			status = decode_unionmessage_contents(&stream, Player_fields, &PlayerMessage);
+			PlayerBase pMessage;
+			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
-			map->data[(int)Players[PlayerMessage.id].Pos.y / BLOCK_SIZE][(int)(Players[PlayerMessage.id].Pos.x) / BLOCK_SIZE].type = BLANK;
-			map->data[(int)Players[PlayerMessage.id].Pos.y / BLOCK_SIZE][(int)(Players[PlayerMessage.id].Pos.x) / BLOCK_SIZE].data = NULL;
+			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
+			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
 
-			int health = Players[PlayerMessage.id].health;
-			Players[PlayerMessage.id] =  PlayerMessage;
-			Players[PlayerMessage.id].health = health;
+			int health = Players[pMessage.id].playerBase.health;
+			Players[pMessage.id].playerBase = pMessage;
+			Players[pMessage.id].playerBase.health = health;
 			
-			map->data[(int)PlayerMessage.Pos.y / BLOCK_SIZE][(int)(PlayerMessage.Pos.x) / BLOCK_SIZE].type = PLAYER;
-			map->data[(int)PlayerMessage.Pos.y / BLOCK_SIZE][(int)(PlayerMessage.Pos.x) / BLOCK_SIZE].data = &Players[PlayerMessage.id];
+			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
+			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
 			
 			GameDataMessage gameDataMessage;
 			uint8_t currentGameBuffer[MAX_BUFFER];
-			gameDataMessage.GameMode = 1;
+			gameDataMessage.gameMode = 1;
 			gameDataMessage.playersCount = actual;
 			gameDataMessage.players.funcs.encode = &listPlayers_callback;
 			gameDataMessage.bullets.funcs.encode = &listBullets_callback;

@@ -1,0 +1,5 @@
+ConnectionCallbackMessage.motd max_size:128
+ConnectionCallbackMessage.map max_size:50 max_count:50
+ConnectionMessage.name max_size:16
+Player.name max_size:16
+

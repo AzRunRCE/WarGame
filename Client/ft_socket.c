@@ -34,7 +34,6 @@ pthread_t NwkThread;
 pthread_t NwkThreadSender;
 SOCKADDR_IN *psin;
 int clientId;
-uint8_t buffer[MAX_BUFFER];
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
 
@@ -86,13 +85,12 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 
 bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-	BulletMessage *bullet = malloc(sizeof(BulletMessage));
+	BulletMessage bullet;
 
-	if (!pb_decode(stream, BulletMessage_fields, bullet))
+	if (!pb_decode(stream, BulletMessage_fields, &bullet))
 		return false;
 
-	headBullets = appendBullet(headBullets, bullet);
-	free(bullet);
+	headBullets = appendBullet(headBullets, &bullet);
 	return true;
 }
 
@@ -186,7 +184,7 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-		exit(-1);
+		//exit(-1);
 	}
 
 
@@ -207,16 +205,16 @@ int sendMessage(const char *buffer, const int length)
 
 bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-	Player PlayerInfo;
-	if (!pb_decode(stream, Player_fields, &PlayerInfo))
+	PlayerBase pMessage;
+	if (!pb_decode(stream, PlayerBase_fields, &pMessage))
 		return false;
-	if (_engine.mainPlayer.id != PlayerInfo.id)
+	if (_engine.mainPlayer.playerBase.id != pMessage.id)
 	{
-		_engine.players[PlayerInfo.id] = PlayerInfo;
+		_engine.players[pMessage.id].playerBase = pMessage;
 	}
 	else
 	{
-		_engine.mainPlayer.health = PlayerInfo.health;
+		_engine.mainPlayer.playerBase.health = pMessage.health;
 	}
 	return true;
 }
@@ -238,7 +236,7 @@ void *NetworkThreadingListening(void *arg)
 			if (callback.sucess)
 			{
 				printf("Connection success motd:%s", callback.motd);
-				_engine.mainPlayer.id = callback.clientId;
+				_engine.mainPlayer.playerBase.id = callback.clientId;
 				if (pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
 					perror("pthread_create");
 				}
@@ -262,19 +260,20 @@ void *SreamClientData(void *arg)
 {
 	while (true)
 	{
-		Player PlayerMessage;
-		memcpy(&PlayerMessage, &_engine.mainPlayer, sizeof(Player));
-		if (_engine.mainPlayer.Pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.Pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.Pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.Pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
+		uint8_t buffer[PlayerBase_size];
+		PlayerBase pMessage;
+		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));
+		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-			PlayerMessage.Pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
-			PlayerMessage.Pos.y += _engine.pCenter.y - _engine.HEIGHT / 2 + 16;
+			pMessage.pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
+			pMessage.pos.y += _engine.pCenter.y - _engine.HEIGHT / 2 + 16;
 		}
-		PlayerMessage.Pos.w = 32;
-		PlayerMessage.Pos.h = 32;
 
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-		encode_unionmessage(&output, Player_fields, &PlayerMessage);
-		write_client(buffer, output.bytes_written);
+		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
+			write_client(buffer, output.bytes_written);
+
+
 		Sleep(10);
 	}
 	pthread_exit(NULL);

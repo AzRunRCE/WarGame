@@ -1,4 +1,4 @@
-#include "include\ft_engine.h"
+#include "include/ft_engine.h"
 #include "include/ft_menu.h"
 void Engine_init()
 {
@@ -33,8 +33,8 @@ void Engine_init()
 	_engine.mousePos.w = 55;
 	_engine.mousePos.h = 55;
 	
-	_engine.mainPlayer = (Player) {.id = -1, .health = 100, .state = DOWN,.ammo = 30, .step = 0, .Pos.x = 800, .Pos.y = 800, .Pos.w = 32, .Pos.h = 32 };
-	_engine.mainPlayer.fireIdle = 0;
+	_engine.mainPlayer = (Player) Player_init_default;
+	_engine.mainPlayer.playerBase.state = 0;
 	_engine.healthPos = (SDL_Rect) { .x =10, .y = _engine.HEIGHT - 25, .w = 150, .h = 30 };
 	//_engine.fogRect= (SDL_Rect) { .x = -230, .y = -270, .w = 1200, .h = 1200 };
 	
