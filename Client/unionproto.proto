@@ -12,6 +12,7 @@ message ConnectionCallbackMessage
     required bool sucess = 1;
 	required string motd = 2;
 	required int32 map = 3 ;
+	required int32 clientId = 4 ;
 }
 
 message ConnectionMessage
@@ -27,8 +28,10 @@ message SpawnMessage
 message GameDataMessage
 {
     required int32 gameMode = 1;
-	required int32 	PlayersConnected = 2;
+	required int32 	playersCount = 2;
     repeated Player players = 3;
+	repeated BulletMessage bullets = 4;
+	
 }
 message SDL_Rect
 {
@@ -40,23 +43,21 @@ message SDL_Rect
 }
 message PlayerBase
 {
-    required int32 id = 2;
-	required int32 health = 3;
-	required int32 ammo = 4;
-	required bool state = 5;
+    required int32 id = 1;
+	required int32 health = 2;
+	required int32 ammo = 3;
+	required int32 state = 4;
+	required int32 orientation = 5;
 	required SDL_Rect pos = 6;
 }
 message Player
 {
     required PlayerBase playerBase = 1;
-  	required int32 step = 2;
-	required bool fireIdle = 3;
-	required bool walk = 4;
-	required int32 orientation = 5;
-	required int32 lastAnim = 6;
-	required SDL_Rect sprite = 7;
-	required int32 deathAnimationState =8;
-	required string name = 9;
+	required int32 lastAnim = 2;
+	required SDL_Rect sprite = 3;
+	required int32 walkAnimationStep = 4;
+	required int32 deathAnimationStep = 5;
+	required string name = 6;
 }
 
 message BulletMessage
@@ -65,6 +66,8 @@ message BulletMessage
 	required int32 state = 2;
 	required SDL_Rect pos = 3;
 	required SDL_Rect dest = 4;
+	required int32 ownerId = 5;
+	
 }
 
 message UnionMessage
@@ -72,10 +75,10 @@ message UnionMessage
     optional ConnectionMessage connCallbackMessage = 1;
     optional ConnectionCallbackMessage connMessage = 2;
     optional BulletMessage bulletMessage = 3;
-	optional Player playerMessage = 4;
+		optional PlayerBase playerMessage = 4;
 	optional SpawnMessage spawnMessage = 5;
 	optional GameDataMessage gameDataMessage = 6;
-	
+
 	
 }
 

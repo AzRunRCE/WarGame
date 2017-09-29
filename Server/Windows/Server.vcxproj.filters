@@ -62,12 +62,6 @@
     <ClInclude Include="pb_decode.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="unionproto.pb.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="pb_functions.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\ft_map.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

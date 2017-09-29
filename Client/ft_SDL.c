@@ -57,10 +57,7 @@ int ft_drawPlayers()
 			rect.h = 41;
 			rect.w = 56;
 			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
-		
 		}
-
-
 	}
 	return 1;
 }
@@ -78,6 +75,7 @@ void ft_drawGame()
 {
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
+	ft_getCharactSprite(&_engine.mainPlayer);
 	
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
@@ -105,4 +103,23 @@ void ft_drawGame()
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
 	SDL_RenderPresent(_engine.screenRenderer);
 	//ft_freeAllSurfaces();
+}
+
+void ft_getCharactSprite(Player *player)
+{
+	player->sprite.x = 32 * player->walkAnimationStep + player->walkAnimationStep + 1;
+	player->sprite.y = 32 * player->playerBase.orientation + player->playerBase.orientation + 1;
+	player->sprite.h = 32;
+	player->sprite.w = 32;
+	if (player->playerBase.state == WALK && ft_delay(&player->lastAnim, 150))
+	{
+		if (player->walkAnimationStep < 3)
+			player->walkAnimationStep++;
+		else
+			player->walkAnimationStep = 0;
+	}
+	else if (player->playerBase.state == FIRE && ft_delay(&player->lastAnim, 200))
+		player->sprite.y += 7 * 32;
+
+
 }

@@ -178,8 +178,6 @@
     <ClInclude Include="pb_common.h" />
     <ClInclude Include="pb_decode.h" />
     <ClInclude Include="include\pb_encode.h" />
-    <ClInclude Include="pb_functions.h" />
-    <ClInclude Include="unionproto.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

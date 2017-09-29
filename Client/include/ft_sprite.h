@@ -4,14 +4,14 @@
 
 typedef enum
 {
-    UP = 1,
-    UP_RIGHT = 2,
-    RIGHT = 3,
-    DOWN_RIGHT = 4,
-    DOWN = 5,
-    DOWN_LEFT = 6,
-    LEFT = 7,
-    UP_LEFT = 8,
+    UP = 0,
+    UP_RIGHT = 1,
+    RIGHT = 2,
+    DOWN_RIGHT = 3,
+    DOWN = 4,
+    DOWN_LEFT = 5,
+    LEFT = 6,
+    UP_LEFT = 7,
 } View_Orientation;
 
 typedef enum

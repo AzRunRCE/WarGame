@@ -123,14 +123,6 @@ int main(int argc, char *argv[])
 
 }
 
-//void ft_getCharactSprite(Player *player, State state, int step)
-//{
-//	player->sprite.x = 32 * step + (step + 1);
-//	player->sprite.y = 32 * state + (state + 1);
-//	player->sprite.h = 32;
-//	player->sprite.w = 32;
-//}
-
 bool ft_getNextDyingSprite(Explode *explode)
 {
 	if (explode->Step == 10)
