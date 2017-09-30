@@ -16,7 +16,7 @@ void Engine_init()
 	_engine.explodeSurface = IMG_LoadTexture(_engine.screenRenderer, "res/explode.png");
 	_engine.AnimKill = IMG_LoadTexture(_engine.screenRenderer, "res/AnimationKill.png");
 	_engine.characterSurface = IMG_LoadTexture(_engine.screenRenderer, "res/character.png");
-	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/ennemi.png");
+	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/enemy.png");
 	_engine.mapSurface = IMG_LoadTexture(_engine.screenRenderer, "res/background_dev.png");
 	_engine.viewSurface = IMG_LoadTexture(_engine.screenRenderer, "res/view.png");
 	gameoverBackground = IMG_LoadTexture(_engine.screenRenderer, "res/gameover.png");

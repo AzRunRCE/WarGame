@@ -5,28 +5,27 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <Windows.h>
-#include "include\ft_item.h"
-#include "include\ft_engine.h"
-#include "include\ft_SDL.h"
-#include "include\ft_player.h"
-#include "include\ft_socket.h"
-#include "include\ft_sprite.h"
-#include "include\ft_socket.h"
-#include "include\ft_engine.h"
-#include "include\ft_menu.h"
-#include "include\ft_point.h"
-#include "include\ft_bullet.h"
-#include "include\ft_configuration.h"
-#include "include\ft_explode.h"
+#include "include/ft_item.h"
+#include "include/ft_engine.h"
+#include "include/ft_SDL.h"
+#include "include/ft_player.h"
+#include "include/ft_socket.h"
+#include "include/ft_sprite.h"
+#include "include/ft_socket.h"
+#include "include/ft_engine.h"
+#include "include/ft_menu.h"
+#include "include/ft_point.h"
+#include "include/ft_bullet.h"
+#include "include/ft_configuration.h"
+#include "include/ft_explode.h"
 #include "include/ft_View.h"
-#include "include\pb.h"
-#include "include\pb_common.h"
-#include "include\pb_encode.h"
-#include "include\pb_decode.h"
-#include "include\unionproto.pb.h"
-#include "include\pb_functions.h"
-#include <Windows.h>
-#include <SDL_syswm.h> 
+#include "include/pb.h"
+#include "include/pb_common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
+#include "include/pb_functions.h"
+#include "include/ft_sound.h"
 
 #define MAX_LENGTH 32
 #define FIRE_DELAY 150
@@ -82,6 +81,8 @@ int main(int argc, char *argv[])
 	mainConfiguration = ft_loadConf();
 	SDL_init();
 	Engine_init();
+	sound_Init();
+	sound_Load("res/fire.wav");
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	do
 	{
@@ -118,7 +119,7 @@ int main(int argc, char *argv[])
 
 	end();
 
-
+	sound_Close();
 	return EXIT_SUCCESS;
 
 }
@@ -173,14 +174,14 @@ bool ft_delay(int *lastAnim, int  SleepTimeAnim)
 
 }
 
-
+int a;
 
 int GetKeyPressEvent()
 {
 	if (_engine.mainPlayer.playerBase.health >= 0)
 	{
-		_engine.mainPlayer.playerBase.state = IDLE;
 
+		_engine.mainPlayer.playerBase.state = IDLE;
 		int posX = _engine.mainPlayer.playerBase.pos.x + 16;
 		int posY = _engine.mainPlayer.playerBase.pos.y + 16;
 		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
@@ -190,7 +191,7 @@ int GetKeyPressEvent()
 			posY = _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32;
 		}
 
-		if (keystate[SDL_SCANCODE_LEFT] && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16 > 0
+		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A]) && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16 > 0
 			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
 			)
 		{
@@ -202,7 +203,7 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.state = WALK;
 
 		}
-		else if (keystate[SDL_SCANCODE_RIGHT] && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
+		else if ((keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D]) && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
 			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX + 8) / BLOCK_SIZE]
 			)
 		{
@@ -214,7 +215,7 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.orientation = RIGHT;
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		if (keystate[SDL_SCANCODE_UP] && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16 > 0
+		if ((keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W]) && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16 > 0
 			&& _engine.map->data[(int)(posY - 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
 			)
 		{
@@ -246,7 +247,7 @@ int GetKeyPressEvent()
 
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		else if (keystate[SDL_SCANCODE_DOWN] && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
+		else if ((keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S]) && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
 			&& _engine.map->data[(int)(posY + 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
 			)
 		{
@@ -277,12 +278,16 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
 		if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&lastFire, FIRE_DELAY))
+		{
 			FireBullet();
-
+		}
+		
+		
+		
 	}
 	else
 	{
-		if (keystate[SDL_SCANCODE_R])
+		if (keystate[SDL_SCANCODE_SPACE])
 		{
 			_engine.mainPlayer.playerBase.pos.x = 800;
 			_engine.mainPlayer.playerBase.pos.y = 800;
@@ -304,7 +309,7 @@ void FireBullet()
 	{
 		_engine.mainPlayer.playerBase.ammo = 30;
 	}
-
+	sound_Play(soundChannelMainPlayer);
 	
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.playerBase.state = FIRE;
@@ -325,6 +330,4 @@ void FireBullet()
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	bool status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
 	int c = sendMessage(buffer, output.bytes_written);
-	//PlaySound(TEXT("res/fire.wav"), NULL, SND_ASYNC);
-
 }

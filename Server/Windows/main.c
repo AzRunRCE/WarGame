@@ -192,7 +192,7 @@ void incrementBullet(BulletElm* headBullets)
 		else if (currentItem->type != BLANK)
 		{
 			Player *player = (Player*)currentItem->data;
-			if (player->playerBase.id != bullet->ownerId && checkCollision(&bullet->pos, &player->playerBase.pos))
+			if (player->playerBase.id != bullet->ownerId && player->playerBase.health > 0 && checkCollision(&bullet->pos, &player->playerBase.pos))
 			{
 					player->playerBase.health -= 10;
 					headBulletList = remove_any(headBulletList, bullet);
