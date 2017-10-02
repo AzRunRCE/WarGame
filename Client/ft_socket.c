@@ -209,14 +209,9 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 	if (!pb_decode(stream, PlayerBase_fields, &pMessage))
 		return false;
 	if (_engine.mainPlayer.playerBase.id != pMessage.id)
-	{
 		_engine.players[pMessage.id].playerBase = pMessage;
-	}
-	else
-	{
-	
-	_engine.mainPlayer.playerBase.health = pMessage.health;
-	}
+	else	
+		_engine.mainPlayer.playerBase.health = pMessage.health;
 	return true;
 }
 

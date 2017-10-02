@@ -166,7 +166,7 @@ int a;
 
 int GetKeyPressEvent()
 {
-	if (_engine.mainPlayer.playerBase.health >= 0)
+	if (_engine.mainPlayer.playerBase.health > 0)
 	{
 
 		_engine.mainPlayer.playerBase.state = IDLE;
