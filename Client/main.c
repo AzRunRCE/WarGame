@@ -126,19 +126,7 @@ int main(int argc, char *argv[])
 
 bool ft_getNextDyingSprite(Explode *explode)
 {
-	if (explode->Step == 10)
-		return false;
-	else if (ft_delay(&explode->lastAnim, 150))
-	{
-		explode->Sprite.x = 56 * (explode->Step % 5)+(explode->Step % 5 +1);
-		explode->Sprite.y = 41 * (explode->Step / 5) + (explode->Step / 5 + 1);
-		
-		explode->Sprite.h = 41;
-		explode->Sprite.w = 56;
-		explode->Step = explode->Step + 1;
-		return true;
-	}
-	return false;
+	
 }
 void ft_getHealthSprite(Player *player)
 {
@@ -292,6 +280,7 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.pos.x = 800;
 			_engine.mainPlayer.playerBase.pos.y = 800;
 			_engine.mainPlayer.playerBase.health = 100;
+			_engine.mainPlayer.deathAnimationStep = 0;
 		}
 	}
 	return 1;
@@ -302,7 +291,6 @@ int GetKeyPressEvent()
 
 void FireBullet()
 {
-
 	if (_engine.mainPlayer.playerBase.ammo > 0)
 		_engine.mainPlayer.playerBase.ammo -= 1;
 	else

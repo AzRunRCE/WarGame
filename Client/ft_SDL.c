@@ -49,16 +49,28 @@ int ft_drawPlayers()
 		ft_getCharactSprite(&_engine.players[i]);
 		if (_engine.players[i].playerBase.health > 0)
 		{
-			_engine.AnimKillEx.Step = 0;
+			
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
 		}
 		else
 		{
-			rect.x -= 12;
-			rect.y -= 6;
-			rect.h = 41;
-			rect.w = 56;
-			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
+			if (_engine.players[i].deathAnimationStep != 10)
+			{
+				if (ft_delay(&_engine.players[i].lastAnim, 100))
+				{
+					_engine.players[i].sprite.x = 56 * (_engine.players[i].deathAnimationStep % 5) + (_engine.players[i].deathAnimationStep % 5 + 1);
+					_engine.players[i].sprite.y = 41 * (_engine.players[i].deathAnimationStep / 5) + (_engine.players[i].deathAnimationStep / 5 + 1);	
+					_engine.players[i].deathAnimationStep += 1;
+				}
+				_engine.players[i].sprite.h = 41;
+				_engine.players[i].sprite.w = 56;
+				rect.x -= 12;
+				rect.y -= 6;
+				rect.h = 41;
+				rect.w = 56;
+				SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.players[i].sprite, &rect);
+			}
+		
 		}
 		if (_engine.players[i].playerBase.state == FIRE)
 			sound_Play(soundChannelEnemies);
@@ -66,42 +78,48 @@ int ft_drawPlayers()
 	return 1;
 }
 
-void ft_freeAllSurfaces()
-{
-	SDL_FreeSurface(_engine.mapSurface);
-	SDL_FreeSurface(_engine.characterSurface);
-	SDL_FreeSurface(_engine.explodeSurface);
-	SDL_FreeSurface(_engine.characterEnnemiSurface);
-	SDL_FreeSurface(_engine.bulletSurface);
-	SDL_FreeSurface(_engine.viewSurface);
-}
+
 void ft_drawGame()
 {
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
-	ft_getCharactSprite(&_engine.mainPlayer);
+	
 	
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
-		_engine.AnimKillEx.Step = 0;
+		ft_getCharactSprite(&_engine.mainPlayer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.pCenter);
+		_engine.mainPlayer.deathAnimationStep = 0;
 	}
 	else
 	{
-		SDL_Rect rect = _engine.pCenter;
-		rect.x -= 12;
-		rect.y -= 6;
-		rect.h = 41;
-		rect.w = 56;
-		SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.AnimKillEx.Sprite, &rect);
-		ft_getNextDyingSprite(&_engine.AnimKillEx);
-		menuDeath();
+
+		if (_engine.mainPlayer.deathAnimationStep != 10)
+		{
+			if (ft_delay(&_engine.mainPlayer.lastAnim, 100))
+			{
+				_engine.mainPlayer.sprite.x = 56 * (_engine.mainPlayer.deathAnimationStep % 5) + (_engine.mainPlayer.deathAnimationStep % 5 + 1);
+				_engine.mainPlayer.sprite.y = 41 * (_engine.mainPlayer.deathAnimationStep / 5) + (_engine.mainPlayer.deathAnimationStep / 5 + 1);
+				_engine.mainPlayer.sprite.h = 41;
+				_engine.mainPlayer.sprite.w = 56;
+				_engine.mainPlayer.deathAnimationStep += 1;
+			}
+			SDL_Rect rect = _engine.pCenter;
+			rect.x -= 12;
+			rect.y -= 6;
+			rect.h = 41;
+			rect.w = 56;
+			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.mainPlayer.sprite, &rect);
+		}
+		else
+			menuDeath();
 	}
 		
 	
 	ft_drawPlayers();
 	browserBullets(headBullets, &drawBullet);
-	SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+	if (_engine.mainPlayer.deathAnimationStep != 10)
+		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
@@ -111,7 +129,7 @@ void ft_drawGame()
 
 void ft_getCharactSprite(Player *player)
 {
-	
+		player->sprite.h = player->sprite.w = 32;
 		switch (player->playerBase.state)
 		{
 		case IDLE:
