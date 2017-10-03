@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous Ãªtes sous Windows */
 #include <winsock2.h> 
 
-#elif defined (linux) /* si vous êtes sous Linux */
+#elif defined (linux) /* si vous Ãªtes sous Linux */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,7 +19,7 @@ typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
-#else /* sinon vous êtes sur une plateforme non supportée */
+#else /* sinon vous Ãªtes sur une plateforme non supportÃ©e */
 #error not defined for this platform
 
 #endif
@@ -28,6 +28,7 @@ typedef struct in_addr IN_ADDR;
 #include "include/client.h"
 #include "include/ft_map.h"
 #include "include/pb.h"
+#include "include/ft_state.h"
 #include "include/pb_common.h"
 #include "include/pb_encode.h"
 #include "include/pb_decode.h"
@@ -50,7 +51,8 @@ Player Players[MAX_CLIENTS];
 int actual = 0;
 SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
-
+void updatePlayer(PlayerBase *playerBase);
+bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 Map *map;
 int lastInc = 0;
@@ -192,9 +194,12 @@ void incrementBullet(BulletElm* headBullets)
 		else if (currentItem->type != BLANK)
 		{
 			Player *player = (Player*)currentItem->data;
-			if (player->playerBase.id != bullet->ownerId && player->playerBase.health > 0 && checkCollision(&bullet->pos, &player->playerBase.pos))
+			if (player->playerBase.id != bullet->ownerId && playerIsAlive(&player->playerBase) && checkCollision(&bullet->pos, &player->playerBase.pos))
 			{
 					player->playerBase.health -= 10;
+					if (player->playerBase.health <= 0){
+						player->playerBase.state = DEATH;
+					}
 					headBulletList = remove_any(headBulletList, bullet);
 			}
 		}
@@ -285,31 +290,7 @@ BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
 	return new_node;
 }
 
-void browse(BulletElm* head, callback f)
-{
-	BulletElm* cursor = head;
-	if (cursor != NULL && (cursor->x0 > 1600 || cursor->x0 < 0 || cursor->y0 > 1600 || cursor->y0 < 0))
-	{
-		if (cursor->next != NULL)
-		{
-			headBulletList = cursor->next;
-			free(cursor);
-			cursor = NULL;
-		}
-		else
-		{
-			free(cursor);
-			cursor = NULL;
-			headBulletList = NULL;
-		}
 
-	}
-	while (cursor != NULL)
-	{
-		f(cursor);
-		cursor = cursor->next;
-	}
-}
 
 
 BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
@@ -384,11 +365,13 @@ void app(void)
 		}
 		else if (type == BulletMessage_fields)
 		{
+
 			BulletMessage bulletMsg;
 			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bulletMsg);
-			printf("BulletMessage name:%s x:%d y:%d\n",Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
-			headBulletList = pushBullet(headBulletList, &bulletMsg);
-			
+			if (playerIsAlive(&Players[bulletMsg.ownerId])) {
+				printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
+				headBulletList = pushBullet(headBulletList, &bulletMsg);
+			}
 		}
 		else if (type == PlayerBase_fields)
 		{
@@ -396,13 +379,10 @@ void app(void)
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
+		
 			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
 			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
-
-			int health = Players[pMessage.id].playerBase.health;
-			Players[pMessage.id].playerBase = pMessage;
-			Players[pMessage.id].playerBase.health = health;
-			
+			updatePlayer(&pMessage);
 			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
 			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
 			
@@ -427,6 +407,16 @@ void app(void)
 }
 
 
+void updatePlayer(PlayerBase *playerBase){
+	if (playerIsAlive(playerBase)){
+		Players[playerBase->id].playerBase.orientation = playerBase->orientation;
+		Players[playerBase->id].playerBase.pos = playerBase->pos;
+		Players[playerBase->id].playerBase.state = playerBase->state;
+	}
+}
+bool playerIsAlive(PlayerBase *playerBase) {
+	return playerBase->state != DEATH;
+}
 
  int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
 {
