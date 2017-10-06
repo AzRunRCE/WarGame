@@ -347,6 +347,7 @@ void app(void)
 				strncpy(Players[actual].name, connectionMessage.name, sizeof(Players[actual].name));
 				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
 				Players[actual].playerBase.health = 100;
+				Players[actual].playerBase.id = actual;
 				callBackMessage->clientId = actual;
 				
 				uint8_t callback_buffer[ConnectionCallbackMessage_size];
