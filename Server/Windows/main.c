@@ -374,6 +374,15 @@ void app(void)
 				headBulletList = pushBullet(headBulletList, &bulletMsg);
 			}
 		}
+		else if (type == SpawnMessage_fields)
+		{
+			SpawnMessage spawnMsg;
+			status = decode_unionmessage_contents(&stream, SpawnMessage_fields, &spawnMsg);
+			printf("Spawn request:%s", Players[spawnMsg.id].name);
+
+			Players[spawnMsg.id].playerBase.health = 100;
+			Players[spawnMsg.id].playerBase.ammo = 30;
+		}
 		else if (type == PlayerBase_fields)
 		{
 			PlayerBase pMessage;

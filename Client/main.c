@@ -277,10 +277,12 @@ int GetKeyPressEvent()
 	{
 		if (keystate[SDL_SCANCODE_SPACE])
 		{
-			_engine.mainPlayer.playerBase.pos.x = 800;
-			_engine.mainPlayer.playerBase.pos.y = 800;
-			_engine.mainPlayer.playerBase.health = 100;
-			_engine.mainPlayer.deathAnimationStep = 0;
+			SpawnMessage spMessage;
+			uint8_t buffer[SpawnMessage_size];
+			spMessage.id = _engine.mainPlayer.playerBase.id;
+			pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
+			if (encode_unionmessage(&output, SpawnMessage_fields, &spMessage))
+				write_client(buffer, output.bytes_written);
 		}
 	}
 	return 1;
