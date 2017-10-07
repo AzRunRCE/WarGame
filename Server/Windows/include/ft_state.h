@@ -7,6 +7,6 @@ typedef enum
 	IDLE = 0,
 	WALK = 1,
 	FIRE = 2,
-	DEATH = 3
+	DEAD = 3
 } Player_State;
 #endif // SPRITE_H_INCLUDED

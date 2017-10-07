@@ -275,6 +275,7 @@ int GetKeyPressEvent()
 	}
 	else
 	{
+		_engine.mainPlayer.playerBase.state = DEAD;
 		if (keystate[SDL_SCANCODE_SPACE])
 		{
 			SpawnMessage spMessage;

@@ -197,9 +197,6 @@ void incrementBullet(BulletElm* headBullets)
 			if (player->playerBase.id != bullet->ownerId && playerIsAlive(&player->playerBase) && checkCollision(&bullet->pos, &player->playerBase.pos))
 			{
 					player->playerBase.health -= 10;
-					if (player->playerBase.health <= 0){
-						player->playerBase.state = DEATH;
-					}
 					headBulletList = remove_any(headBulletList, bullet);
 			}
 		}
@@ -421,11 +418,12 @@ void updatePlayer(PlayerBase *playerBase){
 	if (playerIsAlive(playerBase)){
 		Players[playerBase->id].playerBase.orientation = playerBase->orientation;
 		Players[playerBase->id].playerBase.pos = playerBase->pos;
-		Players[playerBase->id].playerBase.state = playerBase->state;
 	}
+	Players[playerBase->id].playerBase.state = playerBase->state;
+	// Update player state even if he is dead !
 }
 bool playerIsAlive(PlayerBase *playerBase) {
-	return playerBase->state != DEATH;
+	return playerBase->state != DEAD;
 }
 
  int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
