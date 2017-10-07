@@ -13,10 +13,10 @@ void sound_Init()
 	soundChannelEnemies = malloc(sizeof(int));
 	if (FMOD_System_Create(&soundSystem))
 		exit(EXIT_FAILURE);
-	if (FMOD_System_Init(soundSystem, 3, FMOD_LOOP_NORMAL, NULL))
+	if (FMOD_System_Init(soundSystem, 3, FMOD_INIT_NORMAL, NULL))
 		exit(EXIT_FAILURE);
+	FMOD_System_CreateSound(soundSystem, "res/music.mp3", FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL, 0, &music);
 	FMOD_Sound_SetLoopCount(music, -1);
-	FMOD_System_CreateSound(soundSystem, "res/music.mp3", FMOD_2D | FMOD_CREATESTREAM, 0, &music);
 	FMOD_System_PlaySound(soundSystem, music, NULL, 0, soundChannelMusic);
 
 }
