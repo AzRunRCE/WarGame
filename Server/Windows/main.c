@@ -376,9 +376,18 @@ void app(void)
 			SpawnMessage spawnMsg;
 			status = decode_unionmessage_contents(&stream, SpawnMessage_fields, &spawnMsg);
 			printf("Spawn request:%s", Players[spawnMsg.id].name);
-
 			Players[spawnMsg.id].playerBase.health = 100;
 			Players[spawnMsg.id].playerBase.ammo = 30;
+			SpawnCallbackMessage spawnCallbackMsg;
+
+			uint8_t spCallbackBuffer[MAX_BUFFER];
+			spawnCallbackMsg.id = spawnMsg.id;
+			spawnCallbackMsg.x = 400;
+			spawnCallbackMsg.y = 400;
+			pb_ostream_t output = pb_ostream_from_buffer(spCallbackBuffer, sizeof(spCallbackBuffer));
+			encode_unionmessage(&output, SpawnCallbackMessage_fields, &spawnCallbackMsg);
+			write_client(sock, &csin, spCallbackBuffer, output.bytes_written);
+
 		}
 		else if (type == PlayerBase_fields)
 		{
@@ -405,7 +414,7 @@ void app(void)
 			
 		}
 
-		if (ft_delay(&lastInc, 5))
+		if (headBulletList != NULL && ft_delay(&lastInc, 5))
 		{
 			incrementBullet(headBulletList);
 		}

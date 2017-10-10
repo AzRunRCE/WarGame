@@ -210,12 +210,8 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 		return false;
 	if (_engine.mainPlayer.playerBase.id != pMessage.id)
 		_engine.players[pMessage.id].playerBase = pMessage;
-
 	else
-	{
 		_engine.mainPlayer.playerBase.health = pMessage.health;
-		//_engine.mainPlayer.playerBase.ammo = pMessage.ammo;
-	}
 	return true;
 }
 
@@ -252,6 +248,14 @@ void *NetworkThreadingListening(void *arg)
 			decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
 			_engine.playersCount = gameData.playersCount;
 		}
+		else if (type == SpawnCallbackMessage_fields)
+		{
+			SpawnCallbackMessage spawnCallbackMsg;
+			if (decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
+				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.x;
+				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.y;
+			}
+		}
 	}
 	pthread_exit(NULL);
 }
@@ -260,9 +264,12 @@ void *SreamClientData(void *arg)
 {
 	while (true)
 	{
+		int a;
 		uint8_t buffer[PlayerBase_size];
 		PlayerBase pMessage;
 		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));
+		if (_engine.mainPlayer.playerBase.pos.x == 400)
+			a = 1;
 		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
 			pMessage.pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
