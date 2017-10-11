@@ -30,6 +30,7 @@ typedef int bool;
 #define true 1
 #define false 0
 #include "client.h"
+SDL_Rect SpawnList[9];
 void end(void);
 void app(void);
 int init_connection(void);

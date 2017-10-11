@@ -209,7 +209,11 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 	if (!pb_decode(stream, PlayerBase_fields, &pMessage))
 		return false;
 	if (_engine.mainPlayer.playerBase.id != pMessage.id)
+	{
 		_engine.players[pMessage.id].playerBase = pMessage;
+		if (_engine.players[pMessage.id].playerBase.state != DEAD)
+			_engine.players[pMessage.id].deathAnimationStep = 0;
+	}
 	else
 		_engine.mainPlayer.playerBase.health = pMessage.health;
 	return true;

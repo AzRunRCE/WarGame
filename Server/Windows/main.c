@@ -321,7 +321,26 @@ void app(void)
 	callBackMessage->motd[sizeof(callBackMessage->motd) - 1] = '\0';
 	callBackMessage->sucess = true;
 
-
+	SpawnList[0].x = 1002;
+	SpawnList[0].y = 624;
+	SpawnList[1].x = 1203;
+	SpawnList[1].y = 572;
+	SpawnList[2].x = 1282;
+	SpawnList[2].y = 930;
+	SpawnList[3].x = 1030;
+	SpawnList[3].y = 316;
+	SpawnList[4].x = 636;
+	SpawnList[4].y = 284;
+	SpawnList[5].x = 636;
+	SpawnList[5].y = 479;
+	SpawnList[6].x = 558;
+	SpawnList[6].y = 623;
+	SpawnList[7].x = 490;
+	SpawnList[7].y = 876;
+	SpawnList[8].x = 386;
+	SpawnList[8].y = 1176;
+	SpawnList[9].x = 1192;
+	SpawnList[9].y = 1202;
 
 	while (true)
 	{
@@ -375,15 +394,17 @@ void app(void)
 		{
 			SpawnMessage spawnMsg;
 			status = decode_unionmessage_contents(&stream, SpawnMessage_fields, &spawnMsg);
-			printf("Spawn request:%s", Players[spawnMsg.id].name);
+			printf("Spawn request: %s\n", Players[spawnMsg.id].name);
 			Players[spawnMsg.id].playerBase.health = 100;
 			Players[spawnMsg.id].playerBase.ammo = 30;
+			int random;
+			srand(time(NULL)); // initialisation de rand
+			random = (rand() % (9 + 1));		
 			SpawnCallbackMessage spawnCallbackMsg;
-
 			uint8_t spCallbackBuffer[MAX_BUFFER];
 			spawnCallbackMsg.id = spawnMsg.id;
-			spawnCallbackMsg.x = 400;
-			spawnCallbackMsg.y = 400;
+			spawnCallbackMsg.x = SpawnList[random].x;
+			spawnCallbackMsg.y = SpawnList[random].y;
 			pb_ostream_t output = pb_ostream_from_buffer(spCallbackBuffer, sizeof(spCallbackBuffer));
 			encode_unionmessage(&output, SpawnCallbackMessage_fields, &spawnCallbackMsg);
 			write_client(sock, &csin, spCallbackBuffer, output.bytes_written);
