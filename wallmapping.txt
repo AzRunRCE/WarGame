@@ -1,0 +1,40 @@
+******
+while (i < 50 && j < 50)
+{
+	SDL_Rect  rect {x,y,h,w}
+	
+	while (i < 50 && map[i] != WALL)
+	{
+ 		i++;
+	}
+	
+	x = i * 32;
+	y = j * 32;
+	
+	ii = 0;
+	while (ii + i < 50 && map[i + ii] == WALL)
+	{
+ 		ii++;
+	}
+	
+	w = i * ii;
+	i = i + ii;
+
+	while (j < 50 && map[j] != WALL)
+	{
+ 		j++;
+	}
+	
+	jj = 0;
+	while (jj + j < 50 && map[i + ii] == WALL)
+	{
+ 		jj++;
+	}
+	h = jj * 32;
+	
+	j = j  + jj;
+
+	listWall.add(rect);
+	
+
+}
