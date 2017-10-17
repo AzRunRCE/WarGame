@@ -2,7 +2,7 @@
 #define ENGINE_H
 #include "ft_map.h"
 #include "ft_player.h"
-#include <pthread.h>
+#include <pthread_VC.h>
 #include "unionproto.pb.h"
 #include "ft_socket.h"
 #include "ft_explode.h"
