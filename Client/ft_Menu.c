@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <SDL_image.h>
 #include "main.h"
-#include "include\ft_Menu.h"
-#include "include\ft_engine.h"
-#include "include\ft_point.h"
-#include "include\ft_configuration.h"
+#include "include/ft_Menu.h"
+#include "include/ft_engine.h"
+#include "include/ft_point.h"
+#include "include/ft_configuration.h"
 
 
 

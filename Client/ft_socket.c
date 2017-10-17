@@ -9,18 +9,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "include\ft_socket.h"
-#include "include\ft_client.h"
-#include "include\ft_configuration.h"
-#include "include\ft_map.h"
-#include "include\ft_engine.h"
-#include "include\pb.h"
-#include "include\pb_common.h"
-#include "include\pb_encode.h"
-#include "include\pb_decode.h"
-#include "include\unionproto.pb.h"
-#include "include\pb_functions.h"
-#include "include\ft_configuration.h"
+#include "include/ft_socket.h"
+#include "include/ft_client.h"
+#include "include/ft_configuration.h"
+#include "include/ft_map.h"
+#include "include/ft_engine.h"
+#include "include/pb.h"
+#include "include/pb_common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
+#include "include/pb_functions.h"
+#include "include/ft_configuration.h"
 
 #define PORT 1977
 #define MAX_BUFFER 4096
