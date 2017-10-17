@@ -71,6 +71,7 @@ typedef struct _PlayerBase {
 } PlayerBase;
 
 typedef struct _Player {
+	SDL_Rect RelativePos;
     PlayerBase playerBase;
     int32_t lastAnim;
     SDL_Rect sprite;
@@ -108,7 +109,7 @@ typedef struct _UnionMessage {
 #define GameDataMessage_init_default             {0, 0, {{NULL}, NULL}, {{NULL}, NULL}}
 #define SDL_Rect_init_default                    {0, 0, 0, 0}
 #define PlayerBase_init_default                  {-1, 100, 30, 0, 0, {800, 800, 32, 32}}
-#define Player_init_default                      {PlayerBase_init_default, 0, SDL_Rect_init_default, 0, 0, ""}
+#define Player_init_default                      {{800, 800, 32, 32}, PlayerBase_init_default, 0, SDL_Rect_init_default, 0, 0, ""}
 #define BulletMessage_init_default               {0, 0, SDL_Rect_init_default, SDL_Rect_init_default, 0}
 #define UnionMessage_init_default                {false, ConnectionMessage_init_default, false, ConnectionCallbackMessage_init_default, false, BulletMessage_init_default, false, PlayerBase_init_default, false, SpawnMessage_init_default, false, SpawnCallbackMessage_init_default, false, GameDataMessage_init_default}
 #define ConnectionCallbackMessage_init_zero      {0, "", 0, 0}

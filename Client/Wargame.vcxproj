@@ -157,6 +157,7 @@
     <ClInclude Include="include\ft_item.h" />
     <ClInclude Include="include\ft_map.h" />
     <ClInclude Include="include\ft_menu.h" />
+    <ClInclude Include="include\ft_nearwall.h" />
     <ClInclude Include="include\ft_player.h" />
     <ClInclude Include="include\ft_point.h" />
     <ClInclude Include="include\ft_sdl.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="ft_explode.c" />
     <ClCompile Include="ft_map.c" />
     <ClCompile Include="ft_menu.c" />
+    <ClCompile Include="ft_nearwall.c" />
     <ClCompile Include="ft_sdl.c" />
     <ClCompile Include="ft_socket.c" />
     <ClCompile Include="ft_sound.c" />

@@ -26,6 +26,7 @@
 #include "include/unionproto.pb.h"
 #include "include/pb_functions.h"
 #include "include/ft_sound.h"
+#include "include/ft_nearwall.h"
 
 #define MAX_LENGTH 32
 #define FIRE_DELAY 150
@@ -46,6 +47,8 @@ configuration *mainConfiguration;
 Explode explode;
 int GetKeyPressEvent();
 int lastFire = 0;
+New_Map newMapLeft;
+
 bool ft_getNextExplodeSprite(Explode *explode)
 {
 	if (explode->Step == 52)
@@ -76,11 +79,18 @@ bool ft_checkEvent()
 }
 
 int main(int argc, char *argv[])
-{
+{	
 	keystate = SDL_GetKeyboardState(NULL);
 	mainConfiguration = ft_loadConf();
 	SDL_init();
 	Engine_init();
+	nearWallInit();
+	newMapLeft.block.x = 0;
+	newMapLeft.block.y = 0;
+	newMapLeft.block.w = _engine.WIDTH / 2 - 16;
+	newMapLeft.block.h = 1600;
+	newMapLeft.next = NULL;
+	nearWallInit();
 	sound_Init();
 	sound_Load("res/fire.wav");
 	fontSurface = SDL_GetWindowSurface(_engine.window);
@@ -95,30 +105,25 @@ int main(int argc, char *argv[])
 	_engine.AnimKillEx.Step = 0;
 	bool isActive = true;
 	int last = 0;
-	
+
+	_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
+	_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
 
 	while (ft_checkEvent())
 	{
-		_engine.PlayerRealPos.x = (_engine.mainPlayer.playerBase.pos.x + 16);
-		_engine.PlayerRealPos.y = (_engine.mainPlayer.playerBase.pos.y + 16);
-		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-		{
-			_engine.PlayerRealPos.x = (_engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32);
-			_engine.PlayerRealPos.y = (_engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32);
-		}
-		_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
-		_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
+		_engine.mainPlayer.RelativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
+		_engine.mainPlayer.RelativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
+		checkNearWall();
 
-		ft_ViewGetDegrees(_engine.mousePos.y - _engine.pCenter.y, _engine.mousePos.x - _engine.pCenter.x); // Fonction de calcul de degr�es de la vue "torche". Les deux param�tres sont des calculs pour mettre l'image de la torche au milieu du joueur.
-	//	ft_GetPlayerOrientation(&_engine.mainPlayer);
+		ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.RelativePos.y, _engine.mousePos.x - _engine.mainPlayer.RelativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
-//	ft_getNextExplodeSprite(&explode);	
+		//ft_getNextExplodeSprite(&explode);	
 		ft_drawGame();
 	}
 
 	end();
-
+	nearWalldelete();
 	sound_Close();
 	return EXIT_SUCCESS;
 
@@ -168,13 +173,13 @@ int GetKeyPressEvent()
 {
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
-
+		//SDL_bool test = SDL_HasIntersection(&_engine.mainPlayer.playerBase.pos, &newMap.block);
 		_engine.mainPlayer.playerBase.state = IDLE;
 		int posX = _engine.mainPlayer.playerBase.pos.x + 16;
 		int posY = _engine.mainPlayer.playerBase.pos.y + 16;
 		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
 		{
-			// D�calage car la map 50x50 commence (tableau char) a 0 et la position a 1
+			// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
 			posX = _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32;
 			posY = _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32;
 		}
@@ -183,10 +188,10 @@ int GetKeyPressEvent()
 			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
 			)
 		{
-			if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x + 32 > _engine.mapSurface->h)
-				_engine.pCenter.x -= 2;
-			else
-				_engine.mainPlayer.playerBase.pos.x -= 2;
+			//if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x + 32 > _engine.mapSurface->h)
+			_engine.mainPlayer.playerBase.pos.x -= 2;
+			if (nWallMode == NONE || nWallMode == UPDOWN)
+				_engine.camera.x -= 2;
 			_engine.mainPlayer.playerBase.orientation = LEFT;
 			_engine.mainPlayer.playerBase.state = WALK;
 
@@ -196,10 +201,11 @@ int GetKeyPressEvent()
 			)
 		{
 
-			if (_engine.pCenter.x < _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h)
-				_engine.pCenter.x += 2;
-			else
-				_engine.mainPlayer.playerBase.pos.x += 2;
+			/*if (nWallMode == LEFTRIGHT || nWallMode == BOTH)
+				_engine.pCenter.x += 2;*/
+			_engine.mainPlayer.playerBase.pos.x += 2;
+			if (nWallMode == NONE || nWallMode == UPDOWN)
+				_engine.camera.x += 2;
 			_engine.mainPlayer.playerBase.orientation = RIGHT;
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
@@ -210,27 +216,24 @@ int GetKeyPressEvent()
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)
 			{
 				_engine.mainPlayer.playerBase.orientation = UP_LEFT;
-				if (_engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y + 32 >= _engine.mapSurface->h)
-					_engine.pCenter.y--;
-				else
-					_engine.mainPlayer.playerBase.pos.y--;
+				_engine.mainPlayer.playerBase.pos.y--;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y--;
 			}
 
 			else if (_engine.mainPlayer.playerBase.orientation == RIGHT)
 			{
 				_engine.mainPlayer.playerBase.orientation = UP_RIGHT;
-				if (_engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y + 32 >= _engine.mapSurface->h)
-					_engine.pCenter.y--;
-				else
-					_engine.mainPlayer.playerBase.pos.y--;
+				_engine.mainPlayer.playerBase.pos.y--;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y--;
 			}
 			else
 			{
 				_engine.mainPlayer.playerBase.orientation = UP;
-				if (_engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y + 32 >= _engine.mapSurface->h)
-					_engine.pCenter.y -= 2;
-				else
-					_engine.mainPlayer.playerBase.pos.y -= 2;
+				_engine.mainPlayer.playerBase.pos.y -= 2;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y -= 2;
 			}
 
 			_engine.mainPlayer.playerBase.state = WALK;
@@ -242,26 +245,23 @@ int GetKeyPressEvent()
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)
 			{
 				_engine.mainPlayer.playerBase.orientation = DOWN_LEFT;
-				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-					_engine.pCenter.y++;
-				else
-					_engine.mainPlayer.playerBase.pos.y++;
+				_engine.mainPlayer.playerBase.pos.y++;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y++;
 			}
 			else  if (_engine.mainPlayer.playerBase.orientation == RIGHT)
 			{
 				_engine.mainPlayer.playerBase.orientation = DOWN_RIGHT;
-				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-					_engine.pCenter.y++;
-				else
-					_engine.mainPlayer.playerBase.pos.y++;
+				_engine.mainPlayer.playerBase.pos.y++;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y++;
 			}
 			else
 			{
 				_engine.mainPlayer.playerBase.orientation = DOWN;
-				if (_engine.pCenter.y < _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-					_engine.pCenter.y += 2;
-				else
-					_engine.mainPlayer.playerBase.pos.y += 2;
+				_engine.mainPlayer.playerBase.pos.y += 2;
+				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
+					_engine.camera.y += 2;
 			}
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
@@ -307,8 +307,8 @@ void FireBullet()
 	uint8_t buffer[BulletMessage_size];
 
 	BulletMessage bulletMessage;
-	bulletMessage.pos.x = _engine.PlayerRealPos.x;
-	bulletMessage.pos.y = _engine.PlayerRealPos.y;
+	bulletMessage.pos.x = _engine.mainPlayer.playerBase.pos.x + 8;
+	bulletMessage.pos.y = _engine.mainPlayer.playerBase.pos.y + 8;
 	bulletMessage.pos.w = 6;
 	bulletMessage.pos.h = 6;
 

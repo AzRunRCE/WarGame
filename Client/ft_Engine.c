@@ -36,13 +36,10 @@ void Engine_init()
 	_engine.mainPlayer = (Player) Player_init_default;
 	_engine.mainPlayer.playerBase.state = 0;
 	_engine.healthPos = (SDL_Rect) { .x =10, .y = _engine.HEIGHT - 25, .w = 150, .h = 30 };
-	//_engine.fogRect= (SDL_Rect) { .x = -230, .y = -270, .w = 1200, .h = 1200 };
 	
 	_engine.ammoPos = (SDL_Rect) { .x = 0, .y = _engine.HEIGHT - 25 - 50, .w = 400, .h = 100 };
 	
 	_engine.camera = (SDL_Rect) { .y = 0, .x = 0, .w = _engine.WIDTH, .h = _engine.HEIGHT };
 	_engine.viewRect = (SDL_Rect) { .w = 1800, .h = 1800 };
 	_engine.pCenter = (SDL_Rect) { .x = _engine.WIDTH / 2 - 16, .y = _engine.HEIGHT / 2 - 16, .w = 32, .h = 32 };
-	_engine.PlayerRealPos.h = 32;
-	_engine.PlayerRealPos.w = 32;
 }

@@ -90,6 +90,9 @@
     <ClInclude Include="include\ft_sound.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="include\ft_nearwall.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
@@ -147,6 +150,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="ft_sound.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ft_nearwall.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
