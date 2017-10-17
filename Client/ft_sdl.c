@@ -118,8 +118,8 @@ void ft_drawGame()
 	
 	ft_drawPlayers();
 	browserBullets(headBullets, &drawBullet);
-	/*if (_engine.mainPlayer.playerBase.state != DEAD)
-		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);*/
+	if (_engine.mainPlayer.playerBase.state != DEAD)
+		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
