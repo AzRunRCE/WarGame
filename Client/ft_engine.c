@@ -23,8 +23,9 @@ void Engine_init()
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.AmmoSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Ammo.png");
 	_engine.healthSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Life.png");
-	_engine.mutex = PTHREAD_MUTEX_INITIALIZER;
-	_engine.condition = PTHREAD_COND_INITIALIZER;
+	//_engine.mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&_engine.mutex, NULL);
+	//_engine.condition = PTHREAD_COND_INITIALIZER;
 
 	_engine.font = TTF_OpenFont("res/verdana.ttf", 20);
 	_engine.colorWhite = (SDL_Color) { 255, 255, 255 };

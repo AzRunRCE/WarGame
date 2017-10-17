@@ -4,10 +4,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <Windows.h>
 #include "include/ft_item.h"
 #include "include/ft_engine.h"
-#include "include/ft_SDL.h"
+#include "include/ft_sdl.h"
 #include "include/ft_player.h"
 #include "include/ft_socket.h"
 #include "include/ft_sprite.h"
@@ -18,7 +17,7 @@
 #include "include/ft_bullet.h"
 #include "include/ft_configuration.h"
 #include "include/ft_explode.h"
-#include "include/ft_View.h"
+#include "include/ft_view.h"
 #include "include/pb.h"
 #include "include/pb_common.h"
 #include "include/pb_encode.h"

@@ -1,6 +1,9 @@
 #include "include/ft_configuration.h"
 #include <stdio.h>
 #include <stdlib.h>
+#if defined linux || defined __linux || defined __linux__
+#define _strdup strdup
+#endif
 
 const char path[] = "settings.ini";
 

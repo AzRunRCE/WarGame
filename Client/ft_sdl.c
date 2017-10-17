@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "include/ft_item.h"
 #include "include/ft_engine.h"
-#include "include/ft_SDL.h"
+#include "include/ft_sdl.h"
 #include "include/ft_player.h"
 #include "include/ft_sprite.h"
 #include "include/ft_menu.h"

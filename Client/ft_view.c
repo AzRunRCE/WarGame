@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "include/ft_View.h"
+#include "include/ft_view.h"
 #include "include/ft_engine.h"
 #include <stdlib.h>
 #include <math.h>

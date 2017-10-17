@@ -1,7 +1,6 @@
 #include "include/ft_map.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <conio.h>
 #include <math.h>
 #include <SDL.h>
 #define BLOCK_SIZE 32

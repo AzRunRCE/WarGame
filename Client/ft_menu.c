@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <SDL_image.h>
 #include "main.h"
-#include "include/ft_Menu.h"
+#include "include/ft_menu.h"
 #include "include/ft_engine.h"
 #include "include/ft_point.h"
 #include "include/ft_configuration.h"
-
+#if defined linux || defined __linux || defined __linux__
+#define _strdup strdup
+#endif
 
 
 void initMenuOptions(Menu *Menu, configuration *settings)
