@@ -1,8 +1,14 @@
 #ifndef ENGINE_H
 #define ENGINE_H
+ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#include <pthread_VC.h>
+#elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
+#include <pthread.h>
+#else /* sinon vous êtes sur une plateforme non supportée */
+#error not defined for this platform
+#endif
 #include "ft_map.h"
 #include "ft_player.h"
-#include <pthread_VC.h>
 #include "unionproto.pb.h"
 #include "ft_socket.h"
 #include "ft_explode.h"

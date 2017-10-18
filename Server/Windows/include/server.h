@@ -3,7 +3,7 @@
 #define HAVE_STRUCT_TIMESPEC
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h> 
-#elif defined (linux) /* si vous êtes sous Linux */
+#elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
