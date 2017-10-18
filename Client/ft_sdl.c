@@ -104,7 +104,7 @@ void ft_drawGame()
 				_engine.mainPlayer.sprite.w = 56;
 				_engine.mainPlayer.deathAnimationStep += 1;
 			}
-			SDL_Rect rect = _engine.pCenter;
+			SDL_Rect rect = _engine.mainPlayer.RelativePos;
 			rect.x -= 12;
 			rect.y -= 6;
 			rect.h = 41;

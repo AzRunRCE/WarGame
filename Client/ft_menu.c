@@ -5,15 +5,12 @@
 #include "include/ft_engine.h"
 #include "include/ft_point.h"
 #include "include/ft_configuration.h"
-#if defined linux || defined __linux || defined __linux__
-#define _strdup strdup
-#endif
 
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {
-	Menu->textInputIpAddress = _strdup(settings->server);
-	Menu->textInputPseudo = _strdup(settings->nickname);
+	strcpy(Menu->textInputIpAddress, settings->server);
+	strcpy(Menu->textInputPseudo, settings->nickname);
 	Menu->labelIpAddress = TTF_RenderText_Blended(Menu->WarGameFont, "Server address ", _engine.colorWarGame);
 	Menu->labelPseudo = TTF_RenderText_Blended(Menu->WarGameFont, "Pseudo  ", _engine.colorWarGame);
 	Menu->labelApply = TTF_RenderText_Blended(Menu->WarGameFont, "Apply", _engine.colorWarGame);

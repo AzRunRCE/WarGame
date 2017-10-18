@@ -24,7 +24,6 @@ typedef struct {
     SDL_Color colorWhite;
     SDL_Color colorWarGame;
 
-	SDL_Rect pCenter;
 	SDL_Rect camera;
 	SDL_Rect bullets[250];
 	SDL_Rect viewRect;

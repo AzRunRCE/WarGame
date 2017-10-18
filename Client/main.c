@@ -172,22 +172,14 @@ int GetKeyPressEvent()
 {
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
-		//SDL_bool test = SDL_HasIntersection(&_engine.mainPlayer.playerBase.pos, &newMap.block);
 		_engine.mainPlayer.playerBase.state = IDLE;
-		int posX = _engine.mainPlayer.playerBase.pos.x + 16;
-		int posY = _engine.mainPlayer.playerBase.pos.y + 16;
-		if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-		{
-			// Décalage car la map 50x50 commence (tableau char) a 0 et la position a 1
-			posX = _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32;
-			posY = _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32;
-		}
+		int playerPosX = _engine.mainPlayer.playerBase.pos.x + 16;
+		int playerPosY = _engine.mainPlayer.playerBase.pos.y + 16;
 
-		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A]) && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16 > 0
-			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX - 8) / BLOCK_SIZE]
+		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A])
+			&& _engine.map->data[(int)playerPosY / BLOCK_SIZE][(int)(playerPosX - 8) / BLOCK_SIZE]
 			)
 		{
-			//if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x + 32 > _engine.mapSurface->h)
 			_engine.mainPlayer.playerBase.pos.x -= 2;
 			if (nWallMode == NONE || nWallMode == UPDOWN)
 				_engine.camera.x -= 2;
@@ -195,21 +187,18 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.state = WALK;
 
 		}
-		else if ((keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D]) && _engine.pCenter.x + _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 32 < _engine.mapSurface->h
-			&& _engine.map->data[(int)posY / BLOCK_SIZE][(int)(posX + 8) / BLOCK_SIZE]
+		else if ((keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D])
+			&& _engine.map->data[(int)playerPosY / BLOCK_SIZE][(int)(playerPosX + 8) / BLOCK_SIZE]
 			)
 		{
-
-			/*if (nWallMode == LEFTRIGHT || nWallMode == BOTH)
-				_engine.pCenter.x += 2;*/
 			_engine.mainPlayer.playerBase.pos.x += 2;
 			if (nWallMode == NONE || nWallMode == UPDOWN)
 				_engine.camera.x += 2;
 			_engine.mainPlayer.playerBase.orientation = RIGHT;
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		if ((keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W]) && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16 > 0
-			&& _engine.map->data[(int)(posY - 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
+		if ((keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W])
+			&& _engine.map->data[(int)(playerPosY - 8) / BLOCK_SIZE][(int)playerPosX / BLOCK_SIZE]
 			)
 		{
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)
@@ -237,8 +226,8 @@ int GetKeyPressEvent()
 
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		else if ((keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S]) && _engine.pCenter.y + _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 32 < _engine.mapSurface->h
-			&& _engine.map->data[(int)(posY + 8) / BLOCK_SIZE][(int)posX / BLOCK_SIZE]
+		else if ((keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S])
+			&& _engine.map->data[(int)(playerPosY + 8) / BLOCK_SIZE][(int)playerPosX / BLOCK_SIZE]
 			)
 		{
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)
