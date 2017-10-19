@@ -43,7 +43,13 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 
 void ft_LoadMap(char * path, Map *map)
 {
-	SDL_Surface *mapBMP = SDL_LoadBMP(path);
+	SDL_Surface *mapBMP = NULL;
+	mapBMP = SDL_LoadBMP(path);
+	if (!mapBMP)
+	{
+		printf("Erreur de chargement de l'image : %s", SDL_GetError());
+		return -1;
+	}
 	map->heigth = mapBMP->h;
 
 	map->width = mapBMP->w;

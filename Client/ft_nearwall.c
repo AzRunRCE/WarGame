@@ -9,7 +9,7 @@
 
 void nearWallInit()
 {
-	for (int i = 0; i < sizeof(nearWall); i++)
+	for (int i = 0; i < 4; i++)
 		nearWall[i] = malloc(sizeof(SDL_Rect));
 	
 	nearWall[0]->x = 0;
@@ -39,7 +39,7 @@ void checkNearWall()
 	int nWallModeTmp1 = NONE;
 	int nWallModeTmp2 = NONE;
 	nWallMode = NONE;
-	for (int i = 0; i < sizeof(nearWall); i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (SDL_HasIntersection(&_engine.mainPlayer.playerBase.pos, nearWall[i]))
 		{
@@ -54,6 +54,6 @@ void checkNearWall()
 
 void nearWalldelete()
 {
-	for (int i = 0; i < sizeof(nearWall); i++)
+	for (int i = 0; i < 4; i++)
 		free(nearWall[i]);
 }
