@@ -5,14 +5,13 @@
 #include "include/ft_engine.h"
 #include "include/ft_point.h"
 #include "include/ft_configuration.h"
-#if defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
-#define _strdup strdup
-#endif
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {
-	strcpy(Menu->textInputIpAddress, settings->server);
-	strcpy(Menu->textInputPseudo, settings->nickname);
+	Menu->textInputIpAddress[0] = '\0';
+	Menu->textInputPseudo[0] = '\0';
+	strncpy(Menu->textInputIpAddress, settings->server, strlen(settings->server) + 1);
+	strncpy(Menu->textInputPseudo, settings->nickname, strlen(settings->nickname) + 1);
 	Menu->labelIpAddress = TTF_RenderText_Blended(Menu->WarGameFont, "Server address ", _engine.colorWarGame);
 	Menu->labelPseudo = TTF_RenderText_Blended(Menu->WarGameFont, "Pseudo  ", _engine.colorWarGame);
 	Menu->labelApply = TTF_RenderText_Blended(Menu->WarGameFont, "Apply", _engine.colorWarGame);
@@ -46,8 +45,6 @@ void menu(configuration *settings)
 	Menu Menu;
 	point pointLeft[3];
 	point pointRight[3];
-	Menu.textInputIpAddress = malloc(sizeof(char) + MAX_LENGTH + 1);
-	Menu.textInputPseudo = malloc(sizeof(char) + MAX_LENGTH + 1);
 	Menu.menuSelection = 0;
 	Menu.menuOptionsSelection = 0;
 	Menu.countBlink = 0;
@@ -98,8 +95,6 @@ void menu(configuration *settings)
 				else if (Menu.menuOptionsSelection == 1 && strlen(Menu.textInputPseudo) < MAX_LENGTH && Menu.selectionOptionsDone && Menu.confirmOptionsForm == 0)
 					strcat(Menu.textInputPseudo, event.text.text);
 				break;
-				/*case SDL_KEYUP:
-					break;*/
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(Menu.textInputIpAddress) > 0 && Menu.confirmOptionsForm == 0 && Menu.menuOptionsSelection == 0)
 						Menu.textInputIpAddress[strlen(Menu.textInputIpAddress) - 1] = 0;
@@ -143,9 +138,9 @@ void menu(configuration *settings)
 						Menu.menuOptionsSelection = 0;
 						endMenuOptions(&Menu, settings);
 						break;
-					case 3:			
-						settings->server = _strdup(Menu.textInputIpAddress);
-						settings->nickname = _strdup(Menu.textInputPseudo);
+					case 3:
+						strncpy(settings->server, Menu.textInputIpAddress, strlen(Menu.textInputIpAddress) + 1);
+						strncpy(settings->nickname, Menu.textInputPseudo, strlen(Menu.textInputPseudo) + 1);
 						ft_saveConf(settings);
 						break;
 					}

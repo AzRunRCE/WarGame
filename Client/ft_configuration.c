@@ -1,9 +1,6 @@
 #include "include/ft_configuration.h"
 #include <stdio.h>
 #include <stdlib.h>
-#if defined linux || defined __linux || defined __linux__
-#define _strdup strdup
-#endif
 
 const char path[] = "settings.ini";
 
@@ -17,10 +14,14 @@ static int handler(void* user, const char* section, const char* name,
 		pconfig->version = atoi(value);
 	}
 	else if (MATCH("game", "server")) {
-		pconfig->server = _strdup(value);
+		*pconfig->server = '\0';
+		strncpy(pconfig->server, value, strlen(value) + 1);
+		//pconfig->server = _strdup(value);
 	}
 	else if (MATCH("player", "nickname")) {
-		pconfig->nickname = _strdup(value);
+		*pconfig->nickname = '\0';
+		strncpy(pconfig->nickname, value, strlen(value) + 1);
+		//pconfig->nickname = _strdup(value);
 	}
 	else {
 		return 0;  /* unknown section/name, error */

@@ -40,8 +40,8 @@ struct Menu {
 	SDL_Texture *textureLabelApply;
 	SDL_Texture *textureLabelReturn;
     TTF_Font *WarGameFont;
-    char *textInputIpAddress;
-	char *textInputPseudo;
+    char textInputIpAddress[MAX_LENGTH];
+	char textInputPseudo[MAX_LENGTH];
     bool selectionDone;
     bool selectionOptionsDone;
 
