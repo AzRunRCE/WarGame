@@ -169,9 +169,9 @@ int create_connection(configuration *settings)
 	uint8_t buffer[MAX_BUFFER];
 
 	ConnectionMessage connectionMessage;
-	strncpy(_engine.mainPlayer.name, settings->nickname, sizeof(_engine.mainPlayer.name));
-	strncpy(connectionMessage.name, settings->nickname, sizeof(connectionMessage.name));
-	connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
+	int a = sizeof(settings->nickname);
+	strncpy(_engine.mainPlayer.name, settings->nickname, sizeof(settings->nickname));
+	strncpy(connectionMessage.name, settings->nickname, sizeof(settings->nickname));
 
 
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));

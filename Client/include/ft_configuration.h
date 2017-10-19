@@ -4,9 +4,9 @@
 #define MAX_LENGTH 32
 typedef struct
 {
-	char* version;
-	char* nickname;
-	char* server;
+	char version[MAX_LENGTH];
+	char nickname[MAX_LENGTH];
+	char server[MAX_LENGTH];
 } configuration;
 
 static int handler(void* user, const char* section, const char* name,

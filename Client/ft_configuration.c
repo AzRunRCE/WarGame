@@ -11,15 +11,12 @@ static int handler(void* user, const char* section, const char* name,
 
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 	if (MATCH("game", "version")) {
-		pconfig->version = malloc(sizeof(char[5]));
 		strncpy(pconfig->version, value, strlen(value) + 1);
 	}
 	else if (MATCH("game", "server")) {
-		pconfig->server = malloc(sizeof(char[MAX_LENGTH]));
 		strncpy(pconfig->server, value, strlen(value) + 1);
 	}
 	else if (MATCH("player", "nickname")) {
-		pconfig->nickname = malloc(sizeof(char[MAX_LENGTH]));
 		strncpy(pconfig->nickname, value, strlen(value) + 1);
 	}
 	else {
