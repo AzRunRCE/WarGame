@@ -1,4 +1,4 @@
 env = Environment() # Initialize the environment
-env.Append(CPPFLAGS=['-Wall','-g'])
+env.Append(CPPFLAGS=['-std=c99','-Wall','-g'])
 env.AppendUnique(CCFLAGS=('-I../library/include'))
 env.Program(target = 'WarGameClient', source = Glob('*.c'), LIBS=['SDL2', 'SDL2_image', 'SDL2_ttf', 'm', 'c', 'pthread', 'libfmod'], LIBPATH='../library/lib/x64')

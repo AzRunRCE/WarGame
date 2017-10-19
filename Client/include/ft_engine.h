@@ -1,6 +1,6 @@
 #ifndef ENGINE_H
 #define ENGINE_H
-ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <pthread_VC.h>
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <pthread.h>

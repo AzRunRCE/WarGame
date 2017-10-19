@@ -5,7 +5,9 @@
 #include "include/ft_engine.h"
 #include "include/ft_point.h"
 #include "include/ft_configuration.h"
-
+#if defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
+#define _strdup strdup
+#endif
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {
