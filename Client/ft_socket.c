@@ -2,11 +2,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64
+/* si vous êtes sous Windows */
 #include <pthread_VC.h>
-#elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
+#elif defined linux || defined __linux || defined __linux__
+/* si vous êtes sous linux */
 #include <pthread.h>
-#else /* sinon vous êtes sur une plateforme non supportée */
+#else
+/* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
 #include <stdio.h>
@@ -205,7 +208,7 @@ int write_client(const char *buffer, const int length)
 	return n;
 }
 
-int sendMessage(const char *buffer, const int length)
+int sendMessage(const uint8_t *buffer, const int length)
 {
 	return write_client(buffer, length);
 }

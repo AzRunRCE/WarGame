@@ -13,6 +13,6 @@ int nWallMode;
 SDL_Rect *nearWall[3];
 void nearWallInit();
 void nearWalldelete();
-
+void checkNearWall();
 
 #endif // FT_NEARWALL_H

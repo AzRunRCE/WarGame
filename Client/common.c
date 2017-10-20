@@ -1,10 +1,12 @@
 /* Simple binding of nanopb streams to TCP sockets.
  */
 
-#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64
+/* si vous êtes sous Windows */
 #include <winsock2.h>
 
-#else /* si vous êtes sous Linux */
+#else
+/* si vous êtes sous Linux */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -20,7 +22,6 @@ typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
 #endif
 
-#include <sys/types.h>
 #include "include/pb_encode.h"
 #include "include/pb_decode.h"
 

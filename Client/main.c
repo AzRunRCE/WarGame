@@ -77,7 +77,8 @@ bool ft_checkEvent()
 	return true;
 }
 
-int main(int argc, char *argv[])
+//int main(int argc, char *argv[])
+int main()
 {	
 	keystate = SDL_GetKeyboardState(NULL);
 	mainConfiguration = ft_loadConf();
@@ -102,8 +103,6 @@ int main(int argc, char *argv[])
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
 	_engine.AnimKillEx.Step = 0;
-	bool isActive = true;
-	int last = 0;
 
 	_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
 	_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
@@ -128,10 +127,10 @@ int main(int argc, char *argv[])
 
 }
 
-void ft_getNextDyingSprite(Explode *explode)
+/*void ft_getNextDyingSprite(Explode *explode)
 {
 	
-}
+}*/
 void ft_getHealthSprite(Player *player)
 {
 	int nb_life = player->playerBase.health / 10;
@@ -153,7 +152,6 @@ void ft_getAmmoSprite(Player *player)
 bool ft_delay(int *lastAnim, int  SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
-	int a = *lastAnim;
 	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
 	{
 		*lastAnim = ActualTimeAnim;
@@ -307,6 +305,6 @@ void FireBullet()
 
 	bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-	bool status = encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
-	int c = sendMessage(buffer, output.bytes_written);
+	encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
+	sendMessage(buffer, output.bytes_written);
 }

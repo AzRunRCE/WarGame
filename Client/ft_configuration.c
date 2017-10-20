@@ -1,4 +1,5 @@
 #include "include/ft_configuration.h"
+#include "include/ini.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,7 +42,7 @@ bool ft_saveConf(configuration *settings)
 
 	FILE * fp;
 	fp = fopen(path, "w+");
-	fprintf(fp, "[game]\nversion=%i\nserver=%s\n[player]\nnickname=%s\n", settings->version, settings->server, settings->nickname);
+	fprintf(fp, "[game]\nversion=%s\nserver=%s\n[player]\nnickname=%s\n", settings->version, settings->server, settings->nickname);
 
 	fclose(fp);
 	printf("Settings saved in '%s'\n", path);

@@ -5,11 +5,14 @@
 #include <SDL.h>
 #include "include/ft_nearwall.h"
 #include "include/ft_engine.h"
-#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64
+/* si vous êtes sous Windows */
 #define SIZEOFNEARWALL sizeof(nearWall)
-#elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
-#define SIZEOFNEARWALL sizeof(nearWall)/sizeof(SDL_Rect)
-#else /* sinon vous êtes sur une plateforme non supportée */
+#elif defined linux || defined __linux || defined __linux__
+/* si vous êtes sous linux */
+#define SIZEOFNEARWALL sizeof(nearWall)/sizeof(nearWall[0])
+#else
+/* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
 
