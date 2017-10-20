@@ -275,7 +275,6 @@ void *SreamClientData(void *arg)
 {
 	while (true)
 	{
-		int a;
 		uint8_t buffer[PlayerBase_size];
 		PlayerBase pMessage;
 		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));

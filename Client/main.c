@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
 }
 
-bool ft_getNextDyingSprite(Explode *explode)
+void ft_getNextDyingSprite(Explode *explode)
 {
 	
 }

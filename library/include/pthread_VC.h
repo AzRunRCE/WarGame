@@ -298,6 +298,7 @@ enum {
 
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <sched_VC.h>
+
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <sched.h>
 #else /* sinon vous êtes sur une plateforme non supportée */

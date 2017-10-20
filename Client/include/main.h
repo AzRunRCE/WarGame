@@ -12,5 +12,5 @@ void FireBullet();
 void ft_getHealthSprite(Player *player);
 void ft_getAmmoSprite(Player *player);
 bool ft_delay(int *lastAnim, int  SleepTimeAnim);
-bool ft_getNextDyingSprite(Explode *explode);
+void ft_getNextDyingSprite(Explode *explode);
 #endif // MAIN_H
