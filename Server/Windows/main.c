@@ -449,13 +449,13 @@ void app(void)
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
-		
-			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
-			map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
-			updatePlayer(&pMessage);
-			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
-			map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
-			
+			if (Players[pMessage.id].playerBase.pos.y || Players[pMessage.id].playerBase.pos.x) {
+				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
+				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
+				updatePlayer(&pMessage);
+				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
+				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
+			}
 			GameDataMessage gameDataMessage;
 			uint8_t currentGameBuffer[MAX_BUFFER];
 			gameDataMessage.gameMode = 1;
