@@ -47,6 +47,7 @@ typedef struct in_addr IN_ADDR;
 
 Client clients[MAX_CLIENTS];
 BulletElm *headBulletList;
+Item *headItemList = NULL;
 Player Players[MAX_CLIENTS];
 int actual = 0;
 SOCKET sock;
@@ -307,6 +308,38 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 	cursor->next = new_node;
 
 	return head;
+}
+
+Item* pushItem(Item* head, Item *new_node)
+{
+	if (head == NULL) {
+		head = new_node;
+		return head;
+	}
+	/* go to the last node */
+	Item *cursor = head;
+	while (cursor->next != NULL)
+		cursor = cursor->next;
+	cursor->next = new_node;
+	return head;
+}
+
+int countItemWall(Item* head)
+{
+	int total = 0;
+	if (head == NULL) {
+		return 0;
+	}
+	/* go to the last node */
+	Item *cursor = head;
+	while (cursor != NULL)
+	{
+		total++;
+		if (cursor->next == NULL)
+			break;
+		cursor = cursor->next;
+	}
+	return total;
 }
 
 void app(void)
@@ -579,11 +612,44 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 		return false;
 }
 
+
+
  int main(int argc, char **argv)
 {
 	map = malloc(sizeof(Map));
 	ft_LoadMap("map/first.bmp", map);;
 
+
+	int i = 0;
+	int j = 0;
+	while (j < map->heigth)
+	{
+		while (i < map->width)
+		{
+			Item *item = malloc(sizeof(Item));
+			item->rect = malloc(sizeof(SDL_Rect));
+			while (map->data[i][j].type != WALL && i < map->width)
+				i++;
+			item->next = NULL;
+			item->type = WALL;
+			item->rect->h = 32;
+			item->rect->w = 0;
+			item->rect->x = i * 32;
+			item->rect->y = j * 32;
+			bool findWall = false;
+			while (map->data[i][j].type == WALL  && i < map->width)
+			{
+				findWall = true;
+				item->rect->w += 32;
+				i++;
+			}
+			if (findWall)
+				headItemList = pushItem(headItemList, item);
+		}
+		j++;
+		i = 0;
+	}
+	printf("%d", countItemWall(headItemList));
 	app();
 
 	//end();

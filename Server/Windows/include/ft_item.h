@@ -10,5 +10,7 @@ typedef enum
 typedef struct Item {
 	ItemType type;
 	void *data;
+	SDL_Rect *rect;
+	struct Item *next;
 }Item;
 #endif // FT_ITEM_H
