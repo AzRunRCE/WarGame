@@ -10,6 +10,7 @@ typedef struct
 }Map;
 
 Uint32 obtenirPixel(SDL_Surface *surface, int x, int y);
-Map *ft_LoadMap(char * path, Map *map);
+void ft_LoadMap(char * path, Map *map);
+Map *map;
 
 #endif /* guard */

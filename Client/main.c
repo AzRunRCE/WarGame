@@ -106,6 +106,7 @@ int main()
 
 	_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
 	_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
+	headBullets = NULL;
 
 	while (ft_checkEvent())
 	{

@@ -55,7 +55,6 @@ typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
-Map *map;
 int lastInc = 0;
 
  int init_connection(void)
@@ -449,22 +448,23 @@ void app(void)
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
-			if (Players[pMessage.id].playerBase.pos.y || Players[pMessage.id].playerBase.pos.x) {
+			if (pMessage.pos.x || pMessage.pos.y) {
 				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
 				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
 				updatePlayer(&pMessage);
 				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
 				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
+
+				GameDataMessage gameDataMessage;
+				uint8_t currentGameBuffer[MAX_BUFFER];
+				gameDataMessage.gameMode = 1;
+				gameDataMessage.playersCount = actual;
+				gameDataMessage.players.funcs.encode = &listPlayers_callback;
+				gameDataMessage.bullets.funcs.encode = &listBullets_callback;
+				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
+				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
+				write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			}
-			GameDataMessage gameDataMessage;
-			uint8_t currentGameBuffer[MAX_BUFFER];
-			gameDataMessage.gameMode = 1;
-			gameDataMessage.playersCount = actual;
-			gameDataMessage.players.funcs.encode = &listPlayers_callback;
-			gameDataMessage.bullets.funcs.encode = &listBullets_callback;
-			pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
-			encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
-			write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			
 		}
 
@@ -616,8 +616,9 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 
  int main(int argc, char **argv)
 {
-	map = malloc(sizeof(Map));
-	ft_LoadMap("map/first.bmp", map);;
+	//map = malloc(sizeof(Map));
+	 map = calloc(3, sizeof(Map));
+	ft_LoadMap("map/first.bmp", map);
 
 
 	int i = 0;
