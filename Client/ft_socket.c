@@ -268,6 +268,8 @@ void *NetworkThreadingListening(void *arg)
 			if (decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.x;
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.y;
+				_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
+				_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
 			}
 		}
 	}

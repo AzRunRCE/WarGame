@@ -252,13 +252,17 @@ int GetKeyPressEvent()
 			}
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
+		else if (_engine.mainPlayer.playerBase.ammo <= 3 && keystate[SDL_SCANCODE_R])
+			_engine.mainPlayer.playerBase.ammo = 30;
 		if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&lastFire, FIRE_DELAY))
 		{
-			FireBullet();
+			if (_engine.mainPlayer.playerBase.ammo > 3)
+				FireBullet();
+			else if (_engine.mainPlayer.playerBase.ammo == 3)
+				_engine.mainPlayer.playerBase.ammo = 0;
+			else if (_engine.mainPlayer.playerBase.ammo == 0)
+				_engine.mainPlayer.playerBase.ammo = 3;
 		}
-		
-		
-		
 	}
 	else
 	{
@@ -281,14 +285,9 @@ int GetKeyPressEvent()
 
 void FireBullet()
 {
-	if (_engine.mainPlayer.playerBase.ammo > 0)
-		_engine.mainPlayer.playerBase.ammo -= 1;
-	else
-	{
-		_engine.mainPlayer.playerBase.ammo = 30;
-	}
+	_engine.mainPlayer.playerBase.ammo -= 3;
 	sound_Play(soundChannelMainPlayer);
-	
+
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	_engine.mainPlayer.playerBase.state = FIRE;
 	uint8_t buffer[BulletMessage_size];
