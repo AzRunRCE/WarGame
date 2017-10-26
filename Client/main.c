@@ -252,7 +252,7 @@ int GetKeyPressEvent()
 			}
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		else if (_engine.mainPlayer.playerBase.ammo <= 3 && keystate[SDL_SCANCODE_R])
+		else if (_engine.mainPlayer.playerBase.ammo < 30 && keystate[SDL_SCANCODE_R])
 			_engine.mainPlayer.playerBase.ammo = 30;
 		if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&lastFire, FIRE_DELAY))
 		{

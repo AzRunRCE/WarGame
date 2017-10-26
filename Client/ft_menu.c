@@ -253,5 +253,5 @@ void menu(configuration *settings)
 
 void menuDeath()
 {
-		SDL_RenderCopy(_engine.screenRenderer, gameoverBackground, NULL, NULL);
+		SDL_RenderCopy(_engine.screenRenderer, _engine.gameoverBackground, NULL, NULL);
 }

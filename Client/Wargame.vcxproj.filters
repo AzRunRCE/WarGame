@@ -93,6 +93,9 @@
     <ClInclude Include="include\ft_nearwall.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
@@ -155,5 +158,18 @@
     <ClCompile Include="ft_nearwall.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WarGame.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="WarGame1.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="WarGame.ico">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

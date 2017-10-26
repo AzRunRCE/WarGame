@@ -179,6 +179,7 @@
     <ClInclude Include="include\pb_encode.h" />
     <ClInclude Include="include\pb_functions.h" />
     <ClInclude Include="include\unionproto.pb.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
@@ -203,6 +204,13 @@
     <ClCompile Include="pb_encode.c" />
     <ClCompile Include="pb_functions.c" />
     <ClCompile Include="unionproto.pb.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WarGame.rc" />
+    <ResourceCompile Include="WarGame1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="WarGame.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

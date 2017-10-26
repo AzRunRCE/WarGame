@@ -47,7 +47,6 @@ struct Menu {
 
 };
 
-SDL_Texture *gameoverBackground;
 
 void menu(configuration *settings);
 void menuDeath();

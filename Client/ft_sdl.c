@@ -40,7 +40,6 @@ int ft_drawPlayers()
 		_engine.players[i].sprite.h = _engine.players[i].sprite.w = 32;
 		if (_engine.players[i].playerBase.id == -1 || _engine.players[i].playerBase.id == _engine.mainPlayer.playerBase.id)
 			continue;
-
 		_engine.players[i].playerBase.pos.w = 32;
 		_engine.players[i].playerBase.pos.h = 32;
 		SDL_Rect rect = _engine.players[i].playerBase.pos;

@@ -1,5 +1,4 @@
 #include "include/ft_engine.h"
-#include "include/ft_menu.h"
 void Engine_init()
 {
 	_engine.map = malloc(sizeof(Map));
@@ -19,7 +18,7 @@ void Engine_init()
 	_engine.characterEnnemiSurface = IMG_LoadTexture(_engine.screenRenderer, "res/enemy.png");
 	_engine.mapSurface = IMG_LoadTexture(_engine.screenRenderer, "res/background_dev.png");
 	_engine.viewSurface = IMG_LoadTexture(_engine.screenRenderer, "res/view.png");
-	gameoverBackground = IMG_LoadTexture(_engine.screenRenderer, "res/gameover.png");
+	_engine.gameoverBackground = IMG_LoadTexture(_engine.screenRenderer, "res/gameover.png");
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.AmmoSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Ammo.png");
 	_engine.healthSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Life.png");

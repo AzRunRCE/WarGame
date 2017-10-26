@@ -402,7 +402,7 @@ void app(void)
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
 				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage);
 				write_client(sock, &csin, callback_buffer, output.bytes_written);
-				printf("%s connected", connectionMessage.name);
+				printf("%s connected\n", connectionMessage.name);
 				actual++;
 
 			}
@@ -418,7 +418,7 @@ void app(void)
 			BulletMessage bulletMsg;
 			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bulletMsg);
 			if (playerIsAlive(&Players[bulletMsg.ownerId])) {
-				printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
+				//printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
 				headBulletList = pushBullet(headBulletList, &bulletMsg);
 			}
 		}
@@ -650,7 +650,7 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 		j++;
 		i = 0;
 	}
-	printf("%d", countItemWall(headItemList));
+	//printf("%d", countItemWall(headItemList));
 	app();
 
 	//end();

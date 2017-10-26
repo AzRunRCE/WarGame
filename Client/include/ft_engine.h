@@ -56,6 +56,7 @@ typedef struct {
 	SDL_Texture *characterEnnemiSurface;
 	SDL_Texture *menuSurface;
 	SDL_Texture *selectionSurface;
+	SDL_Texture *gameoverBackground;
 
 #pragma endregion
 
