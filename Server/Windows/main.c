@@ -186,7 +186,7 @@ void incrementBullet(BulletElm* headBullets)
 	BulletElm* bullet = headBullets;
 	while (bullet != NULL)
 	{
-		Item *currentItem = &map->data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE];
+		Item *currentItem = &map.data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE];
 		BulletElm* next = bullet->next;
 
 		if (currentItem->type == WALL)
@@ -373,6 +373,7 @@ void app(void)
 	SpawnList[8].y = 1176;
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
+	headBulletList = NULL;
 
 	while (true)
 	{
@@ -449,11 +450,11 @@ void app(void)
 			Client *client = get_client(clients, &csin, actual);
 			if (client == NULL) continue;
 			if (pMessage.pos.x || pMessage.pos.y) {
-				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
-				map->data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
+				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
+				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
 				updatePlayer(&pMessage);
-				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
-				map->data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
+				map.data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
+				map.data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
 
 				GameDataMessage gameDataMessage;
 				uint8_t currentGameBuffer[MAX_BUFFER];
@@ -617,11 +618,11 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
  int main(int argc, char **argv)
 {
 	//map = malloc(sizeof(Map));
-	 map = calloc(3, sizeof(Map));
-	ft_LoadMap("map/first.bmp", map);
+	//map = calloc(3, sizeof(Map));
+	ft_LoadMap("map/first.bmp", &map);
 
 
-	int i = 0;
+	/*int i = 0;
 	int j = 0;
 	while (j < map->heigth)
 	{
@@ -649,7 +650,7 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 		}
 		j++;
 		i = 0;
-	}
+	}*/
 	//printf("%d", countItemWall(headItemList));
 	app();
 

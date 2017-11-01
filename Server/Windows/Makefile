@@ -9,7 +9,7 @@ OBJ=$(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 
 all: $(EXEC)
 debug:
-	$(CC) -std=c99 -g $(SRC) -o $(DEBUGEXEC) $(LDFLAGS)
+	$(CC) $(CFLAGS) -g $(SRC) -o $(DEBUGEXEC) $(LDFLAGS)
 WarGameServer: $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 $(OBJDIR)/%.o: %.c

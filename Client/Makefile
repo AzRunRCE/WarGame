@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -W -Wall -pedantic 
+CFLAGS=-std=c99 -W -Wall -O3 -pedantic 
 LDFLAGS=-I../library/include -L../library/lib/x64 -lSDL2 -lSDL2_image -lSDL2_ttf -lm -lc -lpthread -l:libfmod.so
 EXEC=WarGameClient
 DEBUGEXEC=WarGameClient.debug
@@ -10,7 +10,7 @@ OBJ=$(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 all: $(EXEC)
 
 debug:
-	$(CC) -std=c99 -g $(SRC) -o $(DEBUGEXEC) $(LDFLAGS)
+	$(CC) $(CFLAGS) -g $(SRC) -o $(DEBUGEXEC) $(LDFLAGS)
 WarGameClient: $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 $(OBJDIR)/%.o: %.c
