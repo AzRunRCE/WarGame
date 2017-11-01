@@ -32,7 +32,7 @@
 #define BLOCK_SIZE 32
 
 Engine _engine;
-void FireBullet();
+void FireBullet(bool MouseButtonleft);
 SDL_Color colorWhite = { 255, 255, 255 };
 SDL_Surface *text = NULL;
 SDL_Surface *fontSurface = NULL;
@@ -73,6 +73,12 @@ bool ft_checkEvent()
 	if (event.type == SDL_QUIT)
 		return false;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
+	if (_engine.mainPlayer.playerBase.state != DEAD) {
+		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ft_delay(&lastFire, FIRE_DELAY))
+			FireBullet(true);
+		else
+			FireBullet(false);
+	}
 	GetKeyPressEvent();
 	return true;
 }
@@ -254,21 +260,13 @@ int GetKeyPressEvent()
 		}
 		else if (_engine.mainPlayer.playerBase.ammo < 30 && keystate[SDL_SCANCODE_R])
 			_engine.mainPlayer.playerBase.ammo = 30;
-		if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(SDL_BUTTON_LEFT) && ft_delay(&lastFire, FIRE_DELAY))
-		{
-			if (_engine.mainPlayer.playerBase.ammo > 3)
-				FireBullet();
-			else if (_engine.mainPlayer.playerBase.ammo == 3)
-				_engine.mainPlayer.playerBase.ammo = 0;
-			else if (_engine.mainPlayer.playerBase.ammo == 0)
-				_engine.mainPlayer.playerBase.ammo = 3;
-		}
 	}
 	else
 	{
 		_engine.mainPlayer.playerBase.state = DEAD;
 		if (keystate[SDL_SCANCODE_SPACE])
 		{
+			_engine.mainPlayer.playerBase.ammo = 30;
 			SpawnMessage spMessage;
 			uint8_t buffer[SpawnMessage_size];
 			spMessage.id = _engine.mainPlayer.playerBase.id;
@@ -283,28 +281,33 @@ int GetKeyPressEvent()
 
 
 
-void FireBullet()
+void FireBullet(bool MouseButtonLeft)
 {
-	_engine.mainPlayer.playerBase.ammo -= 3;
-	sound_Play(soundChannelMainPlayer);
+	if (_engine.mainPlayer.playerBase.ammo > 3 && MouseButtonLeft) {
+		_engine.mainPlayer.playerBase.ammo -= 3;
+		sound_Play(soundChannelMainPlayer);
 
-	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
-	_engine.mainPlayer.playerBase.state = FIRE;
-	uint8_t buffer[BulletMessage_size];
+		_engine.mainPlayer.playerBase.state = FIRE;
+		uint8_t buffer[BulletMessage_size];
 
-	BulletMessage bulletMessage;
-	bulletMessage.pos.x = _engine.mainPlayer.playerBase.pos.x + 8;
-	bulletMessage.pos.y = _engine.mainPlayer.playerBase.pos.y + 8;
-	bulletMessage.pos.w = 6;
-	bulletMessage.pos.h = 6;
+		BulletMessage bulletMessage;
+		bulletMessage.pos.x = _engine.mainPlayer.playerBase.pos.x + 8;
+		bulletMessage.pos.y = _engine.mainPlayer.playerBase.pos.y + 8;
+		bulletMessage.pos.w = 6;
+		bulletMessage.pos.h = 6;
 
-	bulletMessage.pos.h = bulletMessage.pos.w = 6;
-	bulletMessage.dest = _engine.mousePos;
-	bulletMessage.dest.x += _engine.camera.x;
-	bulletMessage.dest.y += _engine.camera.y;
+		bulletMessage.pos.h = bulletMessage.pos.w = 6;
+		bulletMessage.dest = _engine.mousePos;
+		bulletMessage.dest.x += _engine.camera.x;
+		bulletMessage.dest.y += _engine.camera.y;
 
-	bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
-	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-	encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
-	sendMessage(buffer, output.bytes_written);
+		bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
+		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
+		encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
+		sendMessage(buffer, output.bytes_written);
+	}
+	else if (_engine.mainPlayer.playerBase.ammo == 3 && ft_delay(&lastFire, FIRE_DELAY))
+		_engine.mainPlayer.playerBase.ammo = 0;
+	else if (_engine.mainPlayer.playerBase.ammo == 0 && ft_delay(&lastFire, FIRE_DELAY))
+		_engine.mainPlayer.playerBase.ammo = 3;
 }
