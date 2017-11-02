@@ -4,13 +4,14 @@
 #include "server.h"
 #include <SDL.h>
 #include "unionproto.pb.h"
-typedef struct
+typedef struct Client
 {
     SOCKADDR_IN sin;
 	int id;
 }Client;
 
-typedef struct
+
+typedef struct BulletElm
 {
 	SDL_Rect dest;
 	SDL_Rect pos;

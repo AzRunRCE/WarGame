@@ -85,7 +85,7 @@ bool print_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
 bool encode_repeatedstring(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 	//char *str[6] = { "Hello world!", "Hi", "Bonjour", "Salut" , "Bonjour", "Salut" };
-	char str[7] = "coucou\0";
+	char str[8] = "coucou\0";
 
 	/*for (i = 0; i < 6; i++)
 	{*/

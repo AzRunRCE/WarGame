@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h> 
 
@@ -35,6 +36,7 @@ typedef struct in_addr IN_ADDR;
 #include "include/unionproto.pb.h"
 #include "include/pb_functions.h"
 #include "include/ft_item.h"
+#include "include/ft_checkcollision.h"
 #define MAX_BUFFER 4096
 #define SERVER "127.0.0.1"
 #define BLOCK_SIZE 32
@@ -345,8 +347,6 @@ void app(void)
 {
 	bool status = true;
 	sock = init_connection();
-	/* the index for the array */
-	int max = sock;
 	/* an array for all clients */
 	ConnectionCallbackMessage *callBackMessage = calloc(1, sizeof(ConnectionCallbackMessage));
 	strncpy(callBackMessage->motd, "Bienvenue sur mon serveur", sizeof(callBackMessage->motd));

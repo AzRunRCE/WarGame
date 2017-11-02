@@ -8,7 +8,7 @@
 #define false 0
 
 BulletElm* headBullets;
-void FireBullet();
+void FireBullet(bool MouseButtonLeft);
 void ft_getHealthSprite(Player *player);
 void ft_getAmmoSprite(Player *player);
 bool ft_delay(int *lastAnim, int  SleepTimeAnim);

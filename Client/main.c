@@ -32,7 +32,7 @@
 #define BLOCK_SIZE 32
 
 Engine _engine;
-void FireBullet(bool MouseButtonleft);
+void FireBullet(bool MouseButtonLeft);
 SDL_Color colorWhite = { 255, 255, 255 };
 SDL_Surface *text = NULL;
 SDL_Surface *fontSurface = NULL;
