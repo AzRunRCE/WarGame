@@ -1,21 +1,24 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
 #include <pthread_VC.h>
+#define SLEEP10MS Sleep(10);
 #elif defined linux || defined __linux || defined __linux__
 /* si vous êtes sous linux */
 #include <pthread.h>
+#define SLEEP10MS usleep(10000);
 #else
 /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <string.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "include/ft_socket.h"
 #include "include/ft_client.h"
 #include "include/ft_configuration.h"
@@ -28,9 +31,6 @@
 #include "include/unionproto.pb.h"
 #include "include/pb_functions.h"
 #include "include/ft_configuration.h"
-#if defined linux || defined __linux || defined __linux__
-#define Sleep sleep
-#endif
 
 #define h_addr h_addr_list[0] /* for backward compatibility */
 #define PORT 1977
@@ -47,6 +47,8 @@ SOCKADDR_IN *psin;
 int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
+pb_istream_t *stream = NULL;
+static uint8_t buffer[MAX_BUFFER];
 
 void end()
 {
@@ -169,8 +171,6 @@ int create_connection(configuration *settings)
 	if ((sock = init_connection(mainConfiguration->server, psin)) == false)
 		return false;
 
-	uint8_t buffer[MAX_BUFFER];
-
 	ConnectionMessage connectionMessage;
 	strncpy(_engine.mainPlayer.name, settings->nickname, strlen(settings->nickname) + 1);
 	strncpy(connectionMessage.name, settings->nickname, strlen(settings->nickname) + 1);
@@ -232,17 +232,17 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 
 void *NetworkThreadingListening(void *arg)
 {
+	stream = calloc(1, sizeof(pb_istream_t));
 	while (true)
 	{
-		uint8_t buffer[MAX_BUFFER];
 		int count = read_client(sock, psin, buffer);
 
-		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
-		const pb_field_t *type = decode_unionmessage_type(&stream);
+		*stream = pb_istream_from_buffer(buffer, count);
+		const pb_field_t *type = decode_unionmessage_type(stream);
 		if (type == ConnectionCallbackMessage_fields)
 		{
 			ConnectionCallbackMessage callback;
-			decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback);
+			decode_unionmessage_contents(stream, ConnectionCallbackMessage_fields, &callback);
 			if (callback.sucess)
 			{
 				printf("Connection success motd:%s", callback.motd);
@@ -259,13 +259,13 @@ void *NetworkThreadingListening(void *arg)
 			GameDataMessage gameData;
 			gameData.players.funcs.decode = &readPlayers_callback;
 			gameData.bullets.funcs.decode = &readBullets_callback;
-			decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
+			decode_unionmessage_contents(stream, GameDataMessage_fields, &gameData);
 			_engine.playersCount = gameData.playersCount;
 		}
 		else if (type == SpawnCallbackMessage_fields)
 		{
 			SpawnCallbackMessage spawnCallbackMsg;
-			if (decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
+			if (decode_unionmessage_contents(stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.x;
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.y;
 				_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
@@ -292,7 +292,7 @@ void *SreamClientData(void *arg)
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
 			write_client(buffer, output.bytes_written);
-		Sleep(10);
+		SLEEP10MS;
 	}
 	pthread_exit(NULL);
 }
