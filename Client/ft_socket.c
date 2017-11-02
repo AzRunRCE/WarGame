@@ -2,10 +2,12 @@
 /* si vous êtes sous Windows */
 #include <pthread_VC.h>
 #define SLEEP10MS Sleep(10);
+#define SOCKET_ERRNO    WSAGetLastError()
 #elif defined linux || defined __linux || defined __linux__
 /* si vous êtes sous linux */
 #include <pthread.h>
 #define SLEEP10MS usleep(10000);
+#define SOCKET_ERRNO    errno
 #else
 /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
@@ -35,11 +37,7 @@
 #define h_addr h_addr_list[0] /* for backward compatibility */
 #define PORT 1977
 #define MAX_BUFFER 4096
-#ifdef _WIN32
-#define SOCKET_ERRNO	WSAGetLastError()
-#else
-#define SOCKET_ERRNO	errno
-#endif
+
 SOCKET sock;
 pthread_t NwkThread;
 pthread_t NwkThreadSender;
@@ -47,7 +45,6 @@ SOCKADDR_IN *psin;
 int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
-pb_istream_t *stream = NULL;
 static uint8_t buffer[MAX_BUFFER];
 
 void end()
@@ -232,17 +229,15 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 
 void *NetworkThreadingListening(void *arg)
 {
-	stream = calloc(1, sizeof(pb_istream_t));
 	while (true)
 	{
 		int count = read_client(sock, psin, buffer);
-
-		*stream = pb_istream_from_buffer(buffer, count);
-		const pb_field_t *type = decode_unionmessage_type(stream);
+		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
+		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == ConnectionCallbackMessage_fields)
 		{
 			ConnectionCallbackMessage callback;
-			decode_unionmessage_contents(stream, ConnectionCallbackMessage_fields, &callback);
+			decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback);
 			if (callback.sucess)
 			{
 				printf("Connection success motd:%s", callback.motd);
@@ -259,13 +254,13 @@ void *NetworkThreadingListening(void *arg)
 			GameDataMessage gameData;
 			gameData.players.funcs.decode = &readPlayers_callback;
 			gameData.bullets.funcs.decode = &readBullets_callback;
-			decode_unionmessage_contents(stream, GameDataMessage_fields, &gameData);
+			decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
 			_engine.playersCount = gameData.playersCount;
 		}
 		else if (type == SpawnCallbackMessage_fields)
 		{
 			SpawnCallbackMessage spawnCallbackMsg;
-			if (decode_unionmessage_contents(stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
+			if (decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.x;
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.y;
 				_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;

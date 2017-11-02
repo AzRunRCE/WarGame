@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -W -Wall -O3 -pedantic 
+CFLAGS=-std=c99 -W -Wall -pedantic 
 LDFLAGS=-I../library/include -L../library/lib/x64 -lSDL2 -lSDL2_image -lSDL2_ttf -lm -lc -lpthread -l:libfmod.so
 EXEC=WarGameClient
 DEBUGEXEC=WarGameClient.debug
