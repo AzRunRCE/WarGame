@@ -87,7 +87,7 @@ void ft_drawGame()
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
 		ft_getCharactSprite(&_engine.mainPlayer);
-		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.RelativePos);
+		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.relativePos);
 		_engine.mainPlayer.deathAnimationStep = 0;
 	}
 	else
@@ -103,7 +103,7 @@ void ft_drawGame()
 				_engine.mainPlayer.sprite.w = 56;
 				_engine.mainPlayer.deathAnimationStep += 1;
 			}
-			SDL_Rect rect = _engine.mainPlayer.RelativePos;
+			SDL_Rect rect = _engine.mainPlayer.relativePos;
 			rect.x -= 12;
 			rect.y -= 6;
 			rect.h = 41;

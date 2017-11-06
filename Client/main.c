@@ -116,11 +116,11 @@ int main()
 
 	while (ft_checkEvent())
 	{
-		_engine.mainPlayer.RelativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
-		_engine.mainPlayer.RelativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
+		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
+		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		checkNearWall();
 
-		ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.RelativePos.y, _engine.mousePos.x - _engine.mainPlayer.RelativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
+		ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
 		//ft_getNextExplodeSprite(&explode);	

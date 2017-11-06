@@ -1,92 +1,88 @@
-// This is an example of how to handle 'union' style messages
-// with nanopb, without allocating memory for all the message types.
-//
-// There is no official type in Protocol Buffers for describing unions,
-// but they are commonly implemented by filling out exactly one of
-// several optional fields.
+// Main pb messages
 
-syntax = "proto2";
+syntax = "proto3";
 
 message ConnectionCallbackMessage
 {
-    required bool sucess = 1;
-	required string motd = 2;
-	required int32 map = 3 ;
-	required int32 clientId = 4 ;
+    bool sucess = 1;
+	string motd = 2;
+	int32 map = 3 ;
+	int32 clientId = 4 ;
 }
 
 message ConnectionMessage
 {
-    required string name = 1;
+    string name = 1;
 }
 
 message SpawnMessage
 {
-    required int32 id = 1;
+    int32 id = 1;
 }
 
 message SpawnCallbackMessage
 {
-    required int32 id = 1;
-	required int32 x = 2;
-	required int32 y = 3;
-	required int32 health = 4;
+    int32 id = 1;
+	int32 x = 2;
+	int32 y = 3;
+	int32 health = 4;
 }
 
 message GameDataMessage
 {
-    required int32 gameMode = 1;
-	required int32 	playersCount = 2;
+    int32 gameMode = 1;
+	int32 	playersCount = 2;
     repeated Player players = 3;
 	repeated BulletMessage bullets = 4;
 	
 }
 message SDL_Rect
 {
-	required int32 x = 1;
-	required int32 y = 2;
-	required int32 h = 3;
-	required int32 w = 4;
+	int32 x = 1;
+	int32 y = 2;
+	int32 h = 3;
+	int32 w = 4;
 	
 }
 message PlayerBase
 {
-    required int32 id = 1;
-	required int32 health = 2;
-	required int32 ammo = 3;
-	required int32 state = 4;
-	required int32 orientation = 5;
-	required SDL_Rect pos = 6;
+    int32 id = 1;
+	int32 health = 2;
+	int32 ammo = 3;
+	int32 state = 4;
+	int32 orientation = 5;
+	SDL_Rect pos = 6;
 }
 message Player
 {
-    required PlayerBase playerBase = 1;
-	required int32 lastAnim = 2;
-	required SDL_Rect sprite = 3;
-	required int32 walkAnimationStep = 4;
-	required int32 deathAnimationStep = 5;
-	required string name = 6;
+    PlayerBase playerBase = 1;
+	SDL_Rect relativePos = 2;
+	int32 lastAnim = 3;
+	SDL_Rect sprite = 4;
+	int32 walkAnimationStep = 5;
+	int32 deathAnimationStep = 6;
+	string name = 7;
 }
 
 message BulletMessage
 {
-	required int32 id = 1;
-	required int32 state = 2;
-	required SDL_Rect pos = 3;
-	required SDL_Rect dest = 4;
-	required int32 ownerId = 5;
+	int32 id = 1;
+	int32 state = 2;
+	SDL_Rect pos = 3;
+	SDL_Rect dest = 4;
+	int32 ownerId = 5;
 	
 }
 
 message UnionMessage
 {
-    optional ConnectionMessage connCallbackMessage = 1;
-    optional ConnectionCallbackMessage connMessage = 2;
-    optional BulletMessage bulletMessage = 3;
-	optional PlayerBase playerMessage = 4;
-	optional SpawnMessage spawnMessage = 5;
-	optional SpawnCallbackMessage spawnCallbackMessage = 6;
-	optional GameDataMessage gameDataMessage = 7;
-
+    ConnectionMessage connCallbackMessage = 1;
+    ConnectionCallbackMessage connMessage = 2;
+    BulletMessage bulletMessage = 3;
+	PlayerBase playerMessage = 4;
+	SpawnMessage spawnMessage = 5;
+	SpawnCallbackMessage spawnCallbackMessage = 6;
+	GameDataMessage gameDataMessage = 7;
+/*	Note : All these fields are optional */
 	
 }
