@@ -15,13 +15,15 @@
 #include "unionproto.pb.h"
 #include "ft_socket.h"
 #include "ft_explode.h"
-typedef struct {
+typedef struct Engine {
 	pthread_cond_t condition; 
 	pthread_mutex_t mutex; 
     int WIDTH;
     int HEIGHT;
     int fullscreen;
 	int playersCount;
+	int cooldownDeath;
+	int lastCooldownDeath;
     Player players[16];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;

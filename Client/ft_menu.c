@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <SDL_image.h>
+#include <string.h>
 #include "main.h"
 #include "include/ft_menu.h"
 #include "include/ft_engine.h"
@@ -251,7 +252,21 @@ void menu(configuration *settings)
 	SDL_FreeSurface(Menu.selectionRight);
 }
 
-void menuDeath()
+void menuDeath(void)
 {
 		SDL_RenderCopy(_engine.screenRenderer, _engine.gameoverBackground, NULL, NULL);
+		TTF_Font *Font = TTF_OpenFont("res/verdana.ttf", 40);
+		char textCoolDown[3];
+		char textRespawn[14] = "Respawn in ";
+		sprintf(textCoolDown, "%d", _engine.cooldownDeath);
+		strcat(textRespawn, textCoolDown);
+		SDL_Color black = { 255, 255, 255 };
+		SDL_Surface *CooldownSurface = TTF_RenderText_Blended(Font, textRespawn, black);
+		SDL_Texture *CooldownTexture = SDL_CreateTextureFromSurface(_engine.screenRenderer, CooldownSurface);
+		SDL_Rect posCooldown = { .x = _engine.WIDTH / 2 - CooldownSurface->w / 2,.y = _engine.HEIGHT / 2,.w = CooldownSurface->w,.h = CooldownSurface->h };
+		SDL_RenderCopy(_engine.screenRenderer, CooldownTexture, NULL, &posCooldown);
+		if (_engine.cooldownDeath > 0 && ft_delay(&_engine.lastCooldownDeath, 1000))
+			_engine.cooldownDeath--;
+		else if (_engine.cooldownDeath == 0)
+			_engine.cooldownDeath = 10;
 }

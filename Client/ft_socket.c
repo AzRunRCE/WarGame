@@ -278,12 +278,6 @@ void *SreamClientData(void *arg)
 		uint8_t buffer[PlayerBase_size];
 		PlayerBase pMessage;
 		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));
-		/*if (_engine.mainPlayer.playerBase.pos.x <= _engine.WIDTH / 2 - 16 || _engine.mainPlayer.playerBase.pos.y <= _engine.HEIGHT / 2 - 16 || _engine.mainPlayer.playerBase.pos.x + _engine.WIDTH / 2 + 16 >= _engine.mapSurface->h || _engine.mainPlayer.playerBase.pos.y + _engine.HEIGHT / 2 + 16 >= _engine.mapSurface->h)
-		{
-			pMessage.pos.x += _engine.pCenter.x - _engine.WIDTH / 2 + 16;
-			pMessage.pos.y += _engine.pCenter.y - _engine.HEIGHT / 2 + 16;
-		}*/
-
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
 			write_client(buffer, output.bytes_written);
