@@ -83,42 +83,35 @@ void ft_drawGame()
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 	
-	
-	if (_engine.mainPlayer.playerBase.health > 0)
+	ft_drawPlayers();
+	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
 		ft_getCharactSprite(&_engine.mainPlayer);
 		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.relativePos);
 		_engine.mainPlayer.deathAnimationStep = 0;
+		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+	}
+	else if (_engine.mainPlayer.deathAnimationStep != 10)
+	{
+		if (ft_delay(&_engine.mainPlayer.lastAnim, 100))
+		{
+			_engine.mainPlayer.sprite.x = 56 * (_engine.mainPlayer.deathAnimationStep % 5) + (_engine.mainPlayer.deathAnimationStep % 5 + 1);
+			_engine.mainPlayer.sprite.y = 41 * (_engine.mainPlayer.deathAnimationStep / 5) + (_engine.mainPlayer.deathAnimationStep / 5 + 1);
+			_engine.mainPlayer.sprite.h = 41;
+			_engine.mainPlayer.sprite.w = 56;
+			_engine.mainPlayer.deathAnimationStep += 1;
+		}
+		SDL_Rect rect = _engine.mainPlayer.relativePos;
+		rect.x -= 12;
+		rect.y -= 6;
+		rect.h = 41;
+		rect.w = 56;
+		SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.mainPlayer.sprite, &rect);
 	}
 	else
-	{
+		menuDeath();
 
-		if (_engine.mainPlayer.deathAnimationStep != 10)
-		{
-			if (ft_delay(&_engine.mainPlayer.lastAnim, 100))
-			{
-				_engine.mainPlayer.sprite.x = 56 * (_engine.mainPlayer.deathAnimationStep % 5) + (_engine.mainPlayer.deathAnimationStep % 5 + 1);
-				_engine.mainPlayer.sprite.y = 41 * (_engine.mainPlayer.deathAnimationStep / 5) + (_engine.mainPlayer.deathAnimationStep / 5 + 1);
-				_engine.mainPlayer.sprite.h = 41;
-				_engine.mainPlayer.sprite.w = 56;
-				_engine.mainPlayer.deathAnimationStep += 1;
-			}
-			SDL_Rect rect = _engine.mainPlayer.relativePos;
-			rect.x -= 12;
-			rect.y -= 6;
-			rect.h = 41;
-			rect.w = 56;
-			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.mainPlayer.sprite, &rect);
-		}
-		else
-			menuDeath();
-	}
-		
-	
-	ft_drawPlayers();
-	browserBullets(headBullets, &drawBullet);
-	if (_engine.mainPlayer.playerBase.state != DEAD)
-		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+	browserBullets(headBullets, &drawBullet);		
 
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);

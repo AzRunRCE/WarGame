@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "include/ft_view.h"
-#include "include/ft_engine.h"
 #include <stdlib.h>
 #include <math.h>
+#include "include/ft_view.h"
+#include "include/ft_engine.h"
 
 void ft_ViewGetDegrees(double a, double b)
 {

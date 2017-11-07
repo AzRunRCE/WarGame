@@ -251,22 +251,38 @@ void menu(configuration *settings)
 	SDL_FreeSurface(Menu.selectionLeft);
 	SDL_FreeSurface(Menu.selectionRight);
 }
+void init_menuDeath(void) {
+	_menuDeath.font = TTF_OpenFont("res/verdana.ttf", 40);
+	_menuDeath.black = (SDL_Color) { 255, 255, 255 };
+	char textRespawn[] = "Respawn in ";
+	char respawnSentence[] = "Press SPACE to respawn !";
+	strncpy(_menuDeath.textRespawn, textRespawn, strlen(textRespawn));
+	strncpy(_menuDeath.respawnSentence, respawnSentence, strlen(respawnSentence));
+}
 
 void menuDeath(void)
 {
-		SDL_RenderCopy(_engine.screenRenderer, _engine.gameoverBackground, NULL, NULL);
-		TTF_Font *Font = TTF_OpenFont("res/verdana.ttf", 40);
-		char textCoolDown[3];
-		char textRespawn[14] = "Respawn in ";
-		sprintf(textCoolDown, "%d", _engine.cooldownDeath);
-		strcat(textRespawn, textCoolDown);
-		SDL_Color black = { 255, 255, 255 };
-		SDL_Surface *CooldownSurface = TTF_RenderText_Blended(Font, textRespawn, black);
-		SDL_Texture *CooldownTexture = SDL_CreateTextureFromSurface(_engine.screenRenderer, CooldownSurface);
-		SDL_Rect posCooldown = { .x = _engine.WIDTH / 2 - CooldownSurface->w / 2,.y = _engine.HEIGHT / 2,.w = CooldownSurface->w,.h = CooldownSurface->h };
-		SDL_RenderCopy(_engine.screenRenderer, CooldownTexture, NULL, &posCooldown);
-		if (_engine.cooldownDeath > 0 && ft_delay(&_engine.lastCooldownDeath, 1000))
+
+	SDL_RenderCopy(_engine.screenRenderer, _engine.gameoverBackground, NULL, NULL);
+	sprintf(_menuDeath.textCoolDown, "%d", _engine.cooldownDeath);
+	strcat(_menuDeath.textRespawn, _menuDeath.textCoolDown);
+
+	if (_engine.cooldownDeath > 0 ) {
+		_menuDeath.textSurface = TTF_RenderText_Blended(_menuDeath.font, _menuDeath.textRespawn, _menuDeath.black);
+		_menuDeath.textTexture = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menuDeath.textSurface);
+		_menuDeath.textPos = (SDL_Rect) { .x = _engine.WIDTH / 2 - _menuDeath.textSurface->w / 2, .y = _engine.HEIGHT / 2, .w = _menuDeath.textSurface->w, .h = _menuDeath.textSurface->h };
+		SDL_RenderCopy(_engine.screenRenderer, _menuDeath.textTexture, NULL, &_menuDeath.textPos);
+		if (ft_delay(&_engine.lastCooldownDeath, 1000))
 			_engine.cooldownDeath--;
-		else if (_engine.cooldownDeath == 0)
-			_engine.cooldownDeath = 10;
+	}
+	else if (!_engine.cooldownDeath) {
+		_menuDeath.textSurface = TTF_RenderText_Blended(_menuDeath.font, _menuDeath.respawnSentence, _menuDeath.black);
+		_menuDeath.textTexture = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menuDeath.textSurface);
+		_menuDeath.textPos = (SDL_Rect) { .x = _engine.WIDTH / 2 - _menuDeath.textSurface->w / 2, .y = _engine.HEIGHT / 2, .w = _menuDeath.textSurface->w, .h = _menuDeath.textSurface->h };
+		SDL_RenderCopy(_engine.screenRenderer, _menuDeath.textTexture, NULL, &_menuDeath.textPos);
+	}
+	_menuDeath.textRespawn[strlen(_menuDeath.textRespawn) - strlen(_menuDeath.textCoolDown)] = '\0';
+	SDL_FreeSurface(_menuDeath.textSurface);
+	SDL_DestroyTexture(_menuDeath.textTexture);
+
 }

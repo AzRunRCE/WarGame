@@ -6,9 +6,8 @@
 #include <SDL_ttf.h>
 #include "main.h"
 #include "ft_configuration.h"
-typedef struct Menu Menu;
 
-struct Menu {
+typedef struct Menu {
     int menuSelection;
     int menuOptionsSelection;
 	int selectionMenuOptionsDone;
@@ -45,9 +44,22 @@ struct Menu {
     bool selectionDone;
     bool selectionOptionsDone;
 
-};
+}Menu;
 
+typedef struct MenuDeath {
+	TTF_Font *font;
+	char textCoolDown[3];
+	char textRespawn[15];
+	char respawnSentence[25];
+	SDL_Color black;
+	SDL_Surface *textSurface;
+	SDL_Texture *textTexture;
+	SDL_Rect textPos;
+} MenuDeath;
+
+static MenuDeath _menuDeath;
 
 void menu(configuration *settings);
-void menuDeath();
+void menuDeath(void);
+void init_menuDeath(void);
 #endif // FT_MENU_H

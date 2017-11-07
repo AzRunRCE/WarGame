@@ -119,7 +119,6 @@ int main()
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		checkNearWall();
-
 		ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 		ft_getHealthSprite(&_engine.mainPlayer);
 		ft_getAmmoSprite(&_engine.mainPlayer);
@@ -264,9 +263,10 @@ int GetKeyPressEvent()
 	else
 	{
 		_engine.mainPlayer.playerBase.state = DEAD;
-		if (keystate[SDL_SCANCODE_SPACE])
+		if (!_engine.cooldownDeath && keystate[SDL_SCANCODE_SPACE])
 		{
 			_engine.mainPlayer.playerBase.ammo = 30;
+			_engine.cooldownDeath = 10;
 			SpawnMessage spMessage;
 			uint8_t buffer[SpawnMessage_size];
 			spMessage.id = _engine.mainPlayer.playerBase.id;

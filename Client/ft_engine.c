@@ -43,4 +43,5 @@ void Engine_init()
 	_engine.viewRect = (SDL_Rect) { .w = 1800, .h = 1800 };
 	_engine.cooldownDeath = 10;
 	_engine.lastCooldownDeath = 0;
+	init_menuDeath();
 }
