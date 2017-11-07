@@ -8,9 +8,6 @@ FMOD_SOUND *music;
 
 void sound_Init()
 {
-	soundChannelMusic = malloc(sizeof(int));
-	soundChannelMainPlayer = malloc(sizeof(int));
-	soundChannelEnemies = malloc(sizeof(int));
 	if (FMOD_System_Create(&soundSystem))
 		exit(EXIT_FAILURE);
 	if (FMOD_System_Init(soundSystem, 3, FMOD_INIT_NORMAL, NULL))
@@ -26,16 +23,13 @@ void sound_Load(char file[30])
 	if (FMOD_System_CreateSound(soundSystem, file, FMOD_CREATESAMPLE, 0, &sound))
 		exit(EXIT_FAILURE);
 }
-void sound_Play(int *channel)
+void sound_Play(FMOD_CHANNEL **channel)
 {
 	FMOD_System_PlaySound(soundSystem, sound, NULL, 0, channel);
 }
 
 void sound_Close()
 {
-	free(soundChannelMusic);
-	free(soundChannelMainPlayer);
-	free(soundChannelEnemies);
 	if (FMOD_Sound_Release(sound))
 		exit(EXIT_FAILURE);
 	if (FMOD_Sound_Release(music))

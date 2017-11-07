@@ -10,9 +10,8 @@ typedef enum
 } NearWallMode;
 
 int nWallMode;
-SDL_Rect *nearWall[3];
+static SDL_Rect nearWall[3];
 void nearWallInit();
-void nearWalldelete();
 void checkNearWall();
 
 #endif // FT_NEARWALL_H

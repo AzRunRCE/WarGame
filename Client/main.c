@@ -127,7 +127,6 @@ int main()
 	}
 
 	end();
-	nearWalldelete();
 	sound_Close();
 	return EXIT_SUCCESS;
 
