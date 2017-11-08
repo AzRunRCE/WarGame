@@ -40,7 +40,7 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 }
 
 
-void ft_LoadMap(char * path, Map *map)
+int ft_LoadMap(char * path, Map *map)
 {
 	SDL_Surface *mapBMP = NULL;
 	mapBMP = SDL_LoadBMP(path);

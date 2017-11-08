@@ -26,9 +26,11 @@
 #include "include/pb_functions.h"
 #include "include/ft_sound.h"
 #include "include/ft_nearwall.h"
+#include "include/ft_playerPosition.h"
 
 #define MAX_LENGTH 32
 #define FIRE_DELAY 150
+#define LAST_UPDATE 12
 #define BLOCK_SIZE 32
 
 Engine _engine;
@@ -46,6 +48,7 @@ configuration *mainConfiguration;
 Explode explode;
 int GetKeyPressEvent();
 int lastFire = 0;
+int lastUpdate = 0;
 New_Map newMapLeft;
 
 bool ft_getNextExplodeSprite(Explode *explode)
@@ -90,18 +93,12 @@ int main(int argc, char *argv[])
 	SDL_init();
 	Engine_init();
 	nearWallInit();
-	newMapLeft.block.x = 0;
-	newMapLeft.block.y = 0;
-	newMapLeft.block.w = _engine.WIDTH / 2 - 16;
-	newMapLeft.block.h = 1600;
-	newMapLeft.next = NULL;
-	nearWallInit();
 	sound_Init();
 	sound_Load("res/fire.wav");
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	do
 	{
-		menu(mainConfiguration, NULL);
+		menu(mainConfiguration, 0);
 	} while (!create_connection(mainConfiguration));
 	if (NwkThreadRet < 0)
 		menu(mainConfiguration, NwkThreadRet);
@@ -121,9 +118,13 @@ int main(int argc, char *argv[])
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		checkNearWall();
-		ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
-		ft_getHealthSprite(&_engine.mainPlayer);
-		ft_getAmmoSprite(&_engine.mainPlayer);
+		if (ft_delay(&lastUpdate, LAST_UPDATE)) {
+			if (!keystate[SDL_SCANCODE_UP] && !keystate[SDL_SCANCODE_DOWN] && !keystate[SDL_SCANCODE_LEFT] && !keystate[SDL_SCANCODE_RIGHT] && !keystate[SDL_SCANCODE_W] && !keystate[SDL_SCANCODE_S] && !keystate[SDL_SCANCODE_A] && !keystate[SDL_SCANCODE_D])
+				checkPlayerPosition();
+			ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
+			ft_getHealthSprite(&_engine.mainPlayer);
+			ft_getAmmoSprite(&_engine.mainPlayer);
+		}
 		//ft_getNextExplodeSprite(&explode);	
 		ft_drawGame();
 	}

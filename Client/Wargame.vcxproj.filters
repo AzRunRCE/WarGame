@@ -99,6 +99,9 @@
     <ClInclude Include="resource2.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="include\ft_playerPosition.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
@@ -159,6 +162,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="ft_nearwall.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ft_playerPosition.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
