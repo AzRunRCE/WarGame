@@ -1,7 +1,17 @@
 #ifndef SOCKET_H
 #define SOCKET_H
-#include "main.h"
-#include "ft_configuration.h"
+#include "include/ft_bullet.h"
+#include "include/ft_client.h"
+#include "include/ft_configuration.h"
+#include "include/ft_map.h"
+#include "include/ft_engine.h"
+#include "include/pb.h"
+#include "include/pb_common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
+#include "include/pb_functions.h"
+#include "include/ft_configuration.h"
 
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
@@ -17,7 +27,6 @@
 /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 typedef enum
 {
@@ -26,8 +35,8 @@ typedef enum
 
 } SocketError;
 
-void *SreamClientData(void *arg);
-void *NetworkThreadingListening(void *arg);
+void *SreamClientData(void);
+void *NetworkThreadingListening(void);
 int create_connection(configuration *settings);
 int write_client(const uint8_t *buffer, const int length);
 void end();

@@ -1,7 +1,9 @@
 #ifndef FT_CONFIGURATION_H
 #define FT_CONFIGURATION_H
-#include "main.h"
 #define MAX_LENGTH 32
+#include <stdbool.h>
+#include "include/ini.h"
+
 typedef struct
 {
 	char version[MAX_LENGTH];
@@ -12,5 +14,6 @@ typedef struct
 static int handler(void* user, const char* section, const char* name,
 	const char* value);
 configuration *ft_loadConf();
+
 bool ft_saveConf(configuration *settings);
 #endif

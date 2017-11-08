@@ -1,11 +1,8 @@
 #include <stdio.h>
+#include <SDL.h>
 #include <SDL_image.h>
 #include <string.h>
-#include "main.h"
 #include "include/ft_menu.h"
-#include "include/ft_engine.h"
-#include "include/ft_point.h"
-#include "include/ft_configuration.h"
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {

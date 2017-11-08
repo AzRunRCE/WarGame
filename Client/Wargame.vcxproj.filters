@@ -96,10 +96,10 @@
     <ClInclude Include="resource.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="resource2.h">
+    <ClInclude Include="include\ft_playerPosition.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\ft_playerPosition.h">
+    <ClInclude Include="include\ft_delay.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,15 +167,12 @@
     <ClCompile Include="ft_playerPosition.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="ft_delay.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WarGame.rc">
-      <Filter>Fichiers de ressources</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="WarGame1.rc">
-      <Filter>Fichiers de ressources</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="WarGame2.rc">
       <Filter>Fichiers de ressources</Filter>
     </ResourceCompile>
   </ItemGroup>

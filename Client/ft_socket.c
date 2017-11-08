@@ -7,17 +7,6 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "include/ft_socket.h"
-#include "include/ft_client.h"
-#include "include/ft_configuration.h"
-#include "include/ft_map.h"
-#include "include/ft_engine.h"
-#include "include/pb.h"
-#include "include/pb_common.h"
-#include "include/pb_encode.h"
-#include "include/pb_decode.h"
-#include "include/unionproto.pb.h"
-#include "include/pb_functions.h"
-#include "include/ft_configuration.h"
 
 #define h_addr h_addr_list[0] /* for backward compatibility */
 #define PORT 1977
@@ -64,6 +53,7 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	}
 
 	hostinfo = gethostbyname(address);
+
 	if (hostinfo == NULL)
 	{
 		fprintf(stderr, "Unknown host %s.\n", address);

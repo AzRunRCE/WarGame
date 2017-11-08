@@ -4,7 +4,6 @@
 #include <string.h>
 #include <SDL.h>
 #include "include/ft_nearwall.h"
-#include "include/ft_engine.h"
 
 
 void nearWallInit()
@@ -36,7 +35,7 @@ void checkNearWall()
 	int nWallModeTmp1 = NONE;
 	int nWallModeTmp2 = NONE;
 	nWallMode = NONE;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i <= 3; i++)
 	{
 		if (SDL_HasIntersection(&_engine.mainPlayer.playerBase.pos, &nearWall[i]))
 		{

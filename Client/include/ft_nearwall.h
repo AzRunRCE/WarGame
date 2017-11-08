@@ -1,6 +1,6 @@
 #ifndef FT_NEARWALL_H
 #define FT_NEARWALL_H
-#include <SDL.h>
+#include "include/ft_engine.h"
 typedef enum
 {
 	NONE = 0,
@@ -10,7 +10,7 @@ typedef enum
 } NearWallMode;
 
 int nWallMode;
-static SDL_Rect nearWall[3];
+static SDL_Rect nearWall[4];
 void nearWallInit();
 void checkNearWall();
 

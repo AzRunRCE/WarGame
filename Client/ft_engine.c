@@ -1,4 +1,5 @@
 #include "include/ft_engine.h"
+
 void Engine_init()
 {
 	_engine.map = malloc(sizeof(Map));

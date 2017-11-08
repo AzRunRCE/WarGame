@@ -4,29 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "include/ft_item.h"
-#include "include/ft_engine.h"
-#include "include/ft_sdl.h"
-#include "include/ft_player.h"
-#include "include/ft_socket.h"
-#include "include/ft_sprite.h"
-#include "include/ft_socket.h"
-#include "include/ft_engine.h"
-#include "include/ft_menu.h"
-#include "include/ft_point.h"
-#include "include/ft_bullet.h"
-#include "include/ft_configuration.h"
-#include "include/ft_explode.h"
-#include "include/ft_view.h"
-#include "include/pb.h"
-#include "include/pb_common.h"
-#include "include/pb_encode.h"
-#include "include/pb_decode.h"
-#include "include/unionproto.pb.h"
-#include "include/pb_functions.h"
-#include "include/ft_sound.h"
-#include "include/ft_nearwall.h"
-#include "include/ft_playerPosition.h"
+#include "include/main.h"
 
 #define MAX_LENGTH 32
 #define FIRE_DELAY 150
@@ -154,21 +132,6 @@ void ft_getAmmoSprite(Player *player)
 	_engine.AmmoRect.y = 100 * player->playerBase.ammo;
 	_engine.AmmoRect.h = 100;
 	_engine.AmmoRect.w = 404;
-
-}
-
-bool ft_delay(int *lastAnim, int  SleepTimeAnim)
-{
-	int ActualTimeAnim = SDL_GetTicks();
-	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)
-	{
-		*lastAnim = ActualTimeAnim;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 
 }
 

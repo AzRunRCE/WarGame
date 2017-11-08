@@ -13,7 +13,6 @@
 #include "ft_map.h"
 #include "ft_player.h"
 #include "unionproto.pb.h"
-#include "ft_socket.h"
 #include "ft_explode.h"
 typedef struct Engine {
 	pthread_cond_t condition; 

@@ -26,17 +26,6 @@ typedef struct in_addr IN_ADDR;
 #endif
 #include <SDL_timer.h>
 #include "include/server.h"
-#include "include/client.h"
-#include "include/ft_map.h"
-#include "include/pb.h"
-#include "include/ft_state.h"
-#include "include/pb_common.h"
-#include "include/pb_encode.h"
-#include "include/pb_decode.h"
-#include "include/unionproto.pb.h"
-#include "include/pb_functions.h"
-#include "include/ft_item.h"
-#include "include/ft_checkcollision.h"
 #define MAX_BUFFER 4096
 #define SERVER "127.0.0.1"
 #define BLOCK_SIZE 32

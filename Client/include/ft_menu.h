@@ -4,8 +4,10 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "main.h"
-#include "ft_configuration.h"
+#include <stdbool.h>
+#include "include/ft_engine.h"
+#include "include/ft_point.h"
+#include "include/ft_configuration.h"
 
 typedef struct Menu {
     int menuSelection;

@@ -20,7 +20,6 @@ typedef struct in_addr IN_ADDR;
 #error not defined for this platform
 
 #endif
-#include <sys/types.h>
 #include "include/pb_encode.h"
 #include "include/pb_decode.h"
 

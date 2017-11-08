@@ -22,14 +22,25 @@ typedef struct in_addr IN_ADDR;
 #error not defined for this platform
 
 #endif
+#include <stdbool.h>
+#include <sys/types.h>
+#include "include/client.h"
+#include "include/ft_map.h"
+#include "include/pb.h"
+#include "include/ft_state.h"
+#include "include/pb_common.h"
+#include "include/pb_encode.h"
+#include "include/pb_decode.h"
+#include "include/unionproto.pb.h"
+#include "include/pb_functions.h"
+#include "include/ft_item.h"
+#include "include/ft_checkcollision.h"
 #define CRLF		"\r\n"
 #define PORT	 	1977
 #define MAX_CLIENTS 	4
 #define BUF_SIZE	1024
-typedef int bool;
 #define true 1
 #define false 0
-#include "client.h"
 SDL_Rect SpawnList[9];
 void end(void);
 void app(void);

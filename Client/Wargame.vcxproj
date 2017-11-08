@@ -37,7 +37,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -96,7 +96,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAs>CompileAsC</CompileAs>
       <AdditionalOptions>/utf-8 /DHAVE_STRUCT_TIMESPEC %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -128,7 +128,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalOptions>/utf-8 /DHAVE_STRUCT_TIMESPEC %(AdditionalOptions)</AdditionalOptions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -167,6 +167,7 @@
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_client.h" />
     <ClInclude Include="include\ft_configuration.h" />
+    <ClInclude Include="include\ft_delay.h" />
     <ClInclude Include="include\ft_engine.h" />
     <ClInclude Include="include\ft_explode.h" />
     <ClInclude Include="include\ft_item.h" />
@@ -190,7 +191,6 @@
     <ClInclude Include="include\pb_functions.h" />
     <ClInclude Include="include\unionproto.pb.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="resource2.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
@@ -199,6 +199,7 @@
     <ClCompile Include="common.c" />
     <ClCompile Include="ft_bullet.c" />
     <ClCompile Include="ft_configuration.c" />
+    <ClCompile Include="ft_delay.c" />
     <ClCompile Include="ft_engine.c" />
     <ClCompile Include="ft_explode.c" />
     <ClCompile Include="ft_map.c" />
@@ -219,8 +220,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WarGame.rc" />
-    <ResourceCompile Include="WarGame1.rc" />
-    <ResourceCompile Include="WarGame2.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="WarGame.ico" />

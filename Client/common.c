@@ -24,7 +24,6 @@ typedef struct in_addr IN_ADDR;
 
 #include "include/pb_encode.h"
 #include "include/pb_decode.h"
-
 #include "include/common.h"
 
 static bool write_callback(pb_ostream_t *stream, const uint8_t *buf, size_t count)

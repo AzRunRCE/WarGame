@@ -1,7 +1,6 @@
-#include "include/ft_configuration.h"
-#include "include/ini.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "include/ft_configuration.h"
 
 const char path[] = "settings.ini";
 

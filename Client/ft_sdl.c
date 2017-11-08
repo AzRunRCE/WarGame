@@ -7,15 +7,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "include/ft_item.h"
-#include "include/ft_engine.h"
 #include "include/ft_sdl.h"
-#include "include/ft_player.h"
-#include "include/ft_sprite.h"
-#include "include/ft_menu.h"
-#include "include/ft_sound.h"
 
 
+int lastupdate = 0;
 
 void SDL_init()
 {

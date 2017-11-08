@@ -1,8 +1,9 @@
-#include "include/ft_map.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <SDL.h>
+#include "include/ft_map.h"
+
 #define BLOCK_SIZE 32
 #define BLACK 255
 #define WHITE 0

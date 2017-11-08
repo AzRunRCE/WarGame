@@ -1,5 +1,3 @@
-#include "SDL.h"
-#include "include/ft_engine.h"
 #include "include/ft_bullet.h"
 SDL_Rect RECT = { .x = 0,.y = 0,.h = 6,.w = 6 };
 void browserBullets(BulletElm* head, callback f)

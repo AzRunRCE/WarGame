@@ -1,4 +1,5 @@
 #include "include/ft_playerPosition.h"
+
 void checkPlayerPosition(void)
 {
 	if (_engine.viewDegrees >= -22.5 && _engine.viewDegrees < 22.5)

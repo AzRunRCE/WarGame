@@ -95,18 +95,9 @@
     <ClInclude Include="resource.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="resource2.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Server.rc">
-      <Filter>Fichiers de ressources</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="Server1.rc">
-      <Filter>Fichiers de ressources</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="Server2.rc">
       <Filter>Fichiers de ressources</Filter>
     </ResourceCompile>
   </ItemGroup>

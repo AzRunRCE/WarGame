@@ -187,12 +187,9 @@
     <ClInclude Include="pb_decode.h" />
     <ClInclude Include="include\pb_encode.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="resource2.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Server.rc" />
-    <ResourceCompile Include="Server1.rc" />
-    <ResourceCompile Include="Server2.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="WarGame.ico" />
