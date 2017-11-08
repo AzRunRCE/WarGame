@@ -418,7 +418,7 @@ void app(void)
 
 			BulletMessage bulletMsg;
 			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bulletMsg);
-			if (playerIsAlive(&Players[bulletMsg.ownerId])) {
+			if (playerIsAlive(&Players[bulletMsg.ownerId].playerBase)) {
 				//printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
 				headBulletList = pushBullet(headBulletList, &bulletMsg);
 			}

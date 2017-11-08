@@ -59,7 +59,8 @@ typedef struct MenuDeath {
 
 static MenuDeath _menuDeath;
 
-void menu(configuration *settings);
+void menu(configuration *settings, int errcode);
+void endMenuOptions(Menu *Menu);
 void menuDeath(void);
-void init_menuDeath(void);
+int init_menuDeath(void);
 #endif // FT_MENU_H

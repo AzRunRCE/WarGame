@@ -11,7 +11,7 @@
 
 
 
-/*obtenirPixel : permet de récupérer la couleur d'un pixel*/
+/*obtenirPixel : permet de rÃ©cupÃ©rer la couleur d'un pixel*/
 Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 {
 	int nbOctetsParPixel = surface->format->BytesPerPixel;
@@ -34,14 +34,14 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 	case 4:
 		return *(Uint32 *)p;
 
-		/*Ne devrait pas arriver, mais évite les erreurs*/
+		/*Ne devrait pas arriver, mais Ã©vite les erreurs*/
 	default:
 		return 0;
 	}
 }
 
 
-void ft_LoadMap(char * path, Map *map)
+int ft_LoadMap(char * path, Map *map)
 {
 	SDL_Surface *mapBMP = NULL;
 	mapBMP = SDL_LoadBMP(path);
@@ -54,7 +54,7 @@ void ft_LoadMap(char * path, Map *map)
 
 	map->width = mapBMP->w;
 
-	int rows, columns;
+	// int rows, columns;
 	/* initialize rows and columns to the desired value */
 
 	/*map->data = (int**)malloc(mapBMP->h * sizeof(int*));

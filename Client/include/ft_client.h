@@ -1,9 +1,9 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-#ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
+#ifdef _WIN32 || _WIN64 /* si vous Ãªtes sous Windows */
 #include <winsock2.h>
 
-#elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
+#elif defined linux || defined __linux || defined __linux__ /* si vous Ãªtes sous linux */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -17,7 +17,7 @@ typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
-#else /* sinon vous êtes sur une plateforme non supportée */
+#else /* sinon vous Ãªtes sur une plateforme non supportÃ©e */
 #error not defined for this platform
 #endif
 

@@ -1,18 +1,3 @@
-#ifdef _WIN32 || _WIN64
-/* si vous êtes sous Windows */
-#include <pthread_VC.h>
-#define SLEEP10MS Sleep(10);
-#define SOCKET_ERRNO    WSAGetLastError()
-#elif defined linux || defined __linux || defined __linux__
-/* si vous êtes sous linux */
-#include <pthread.h>
-#define SLEEP10MS usleep(10000);
-#define SOCKET_ERRNO    errno
-#else
-/* sinon vous êtes sur une plateforme non supportée */
-#error not defined for this platform
-#endif
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -39,8 +24,6 @@
 #define MAX_BUFFER 4096
 
 SOCKET sock;
-pthread_t NwkThread;
-pthread_t NwkThreadSender;
 SOCKADDR_IN *psin;
 int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
@@ -159,6 +142,7 @@ BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage)
 
 int create_connection(configuration *settings)
 {
+	NwkThreadRet = 0;
 	configuration *mainConfiguration;
 	mainConfiguration = ft_loadConf();
 	bool status = false;
@@ -176,38 +160,34 @@ int create_connection(configuration *settings)
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 	status = encode_unionmessage(&output, ConnectionMessage_fields, &connectionMessage);
 
-	int c = write_client(buffer, output.bytes_written);
+	write_client(buffer, output.bytes_written);
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
 		return false;
 	}
 	return true;
 }
-int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
+int read_client()
 {
 	int n = 0;
-	size_t sinsize = sizeof *sin;
+	size_t sinsize = sizeof *psin;
 
-	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
+	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)psin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
-		//exit(-1);
+		return RECVERROR;
 	}
-
-
 	return n;
 }
-int write_client(const char *buffer, const int length)
+int write_client(const uint8_t *writebuffer, const int length)
 {
 	int n = 0;
-	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)psin, sizeof *psin)) < 0)
+	if ((n = sendto(sock, writebuffer, length, 0, (SOCKADDR *)psin, sizeof *psin)) < 0)
+	{
 		perror("write_client()");
+		return SENDERROR;
+	}
 	return n;
-}
-
-int sendMessage(const uint8_t *buffer, const int length)
-{
-	return write_client(buffer, length);
 }
 
 bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
@@ -227,11 +207,16 @@ bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **
 }
 
 
-void *NetworkThreadingListening(void *arg)
+void *NetworkThreadingListening(void)
 {
 	while (true)
 	{
-		int count = read_client(sock, psin, buffer);
+		int count = read_client();
+		if (count < 0) /* This mean there is an error, we need to kill the thread ! */
+		{
+			NwkThreadRet = -10;
+			pthread_exit(&count);
+		}
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == ConnectionCallbackMessage_fields)
@@ -271,16 +256,16 @@ void *NetworkThreadingListening(void *arg)
 	pthread_exit(NULL);
 }
 
-void *SreamClientData(void *arg)
+void *SreamClientData(void)
 {
 	while (true)
 	{
-		uint8_t buffer[PlayerBase_size];
+		uint8_t writebuffer[PlayerBase_size];
 		PlayerBase pMessage;
 		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));
-		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
+		pb_ostream_t output = pb_ostream_from_buffer(writebuffer, sizeof(writebuffer));
 		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
-			write_client(buffer, output.bytes_written);
+			write_client(writebuffer, output.bytes_written);
 		SLEEP10MS;
 	}
 	pthread_exit(NULL);

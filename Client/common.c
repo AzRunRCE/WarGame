@@ -2,11 +2,11 @@
  */
 
 #ifdef _WIN32 || _WIN64
-/* si vous êtes sous Windows */
+/* si vous Ãªtes sous Windows */
 #include <winsock2.h>
 
 #else
-/* si vous êtes sous Linux */
+/* si vous Ãªtes sous Linux */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

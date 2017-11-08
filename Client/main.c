@@ -83,8 +83,7 @@ bool ft_checkEvent()
 	return true;
 }
 
-//int main(int argc, char *argv[])
-int main()
+int main(int argc, char *argv[])
 {	
 	keystate = SDL_GetKeyboardState(NULL);
 	mainConfiguration = ft_loadConf();
@@ -102,9 +101,10 @@ int main()
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	do
 	{
-		menu(mainConfiguration);
+		menu(mainConfiguration, NULL);
 	} while (!create_connection(mainConfiguration));
-
+	if (NwkThreadRet < 0)
+		menu(mainConfiguration, NwkThreadRet);
 	ft_LoadMap("map/first.bmp", _engine.map);
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
@@ -116,6 +116,8 @@ int main()
 
 	while (ft_checkEvent())
 	{
+		if (NwkThreadRet < 0)
+			menu(mainConfiguration, NwkThreadRet);
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		checkNearWall();
@@ -168,8 +170,6 @@ bool ft_delay(int *lastAnim, int  SleepTimeAnim)
 	}
 
 }
-
-int a;
 
 int GetKeyPressEvent()
 {
@@ -263,6 +263,7 @@ int GetKeyPressEvent()
 	{
 		_engine.mainPlayer.playerBase.state = DEAD;
 		if (!_engine.cooldownDeath && keystate[SDL_SCANCODE_SPACE])
+			/* When spawn cooldown is done and space pressed */
 		{
 			_engine.mainPlayer.playerBase.ammo = 30;
 			_engine.cooldownDeath = 10;
@@ -303,7 +304,8 @@ void FireBullet(bool MouseButtonLeft)
 		bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 		encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
-		sendMessage(buffer, output.bytes_written);
+		if (!write_client(buffer, output.bytes_written))
+			perror("FireBullet()");
 	}
 	else if (_engine.mainPlayer.playerBase.ammo == 3 && ft_delay(&lastFire, FIRE_DELAY))
 		_engine.mainPlayer.playerBase.ammo = 0;

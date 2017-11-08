@@ -28,6 +28,6 @@ void ft_ViewGetDegrees(double a, double b)
 		}
 		_engine.viewRect.x = _engine.mainPlayer.relativePos.x + 16 - _engine.viewRect.w / 2;
 		_engine.viewRect.y = _engine.mainPlayer.relativePos.y + 16 - _engine.viewRect.h / 2;
-		_engine.viewDegrees = _engine.viewDegrees * 180 / M_PI; // Conversion en degrés
+		_engine.viewDegrees = _engine.viewDegrees * 180 / M_PI; // Conversion en degrÃ©s
 	}
 }

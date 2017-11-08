@@ -27,7 +27,7 @@ void initMenuOptions(Menu *Menu, configuration *settings)
 	Menu->textureLabelReturn = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelReturn);
 }
 
-void endMenuOptions(Menu *Menu, configuration *settings)
+void endMenuOptions(Menu *Menu)
 {
 	SDL_DestroyTexture(Menu->textureLabelIpAddress);
 	SDL_DestroyTexture(Menu->textureLabelPseudo);
@@ -41,7 +41,8 @@ void endMenuOptions(Menu *Menu, configuration *settings)
 	SDL_FreeSurface(Menu->selectionLeft);
 }
 
-void menu(configuration *settings)
+void menu(configuration *settings, int errcode)
+/* TODO: handling errorcode, for example when server is not recheable or disconnected */
 {
 	Menu Menu;
 	point pointLeft[3];
@@ -137,7 +138,7 @@ void menu(configuration *settings)
 					case 2:
 						Menu.selectionOptionsDone = false;
 						Menu.menuOptionsSelection = 0;
-						endMenuOptions(&Menu, settings);
+						endMenuOptions(&Menu);
 						break;
 					case 3:
 						strncpy(settings->server, Menu.textInputIpAddress, strlen(Menu.textInputIpAddress) + 1);
@@ -251,7 +252,7 @@ void menu(configuration *settings)
 	SDL_FreeSurface(Menu.selectionLeft);
 	SDL_FreeSurface(Menu.selectionRight);
 }
-void init_menuDeath(void) {
+int init_menuDeath(void) {
 	_menuDeath.font = TTF_OpenFont("res/verdana.ttf", 40);
 	_menuDeath.black = (SDL_Color) { 255, 255, 255 };
 	char textRespawn[] = "Respawn in ";
