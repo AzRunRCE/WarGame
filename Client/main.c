@@ -54,13 +54,13 @@ bool ft_checkEvent()
 	if (event.type == SDL_QUIT)
 		return false;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
+	GetKeyPressEvent();
 	if (_engine.mainPlayer.playerBase.state != DEAD) {
 		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ft_delay(&lastFire, FIRE_DELAY))
 			FireBullet(true);
 		else
 			FireBullet(false);
 	}
-	GetKeyPressEvent();
 	return true;
 }
 

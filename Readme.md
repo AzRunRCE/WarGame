@@ -1,5 +1,5 @@
 # WarGame
-Work in progress, not playable right now
+Work in progress
 
 ## Licence
 Except libraries, all Code is under GNU GPLv3, see LICENCE.md

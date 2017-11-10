@@ -2,6 +2,11 @@
 
 syntax = "proto3";
 
+message HeartbeatMessage
+{
+	int32 id = 1;
+}
+
 message ConnectionCallbackMessage
 {
     bool sucess = 1;
@@ -83,6 +88,7 @@ message UnionMessage
 	SpawnMessage spawnMessage = 5;
 	SpawnCallbackMessage spawnCallbackMessage = 6;
 	GameDataMessage gameDataMessage = 7;
+	HeartbeatMessage hearbeatMessage = 8;
 /*	Note : All these fields are optional */
 	
 }

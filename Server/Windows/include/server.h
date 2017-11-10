@@ -1,6 +1,5 @@
 #ifndef SERVER_H
 #define SERVER_H
-#define HAVE_STRUCT_TIMESPEC
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h> 
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
@@ -24,7 +23,6 @@ typedef struct in_addr IN_ADDR;
 #endif
 #include <stdbool.h>
 #include <sys/types.h>
-#include "include/client.h"
 #include "include/ft_map.h"
 #include "include/pb.h"
 #include "include/ft_state.h"
@@ -35,9 +33,11 @@ typedef struct in_addr IN_ADDR;
 #include "include/pb_functions.h"
 #include "include/ft_item.h"
 #include "include/ft_checkcollision.h"
+#include "include/client.h"
+
 #define CRLF		"\r\n"
 #define PORT	 	1977
-#define MAX_CLIENTS 	4
+#define SERVER "127.0.0.1"
 #define BUF_SIZE	1024
 #define true 1
 #define false 0

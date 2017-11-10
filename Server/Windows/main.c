@@ -3,6 +3,9 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
+#include <SDL_timer.h>
+#include "include/ft_disconnect.h"
+#include "include/server.h"
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h> 
 
@@ -22,12 +25,8 @@ typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
 #else /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
-
 #endif
-#include <SDL_timer.h>
-#include "include/server.h"
 #define MAX_BUFFER 4096
-#define SERVER "127.0.0.1"
 #define BLOCK_SIZE 32
 #ifdef WIN32
 #define SOCKET_ERRNO	WSAGetLastError()
@@ -35,18 +34,15 @@ typedef struct in_addr IN_ADDR;
 #define SOCKET_ERRNO	errno
 #endif
 
-
-Client clients[MAX_CLIENTS];
 BulletElm *headBulletList;
 Item *headItemList = NULL;
-Player Players[MAX_CLIENTS];
-int actual = 0;
 SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 int lastInc = 0;
+
 
  int init_connection(void)
 {
@@ -242,7 +238,7 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 
 bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	for (int i =0; i < actual;i++)
+	for (int i =0; i < playerCount;i++)
 	{	
 	
 		
@@ -362,45 +358,40 @@ void app(void)
 	SpawnList[8].y = 1176;
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
-	headBulletList = NULL;
+	headBulletList = NULL;;
+	if (!threadStartDisconnect(playerCount))
+		exit(EXIT_FAILURE);
 
 	while (true)
 	{
 		SOCKADDR_IN csin = { 0 };
-		/* a client is talking */
 		uint8_t buffer[MAX_BUFFER];
 		int count = read_client(sock, &csin, buffer);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
-
-		if (type == ConnectionMessage_fields && check_if_client_exists(clients, &csin, actual) == 0)
+		if (type == ConnectionMessage_fields && check_if_client_exists(clients, &csin, playerCount) == 0)
 		{
 			ConnectionMessage connectionMessage;
 			status = decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage);
-			if (actual != MAX_CLIENTS && status)
+			if (playerCount != MAX_CLIENTS && status)
 			{
 				Client c = { csin };
-				c.id = actual;
-				clients[actual] = c;
-				strncpy(Players[actual].name, connectionMessage.name, sizeof(Players[actual].name));
+				c.id = playerCount;
+				clients[playerCount] = c;
+				strncpy(Players[playerCount].name, connectionMessage.name, sizeof(Players[playerCount].name));
 				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
-				Players[actual].playerBase.health = 100;
-				Players[actual].playerBase.id = actual;
-				callBackMessage->clientId = actual;
+				Players[playerCount].playerBase.health = 100;
+				Players[playerCount].playerBase.id = playerCount;
+				callBackMessage->clientId = playerCount;
 				
 				uint8_t callback_buffer[ConnectionCallbackMessage_size];
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
 				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage);
 				write_client(sock, &csin, callback_buffer, output.bytes_written);
 				printf("%s connected\n", connectionMessage.name);
-				actual++;
+				playerCount++;
 
 			}
-
-			/*	int pos = get_client_pos(clients, &csin, actual);
-				array_remove(clients, MAX_CLIENTS, pos, 1);
-				printf("player disconnected \n");
-				actual--;*/
 		}
 		else if (type == BulletMessage_fields)
 		{
@@ -436,7 +427,8 @@ void app(void)
 		{
 			PlayerBase pMessage;
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
-			Client *client = get_client(clients, &csin, actual);
+			Client *client = get_client(clients, &csin, playerCount);
+			clients[client->id].lastUpdate = SDL_GetTicks();
 			if (client == NULL) continue;
 			if (pMessage.pos.x || pMessage.pos.y) {
 				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
@@ -448,12 +440,12 @@ void app(void)
 				GameDataMessage gameDataMessage;
 				uint8_t currentGameBuffer[MAX_BUFFER];
 				gameDataMessage.gameMode = 1;
-				gameDataMessage.playersCount = actual;
+				gameDataMessage.playersCount = playerCount;
 				gameDataMessage.players.funcs.encode = &listPlayers_callback;
 				gameDataMessage.bullets.funcs.encode = &listBullets_callback;
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
 				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
-				write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+				int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			}
 			
 		}
@@ -462,6 +454,13 @@ void app(void)
 		{
 			incrementBullet(headBulletList);
 		}
+		//size_t pos = get_client_pos(clients, &csin, actual);
+		//printf("pos: %d\n", pos);
+		/*if (pos < actual) {
+			array_remove(clients, MAX_CLIENTS, pos, actual);
+			printf("player disconnected \n");
+			actual--;
+		}*/
 	}
 	end_connection(sock);
 }
@@ -477,117 +476,6 @@ void updatePlayer(PlayerBase *playerBase){
 }
 bool playerIsAlive(PlayerBase *playerBase) {
 	return playerBase->state != DEAD;
-}
-
- int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int actual)
-{
-	int i = 0;
-	for (i = 0; i < actual; i++)
-	{
-		if (clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
-			&& clients[i].sin.sin_port == csin->sin_port)
-		{
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-Client* get_client(Client *clients, SOCKADDR_IN *csin, int actual)
-{
-	int i = 0;
-	for (i = 0; i < actual; i++)
-	{
-		if (clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
-			&& clients[i].sin.sin_port == csin->sin_port)
-		{
-			return &clients[i];
-		}
-	}
-
-	return NULL;
-}
-
-int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
-{
-	int i = 0;
-	for (i = 0; i < actual; i++)
-	{
-		if (clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
-			&& clients[i].sin.sin_port == csin->sin_port)
-		{
-			return i;
-		}
-	}
-
-	return 0;
-}
-void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
-{
-	int* begin = arr + index;                        // beginning of segment to remove
-	int* end = arr + index + rem_size;               // end of segment to remove
-	size_t trail_size = size - index - rem_size;       // size of the trailing items after segment
-
-	memcpy(begin,                                  // move data to beginning
-		end,                                    // from end of segment
-		trail_size * sizeof(Client));
-
-	memset(begin + trail_size,                       // from the new end of the array
-		0,                                      // set everything to zero
-		rem_size * sizeof(Client));
-
-}
-
- void remove_client(Client *clients, int to_remove, int *actual)
-{
-	/* we remove the client in the array */
-	memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove) * sizeof(Client));
-	/* number client - 1 */
-	(*actual)--;
-}
-
- void send_message_to_all_clients(int sock, Client *clients, Client *sender, int actual, uint8_t *buffer,int length)
-{
-	for (int i = 0; i < actual; i++)
-	{
-		if (sender != &clients[i])
-		{
-			write_client(sock, &clients[i].sin, buffer,length);
-		}
-	}
-
-}
- 
- void end_connection(int sock)
-{
-	closesocket(sock);
-}
-
- int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
-{
-	int n = 0;
-	size_t sinsize = sizeof *sin;
-
-	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
-	{
-		perror("recvfrom()");
-		
-	}
-
-
-	return n;
-}
-
- int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length)
-{
-	int n = 0;
-	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin))< 0)
-	{
-		perror("send()");
-		
-	}
-	return n;
 }
 
  bool ft_delay(int *last, int SleepTimeAnim)
