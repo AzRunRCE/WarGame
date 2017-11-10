@@ -29,7 +29,7 @@ typedef struct Client
 {
     SOCKADDR_IN sin;
 	int id;
-	Uint32 lastUpdate;
+	time_t lastUpdate;
 }Client;
 
 

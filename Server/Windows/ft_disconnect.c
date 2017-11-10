@@ -22,13 +22,13 @@ void *DisconnectThreading(void)
 		{
 			for (int i = 0; i < playerCount; i++)
 			{
-				Uint32 actualTime = SDL_GetTicks();
+				time_t actualTime = time(NULL);
 				/*printf("actual time: %d\n", actualTime);
 				printf("Client %d last update: %d\n",i, clients[i].lastUpdate);*/
-				if (actualTime - clients[i].lastUpdate > 2000)
+				if (actualTime - clients[i].lastUpdate > 2)
 				{
 					remove_client(&clients, i, &playerCount);
-					printf("The client: %d, pseudo: %s has been disconnected for timeout\n", i, Players[i].name);
+					printf("%s has been disconnected for timeout\n", Players[i].name);
 				}
 			}
 		}

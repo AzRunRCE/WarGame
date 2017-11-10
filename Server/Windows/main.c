@@ -428,7 +428,7 @@ void app(void)
 			PlayerBase pMessage;
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, playerCount);
-			clients[client->id].lastUpdate = SDL_GetTicks();
+			clients[client->id].lastUpdate = time(NULL);
 			if (client == NULL) continue;
 			if (pMessage.pos.x || pMessage.pos.y) {
 				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
