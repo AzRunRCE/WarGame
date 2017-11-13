@@ -1,13 +1,13 @@
 #ifndef FT_SDL_H
 #define FT_SDL_H
-#include "include/ft_bullet.h"
-#include "include/ft_item.h"
-#include "include/ft_player.h"
-#include "include/ft_sprite.h"
-#include "include/ft_menu.h"
-#include "include/ft_sound.h"
-#include "include/ft_engine.h"
-#include "include/ft_delay.h"
+#include "ft_bullet.h"
+#include "ft_item.h"
+#include "ft_player.h"
+#include "ft_sprite.h"
+#include "ft_menu.h"
+#include "ft_sound.h"
+#include "ft_engine.h"
+#include "ft_delay.h"
 
 
 int ft_drawPlayers();

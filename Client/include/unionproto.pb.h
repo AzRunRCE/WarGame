@@ -3,7 +3,7 @@
 
 #ifndef PB_UNIONPROTO_PB_H_INCLUDED
 #define PB_UNIONPROTO_PB_H_INCLUDED
-#include "include/pb.h"
+#include "pb.h"
 #include <SDL.h>
 
 /* @@protoc_insertion_point(includes) */

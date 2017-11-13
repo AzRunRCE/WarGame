@@ -2,7 +2,8 @@
 #define CLIENT_H
 
 #include <SDL.h>
-#include "include/unionproto.pb.h"
+#include <errno.h>
+#include "unionproto.pb.h"
 #define SLEEPDISCONNECTTHREADING 100
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h>
@@ -17,6 +18,7 @@
 #include <netdb.h> /* gethostbyname */
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
+#define SOCKET_ERRNO    errno
 #define closesocket(s) close(s)
 typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;

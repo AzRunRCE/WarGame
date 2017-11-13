@@ -2,7 +2,7 @@
 #define FT_CONFIGURATION_H
 #define MAX_LENGTH 32
 #include <stdbool.h>
-#include "include/ini.h"
+#include "ini.h"
 
 typedef struct
 {

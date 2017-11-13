@@ -1,17 +1,17 @@
 #ifndef SOCKET_H
 #define SOCKET_H
-#include "include/ft_bullet.h"
-#include "include/ft_client.h"
-#include "include/ft_configuration.h"
-#include "include/ft_map.h"
-#include "include/ft_engine.h"
-#include "include/pb.h"
-#include "include/pb_common.h"
-#include "include/pb_encode.h"
-#include "include/pb_decode.h"
-#include "include/unionproto.pb.h"
-#include "include/pb_functions.h"
-#include "include/ft_configuration.h"
+#include "ft_bullet.h"
+#include "ft_client.h"
+#include "ft_configuration.h"
+#include "ft_map.h"
+#include "ft_engine.h"
+#include "pb.h"
+#include "pb_common.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+#include "unionproto.pb.h"
+#include "pb_functions.h"
+#include "ft_configuration.h"
 
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
