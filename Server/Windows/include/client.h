@@ -3,8 +3,11 @@
 
 #include <SDL.h>
 #include "include/unionproto.pb.h"
+#define SLEEPDISCONNECTTHREADING 100
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
-#include <winsock2.h> 
+#include <winsock2.h>
+#define SOCKET_ERRNO WSAGetLastError()
+#define SLEEP100MS Sleep(SLEEPDISCONNECTTHREADING)
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,12 +22,15 @@ typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
+#define SLEEP100MS usleep(SLEEPDISCONNECTTHREADING*1000)
 
 #else /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
 #define MAX_CLIENTS 4
 #define MAX_BUFFER 4096
+#define PORT	 	1977
+#define SERVER "127.0.0.1"
 typedef struct Client
 {
     SOCKADDR_IN sin;

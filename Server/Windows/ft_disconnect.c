@@ -16,7 +16,7 @@ void *DisconnectThreading(void)
 {
 	while (true)
 	{
-		Sleep(100);
+		SLEEP100MS;
 		//printf("playerCount: %d\n", playerCount);
 		if (playerCount > 0)
 		{

@@ -1,7 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
-#include <winsock2.h> 
+#include <winsock2.h>
+#define SOCKET_ERRNO	WSAGetLastError()
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +13,7 @@
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define closesocket(s) close(s)
+#define SOCKET_ERRNO	errno
 typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
@@ -36,8 +38,6 @@ typedef struct in_addr IN_ADDR;
 #include "include/client.h"
 
 #define CRLF		"\r\n"
-#define PORT	 	1977
-#define SERVER "127.0.0.1"
 #define BUF_SIZE	1024
 #define true 1
 #define false 0

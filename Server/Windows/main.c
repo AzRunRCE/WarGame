@@ -28,11 +28,6 @@ typedef struct in_addr IN_ADDR;
 #endif
 #define MAX_BUFFER 4096
 #define BLOCK_SIZE 32
-#ifdef WIN32
-#define SOCKET_ERRNO	WSAGetLastError()
-#else
-#define SOCKET_ERRNO	errno
-#endif
 
 BulletElm *headBulletList;
 Item *headItemList = NULL;
@@ -42,48 +37,6 @@ void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 int lastInc = 0;
-
-
- int init_connection(void)
-{
-#ifdef _WIN32
-	WSADATA WSAData;                    // Contains details of the 
-										// Winsock implementation
-										// Initialize Winsock. 
-	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
-	{
-		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
-		return false;
-	}
-#endif
-	/* UDP so SOCK_DGRAM */
-	SOCKET sock;
-	SOCKADDR_IN sin = { 0 };
-	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
-	{
-		printf("Allocating socket failed! Error: %d\n", SOCKET_ERRNO);
-		return false;
-	}
-
-
-	if (sock == INVALID_SOCKET)
-	{
-		perror("socket()");
-		exit(errno);
-	}
-
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);
-	sin.sin_port = htons(PORT);
-	sin.sin_family = AF_INET;
-
-	if (bind(sock, (SOCKADDR *)&sin, sizeof sin) == SOCKET_ERROR)
-	{
-		perror("bind()");
-		exit(errno);
-	}
-
-	return sock;
-}
 
 BulletElm *initBullet(BulletElm* bullet)
 {

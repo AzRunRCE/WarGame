@@ -112,3 +112,44 @@ int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int
 	}
 	return n;
 }
+
+int init_connection(void)
+{
+#ifdef _WIN32
+	WSADATA WSAData;                    // Contains details of the 
+										// Winsock implementation
+										// Initialize Winsock. 
+	if (WSAStartup(MAKEWORD(1, 1), &WSAData) != 0)
+	{
+		printf("WSAStartup failed! Error: %d\n", SOCKET_ERRNO);
+		return false;
+	}
+#endif
+	/* UDP so SOCK_DGRAM */
+	SOCKET sock;
+	SOCKADDR_IN sin = { 0 };
+	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
+	{
+		printf("Allocating socket failed! Error: %d\n", SOCKET_ERRNO);
+		return false;
+	}
+
+
+	if (sock == INVALID_SOCKET)
+	{
+		perror("socket()");
+		exit(errno);
+	}
+
+	sin.sin_addr.s_addr = htonl(INADDR_ANY);
+	sin.sin_port = htons(PORT);
+	sin.sin_family = AF_INET;
+
+	if (bind(sock, (SOCKADDR *)&sin, sizeof sin) == SOCKET_ERROR)
+	{
+		perror("bind()");
+		exit(errno);
+	}
+
+	return sock;
+}
