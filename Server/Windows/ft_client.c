@@ -82,11 +82,6 @@ void send_message_to_all_clients(int sock, Client *clients, Client *sender, int 
 
 }
 
-void end_connection(int sock)
-{
-	closesocket(sock);
-}
-
 int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 {
 	int n = 0;
@@ -152,4 +147,9 @@ int init_connection(void)
 	}
 
 	return sock;
+}
+
+void end_connection(int sock)
+{
+	closesocket(sock);
 }
