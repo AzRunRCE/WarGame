@@ -1,6 +1,6 @@
 #ifndef FT_NEARWALL_H
 #define FT_NEARWALL_H
-#include "include/ft_engine.h"
+#include "ft_engine.h"
 typedef enum
 {
 	NONE = 0,

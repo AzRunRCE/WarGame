@@ -311,7 +311,7 @@ void app(void)
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
 	headBulletList = NULL;;
-	if (!threadStartDisconnect(playerCount))
+	if (!threadStartDisconnect())
 		exit(EXIT_FAILURE);
 
 	while (true)

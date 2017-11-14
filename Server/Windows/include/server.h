@@ -25,17 +25,17 @@ typedef struct in_addr IN_ADDR;
 #endif
 #include <stdbool.h>
 #include <sys/types.h>
-#include "include/ft_map.h"
-#include "include/pb.h"
-#include "include/ft_state.h"
-#include "include/pb_common.h"
-#include "include/pb_encode.h"
-#include "include/pb_decode.h"
-#include "include/unionproto.pb.h"
-#include "include/pb_functions.h"
-#include "include/ft_item.h"
-#include "include/ft_checkcollision.h"
-#include "include/client.h"
+#include "ft_map.h"
+#include "pb.h"
+#include "ft_state.h"
+#include "pb_common.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+#include "unionproto.pb.h"
+#include "pb_functions.h"
+#include "ft_item.h"
+#include "ft_checkcollision.h"
+#include "client.h"
 
 #define CRLF		"\r\n"
 #define BUF_SIZE	1024

@@ -1,7 +1,7 @@
 #ifndef FT_BULLET_H
 #define FT_BULLET_H
 #include <SDL.h>
-#include "include/ft_engine.h"
+#include "ft_engine.h"
 
 typedef struct _BulletElm
 {
