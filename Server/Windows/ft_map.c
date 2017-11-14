@@ -18,21 +18,17 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 	{
 	case 1:
 		return *p;
-
 	case 2:
 		return *(Uint16 *)p;
-
 	case 3:
 		/*Suivant l'architecture de la machine*/
 		if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
 			return p[0] << 16 | p[1] << 8 | p[2];
 		else
 			return p[0] | p[1] << 8 | p[2] << 16;
-
 	case 4:
 		return *(Uint32 *)p;
-
-		/*Ne devrait pas arriver, mais évite les erreurs*/
+	/*Ne devrait pas arriver, mais évite les erreurs*/
 	default:
 		return 0;
 	}
