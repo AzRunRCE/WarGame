@@ -3,12 +3,11 @@
 #include <math.h>
 #include <SDL.h>
 #include "include/ft_map.h"
-
+#include "include/ft_engine.h"
 #define BLOCK_SIZE 32
 #define BLACK 255
 #define WHITE 0
-
-
+Item *headItemList = NULL;
 
 
 
@@ -42,41 +41,48 @@ Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 }
 
 
-int ft_LoadMap(char * path, Map *map)
+Item* ft_LoadMap(char *path, Map *map)
 {
 	SDL_Surface *mapBMP = NULL;
 	mapBMP = SDL_LoadBMP(path);
 	if (!mapBMP)
 	{
 		printf("Erreur de chargement de l'image : %s", SDL_GetError());
-		return -1;
+		exit(-1);
 	}
 	map->heigth = mapBMP->h;
 
 	map->width = mapBMP->w;
 
-	// int rows, columns;
-	/* initialize rows and columns to the desired value */
-
-	/*map->data = (int**)malloc(mapBMP->h * sizeof(int*));
-	for (int i = 0;i<mapBMP->h;i++)
+	int i = 0;
+	int j = 0;
+	while (j < map->heigth)
 	{
-	map->data[i] = (int*)malloc(mapBMP->w * sizeof(int));
-	}*/
-	//
-	//int i = 0; i < mapBMP->h; i++)
-	for (int j = 0; j < mapBMP->w; j++)
-	{
-		for (int i = 0; i < mapBMP->h; i++)
+		while (i < map->width)
 		{
-			if ((int)obtenirPixel(mapBMP, j, i) == BLACK)
+			Item *item = malloc(sizeof(Item));
+			item->rect = malloc(sizeof(SDL_Rect));
+			while ((int)obtenirPixel(mapBMP, j, i) != BLACK && i < map->width)
+				i++;
+			item->next = NULL;
+			item->type = WALL;
+			item->rect->h = 0;
+			item->rect->w = 32;
+			item->rect->x = j * 32;
+			item->rect->y = i * 32;
+			bool findWall = false;
+			while ((int)obtenirPixel(mapBMP, j, i) == BLACK  && i < map->width)
 			{
-				map->data[i][j] = 0;
+				findWall = true;
+				item->rect->h += 32;
+				i++;
 			}
-			else
-				map->data[i][j] = 1;
-
+			if (findWall)
+				headItemList = pushItem(headItemList, item);
 		}
+		j++;
+		i = 0;
 	}
+	printf("%d items\n", countItemWall(headItemList));
+	return headItemList;
 }
-

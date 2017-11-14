@@ -30,7 +30,6 @@ typedef struct in_addr IN_ADDR;
 #define BLOCK_SIZE 32
 
 BulletElm *headBulletList;
-Item *headItemList = NULL;
 SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
@@ -381,7 +380,8 @@ void app(void)
 			PlayerBase pMessage;
 			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
 			Client *client = get_client(clients, &csin, playerCount);
-			clients[client->id].lastUpdate = time(NULL);
+			if (client != NULL) /*Ne devrait pas arriver, ne devrait pas être nul. FIXME*/
+				clients[client->id].lastUpdate = time(NULL);
 			if (client == NULL) continue;
 			if (pMessage.pos.x || pMessage.pos.y) {
 				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
@@ -450,38 +450,6 @@ bool playerIsAlive(PlayerBase *playerBase) {
 	//map = malloc(sizeof(Map));
 	//map = calloc(3, sizeof(Map));
 	ft_LoadMap("map/first.bmp", &map);
-
-
-	/*int i = 0;
-	int j = 0;
-	while (j < map->heigth)
-	{
-		while (i < map->width)
-		{
-			Item *item = malloc(sizeof(Item));
-			item->rect = malloc(sizeof(SDL_Rect));
-			while (map->data[i][j].type != WALL && i < map->width)
-				i++;
-			item->next = NULL;
-			item->type = WALL;
-			item->rect->h = 32;
-			item->rect->w = 0;
-			item->rect->x = i * 32;
-			item->rect->y = j * 32;
-			bool findWall = false;
-			while (map->data[i][j].type == WALL  && i < map->width)
-			{
-				findWall = true;
-				item->rect->w += 32;
-				i++;
-			}
-			if (findWall)
-				headItemList = pushItem(headItemList, item);
-		}
-		j++;
-		i = 0;
-	}*/
-	//printf("%d", countItemWall(headItemList));
 	app();
 
 	//end();

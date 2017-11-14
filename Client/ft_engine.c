@@ -23,6 +23,7 @@ void Engine_init()
 	_engine.bulletSurface = IMG_LoadTexture(_engine.screenRenderer, "res/bullet.png");
 	_engine.AmmoSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Ammo.png");
 	_engine.healthSurface = IMG_LoadTexture(_engine.screenRenderer, "res/Life.png");
+	_engine.redSurface = IMG_LoadTexture(_engine.screenRenderer, "res/red.png");
 	//_engine.mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_init(&_engine.mutex, NULL);
 	//_engine.condition = PTHREAD_COND_INITIALIZER;
@@ -45,4 +46,5 @@ void Engine_init()
 	_engine.cooldownDeath = 10;
 	_engine.lastCooldownDeath = 0;
 	init_menuDeath();
+	headItemList2 = ft_LoadMap("map/first.bmp", _engine.map);
 }

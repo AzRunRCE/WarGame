@@ -6,8 +6,7 @@
 #define BLACK 255
 #define WHITE 0
 
-
-
+Item *headItemList = NULL;
 
 
 /*obtenirPixel : permet de récupérer la couleur d'un pixel*/
@@ -67,5 +66,37 @@ int ft_LoadMap(char * path, Map *map)
 			
 		}
 	}
+
+	int i = 0;
+	int j = 0;
+	while (j < map->heigth)
+	{
+		while (i < map->width)
+		{
+			Item *item = malloc(sizeof(Item));
+			item->rect = malloc(sizeof(SDL_Rect));
+			while ((int)obtenirPixel(mapBMP, j, i) != BLACK && i < map->width)
+				i++;
+			item->next = NULL;
+			item->type = WALL;
+			item->rect->h = 0;
+			item->rect->w = 32;
+			item->rect->x = j * 32;
+			item->rect->y = i * 32;
+			bool findWall = false;
+			while ((int)obtenirPixel(mapBMP, j, i) == BLACK  && i < map->width)
+			{
+				findWall = true;
+				item->rect->h += 32;
+				i++;
+			}
+			if (findWall)
+				headItemList = pushItem(headItemList, item);
+		}
+		j++;
+		i = 0;
+	}
+	printf("%d items\n", countItemWall(headItemList));
+	return headItemList;
 }
 

@@ -215,7 +215,7 @@ void *NetworkThreadingListening(void)
 			decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback);
 			if (callback.sucess)
 			{
-				printf("Connection success motd:%s", callback.motd);
+				printf("Connection success motd:%s\n", callback.motd);
 				_engine.mainPlayer.playerBase.id = callback.clientId;
 				if (pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
 					perror("pthread_create");

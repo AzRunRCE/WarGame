@@ -162,7 +162,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ft_item.h" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_client.h" />
@@ -202,6 +201,7 @@
     <ClCompile Include="ft_delay.c" />
     <ClCompile Include="ft_engine.c" />
     <ClCompile Include="ft_explode.c" />
+    <ClCompile Include="ft_item.c" />
     <ClCompile Include="ft_map.c" />
     <ClCompile Include="ft_menu.c" />
     <ClCompile Include="ft_nearwall.c" />

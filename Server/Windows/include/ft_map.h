@@ -1,6 +1,7 @@
 #ifndef FT_MAP_H
 #define FT_MAP_H
 #include <SDL.h>
+#include <stdbool.h>
 #include "ft_item.h"
 typedef struct Map
 {

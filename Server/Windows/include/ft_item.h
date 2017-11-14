@@ -1,6 +1,6 @@
 #ifndef FT_ITEM_H
 #define FT_ITEM_H
-typedef enum
+typedef enum ItemType
 {
 	BLANK = 0,
 	WALL = 1,

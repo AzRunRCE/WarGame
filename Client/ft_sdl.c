@@ -43,7 +43,6 @@ int ft_drawPlayers()
 		ft_getCharactSprite(&_engine.players[i]);
 		if (_engine.players[i].playerBase.health > 0)
 		{
-			
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
 		}
 		else

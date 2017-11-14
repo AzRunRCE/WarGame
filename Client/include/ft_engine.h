@@ -10,6 +10,7 @@
 /* sinon vous êtes sur une plateforme non supportée */
 #error not defined for this platform
 #endif
+
 #include "ft_map.h"
 #include "ft_player.h"
 #include "unionproto.pb.h"
@@ -47,6 +48,7 @@ typedef struct Engine {
 
 	SDL_Surface *mapSurface;
 	SDL_Texture *viewSurface;
+	SDL_Texture *redSurface;
 	SDL_Texture *AmmoSurface;
 	SDL_Texture *healthSurface;
 	SDL_Texture *bulletSurface;
@@ -59,12 +61,14 @@ typedef struct Engine {
 	SDL_Texture *selectionSurface;
 	SDL_Texture *gameoverBackground;
 
-#pragma endregion
+	#pragma endregion
 
     SDL_Rect spriteRect;
     SDL_Rect mousePos;
 }Engine;
 extern Engine _engine;
+
+Item *headItemList2;
 
 void Engine_init();
 

@@ -80,7 +80,6 @@ int main(int argc, char *argv[])
 	} while (!create_connection(mainConfiguration));
 	if (NwkThreadRet < 0)
 		menu(mainConfiguration, NwkThreadRet);
-	ft_LoadMap("map/first.bmp", _engine.map);
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
 	_engine.AnimKillEx.Step = 0;
@@ -144,7 +143,7 @@ int GetKeyPressEvent()
 		int playerPosY = _engine.mainPlayer.playerBase.pos.y + 16;
 
 		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A])
-			&& _engine.map->data[(int)playerPosY / BLOCK_SIZE][(int)(playerPosX - 8) / BLOCK_SIZE]
+			&& !checkWallColision(headItemList2, LEFT)
 			)
 		{
 			_engine.mainPlayer.playerBase.pos.x -= 2;
@@ -155,7 +154,7 @@ int GetKeyPressEvent()
 
 		}
 		else if ((keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D])
-			&& _engine.map->data[(int)playerPosY / BLOCK_SIZE][(int)(playerPosX + 8) / BLOCK_SIZE]
+			&& !checkWallColision(headItemList2, RIGHT)
 			)
 		{
 			_engine.mainPlayer.playerBase.pos.x += 2;
@@ -165,7 +164,7 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
 		if ((keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W])
-			&& _engine.map->data[(int)(playerPosY - 8) / BLOCK_SIZE][(int)playerPosX / BLOCK_SIZE]
+			&& !checkWallColision(headItemList2, UP)
 			)
 		{
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)
@@ -194,7 +193,7 @@ int GetKeyPressEvent()
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
 		else if ((keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S])
-			&& _engine.map->data[(int)(playerPosY + 8) / BLOCK_SIZE][(int)playerPosX / BLOCK_SIZE]
+			&& !checkWallColision(headItemList2, DOWN)
 			)
 		{
 			if (_engine.mainPlayer.playerBase.orientation == LEFT)

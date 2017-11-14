@@ -2,7 +2,7 @@
 #ifndef SPRITE_H_INCLUDED
 #define SPRITE_H_INCLUDED
 
-typedef enum
+typedef enum View_Orientation
 {
     UP = 0,
     UP_RIGHT = 1,
@@ -14,7 +14,7 @@ typedef enum
     UP_LEFT = 7,
 } View_Orientation;
 
-typedef enum
+typedef enum Player_State
 {
 	IDLE=0,
 	WALK=1,
