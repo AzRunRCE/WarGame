@@ -44,8 +44,8 @@ BulletElm *initBullet(BulletElm* bullet)
 	bullet->x1 = bullet->dest.x;
 	bullet->y1 = bullet->dest.y;
 	bullet->dX = abs(bullet->x1 - bullet->x0), bullet->sX = bullet->x0 < bullet->x1 ? 1 : -1;
-	bullet->dY = abs(bullet->y1 - bullet->y0), bullet->sY = bullet->y0< bullet->y1 ? 1 : -1;
-	bullet->err = (bullet->dX>bullet->dY ? bullet->dX : -bullet->dY) / 2;
+	bullet->dY = abs(bullet->y1 - bullet->y0), bullet->sY = bullet->y0 < bullet->y1 ? 1 : -1;
+	bullet->err = (bullet->dX > bullet->dY ? bullet->dX : -bullet->dY) / 2;
 	bullet->pos.h = 6;
 	bullet->pos.w = 6;
 
@@ -116,7 +116,7 @@ BulletElm* remove_any(BulletElm* head, BulletElm* nd)
 		tmp->next = NULL;
 		free(tmp);
 	}
-	
+
 	return head;
 }
 
@@ -129,7 +129,7 @@ void incrementBullet(BulletElm* headBullets)
 		if (checkCollisionWall(headItemList, bullet))
 			headBulletList = remove_any(headBulletList, bullet);
 		else if (checkCollisionPlayer(bullet, playerCount))
-				headBulletList = remove_any(headBulletList, bullet);
+			headBulletList = remove_any(headBulletList, bullet);
 		if (bullet != NULL)
 		{
 
@@ -149,42 +149,42 @@ void incrementBullet(BulletElm* headBullets)
 					bullet->y0 += bullet->sY;
 				}
 			}
-			
+
 
 		}
-	
+
 		bullet = next;
 	}
-	
+
 }
 
 bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-		BulletElm* cursor = headBulletList;
-		int count = 0;
-		while (cursor != NULL)
-		{
-			if (!pb_encode_tag_for_field(stream, field))
-				return false;
-			BulletMessage tmpBulletMsg;
-			tmpBulletMsg.dest = cursor->dest;
-			tmpBulletMsg.pos = cursor->pos;
-			tmpBulletMsg.id = count;
-			tmpBulletMsg.ownerId = cursor->ownerId;
-			if (!pb_encode_submessage(stream, BulletMessage_fields, &tmpBulletMsg))
-				return false;
-			count++;
-			cursor = cursor->next;
-		}
+	BulletElm* cursor = headBulletList;
+	int count = 0;
+	while (cursor != NULL)
+	{
+		if (!pb_encode_tag_for_field(stream, field))
+			return false;
+		BulletMessage tmpBulletMsg;
+		tmpBulletMsg.dest = cursor->dest;
+		tmpBulletMsg.pos = cursor->pos;
+		tmpBulletMsg.id = count;
+		tmpBulletMsg.ownerId = cursor->ownerId;
+		if (!pb_encode_submessage(stream, BulletMessage_fields, &tmpBulletMsg))
+			return false;
+		count++;
+		cursor = cursor->next;
+	}
 	return true;
 }
 
 bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	for (int i =0; i < playerCount;i++)
-	{	
-	
-		
+	for (int i = 0; i < playerCount; i++)
+	{
+
+
 		/* This encodes the header for the field, based on the constant info
 		* from pb_field_t. */
 		if (!pb_encode_tag_for_field(stream, field))
@@ -206,7 +206,7 @@ BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
 		printf("Error creating a new node.\n");
 		exit(0);
 	}
-	
+
 	new_node->next = next;
 	new_node->ownerId = bulletMsg->ownerId;
 	new_node->pos = bulletMsg->pos;
@@ -222,7 +222,7 @@ BulletElm* create(BulletMessage *bulletMsg, BulletElm* next)
 
 BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 {
-	if (head == NULL)	{
+	if (head == NULL) {
 		head = create(bulletMsg, NULL);
 		return head;
 	}
@@ -231,7 +231,7 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 	while (cursor->next != NULL)
 		cursor = cursor->next;
 
-		
+
 	/* create a new node */
 	BulletElm* new_node = create(bulletMsg, NULL);
 	cursor->next = new_node;
@@ -301,7 +301,7 @@ void app(void)
 				Players[playerCount].playerBase.health = 100;
 				Players[playerCount].playerBase.id = playerCount;
 				callBackMessage->clientId = playerCount;
-				
+
 				uint8_t callback_buffer[ConnectionCallbackMessage_size];
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
 				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage);
@@ -330,7 +330,7 @@ void app(void)
 			Players[spawnMsg.id].playerBase.ammo = 30;
 			int random;
 			srand(time(NULL)); // initialisation de rand
-			random = (rand() % (9 + 1));		
+			random = (rand() % (9 + 1));
 			SpawnCallbackMessage spawnCallbackMsg;
 			uint8_t spCallbackBuffer[MAX_BUFFER];
 			spawnCallbackMsg.id = spawnMsg.id;
@@ -365,7 +365,7 @@ void app(void)
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
 				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
 				write_client(sock, &csin, currentGameBuffer, output.bytes_written);
-			}			
+			}
 		}
 
 		if (headBulletList != NULL && ft_delay(&lastInc, 5))
@@ -377,8 +377,8 @@ void app(void)
 }
 
 
-void updatePlayer(PlayerBase *playerBase){
-	if (playerIsAlive(playerBase)){
+void updatePlayer(PlayerBase *playerBase) {
+	if (playerIsAlive(playerBase)) {
 		Players[playerBase->id].playerBase.orientation = playerBase->orientation;
 		Players[playerBase->id].playerBase.pos = playerBase->pos;
 	}
@@ -389,7 +389,7 @@ bool playerIsAlive(PlayerBase *playerBase) {
 	return playerBase->state != DEAD;
 }
 
- bool ft_delay(int *last, int SleepTimeAnim)
+bool ft_delay(int *last, int SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
 	if (ActualTimeAnim - *last > SleepTimeAnim)
@@ -403,8 +403,9 @@ bool playerIsAlive(PlayerBase *playerBase) {
 
 
 
- int main(int argc, char **argv)
+int main(int argc, char **argv)
 {
+	headItemList = NULL;
 	//map = malloc(sizeof(Map));
 	//map = calloc(3, sizeof(Map));
 	ft_LoadMap("map/first.bmp", &map);

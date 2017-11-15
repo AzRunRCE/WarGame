@@ -100,7 +100,7 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int length)
 {
 	int n = 0;
-	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin))< 0)
+	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin)) < 0)
 	{
 		perror("send()");
 
