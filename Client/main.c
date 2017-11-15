@@ -105,7 +105,12 @@ int main(int argc, char *argv[])
 		//ft_getNextExplodeSprite(&explode);	
 		ft_drawGame();
 	}
-
+	uint8_t bufferQuit[QuitMessage_size];
+	QuitMessage qMessage;
+	qMessage.id = _engine.mainPlayer.playerBase.id;
+	pb_ostream_t outputQuit = pb_ostream_from_buffer(bufferQuit, sizeof(bufferQuit));
+	if (encode_unionmessage(&outputQuit, QuitMessage_fields, &qMessage))
+		write_client(bufferQuit, outputQuit.bytes_written);
 	end();
 	sound_Close();
 	return EXIT_SUCCESS;

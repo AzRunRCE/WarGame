@@ -37,10 +37,10 @@ typedef struct _GameDataMessage {
 /* @@protoc_insertion_point(struct:GameDataMessage) */
 } GameDataMessage;
 
-typedef struct _HeartbeatMessage {
+typedef struct _QuitMessage {
     int32_t id;
-/* @@protoc_insertion_point(struct:HeartbeatMessage) */
-} HeartbeatMessage;
+/* @@protoc_insertion_point(struct:QuitMessage) */
+} QuitMessage;
 
 typedef struct _SpawnCallbackMessage {
     int32_t id;
@@ -93,14 +93,14 @@ typedef struct _UnionMessage {
     SpawnMessage spawnMessage;
     SpawnCallbackMessage spawnCallbackMessage;
     GameDataMessage gameDataMessage;
-    HeartbeatMessage hearbeatMessage;
+    QuitMessage quitMessage;
 /* @@protoc_insertion_point(struct:UnionMessage) */
 } UnionMessage;
 
 /* Default values for struct fields */
 
 /* Initializer values for message structs */
-#define HeartbeatMessage_init_default            {0}
+#define QuitMessage_init_default                 {0}
 #define mainPlayer_init_default_realPos			 {800, 800, 32, 32}
 #define mainPlayer_init_default_relativePos		 {0, 0, 32, 32}
 #define ConnectionCallbackMessage_init_default   {0, "", 0, 0}
@@ -113,7 +113,7 @@ typedef struct _UnionMessage {
 #define Player_init_default                      {PlayerBase_init_default, mainPlayer_init_default_relativePos, 0, SDL_Rect_init_default, 0, 0, ""}
 #define BulletMessage_init_default               {0, 0, SDL_Rect_init_default, SDL_Rect_init_default, 0}
 #define UnionMessage_init_default                {ConnectionMessage_init_default, ConnectionCallbackMessage_init_default, BulletMessage_init_default, PlayerBase_init_default, SpawnMessage_init_default, SpawnCallbackMessage_init_default, GameDataMessage_init_default, HeartbeatMessage_init_default}
-#define HeartbeatMessage_init_zero               {0}
+#define QuitMessage_init_zero                    {0}
 #define ConnectionCallbackMessage_init_zero      {0, "", 0, 0}
 #define ConnectionMessage_init_zero              {""}
 #define SpawnMessage_init_zero                   {0}
@@ -123,7 +123,7 @@ typedef struct _UnionMessage {
 #define PlayerBase_init_zero                     {0, 0, 0, 0, 0, SDL_Rect_init_zero}
 #define Player_init_zero                         {PlayerBase_init_zero, SDL_Rect_init_zero, 0, SDL_Rect_init_zero, 0, 0, ""}
 #define BulletMessage_init_zero                  {0, 0, SDL_Rect_init_zero, SDL_Rect_init_zero, 0}
-#define UnionMessage_init_zero                   {ConnectionMessage_init_zero, ConnectionCallbackMessage_init_zero, BulletMessage_init_zero, PlayerBase_init_zero, SpawnMessage_init_zero, SpawnCallbackMessage_init_zero, GameDataMessage_init_zero, HeartbeatMessage_init_zero}
+#define UnionMessage_init_zero                   {ConnectionMessage_init_zero, ConnectionCallbackMessage_init_zero, BulletMessage_init_zero, PlayerBase_init_zero, SpawnMessage_init_zero, SpawnCallbackMessage_init_zero, GameDataMessage_init_zero, QuitMessage_init_zero}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define ConnectionCallbackMessage_sucess_tag     1
@@ -135,7 +135,7 @@ typedef struct _UnionMessage {
 #define GameDataMessage_playersCount_tag         2
 #define GameDataMessage_players_tag              3
 #define GameDataMessage_bullets_tag              4
-#define HeartbeatMessage_id_tag                  1
+#define QuitMessage_id_tag                       1
 #define SDL_Rect_x_tag                           1
 #define SDL_Rect_y_tag                           2
 #define SDL_Rect_h_tag                           3
@@ -170,10 +170,10 @@ typedef struct _UnionMessage {
 #define UnionMessage_spawnMessage_tag            5
 #define UnionMessage_spawnCallbackMessage_tag    6
 #define UnionMessage_gameDataMessage_tag         7
-#define UnionMessage_hearbeatMessage_tag         8
+#define UnionMessage_quitMessage_tag             8
 
 /* Struct field encoding specification for nanopb */
-extern const pb_field_t HeartbeatMessage_fields[2];
+extern const pb_field_t QuitMessage_fields[2];
 extern const pb_field_t ConnectionCallbackMessage_fields[5];
 extern const pb_field_t ConnectionMessage_fields[2];
 extern const pb_field_t SpawnMessage_fields[2];
@@ -186,7 +186,7 @@ extern const pb_field_t BulletMessage_fields[6];
 extern const pb_field_t UnionMessage_fields[9];
 
 /* Maximum encoded size of messages (where known) */
-#define HeartbeatMessage_size                    11
+#define QuitMessage_size                         11
 #define ConnectionCallbackMessage_size           155
 #define ConnectionMessage_size                   18
 #define SpawnMessage_size                        11

@@ -6,7 +6,6 @@
 #define BLACK 255
 #define WHITE 0
 
-Item *headItemList = NULL;
 
 
 /*obtenirPixel : permet de récupérer la couleur d'un pixel*/

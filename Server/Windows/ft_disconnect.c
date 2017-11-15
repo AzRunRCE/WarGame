@@ -28,7 +28,7 @@ void *DisconnectThreading(void)
 				if (actualTime - clients[i].lastUpdate > 2)
 				{
 					remove_client(&clients, i, &playerCount);
-					printf("%s has been disconnected for timeout\n", Players[i].name);
+					printf("%s has been disconnected. Reason: timeout\n", Players[i].name);
 				}
 			}
 		}

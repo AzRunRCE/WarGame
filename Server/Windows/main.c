@@ -125,20 +125,11 @@ void incrementBullet(BulletElm* headBullets)
 	BulletElm* bullet = headBullets;
 	while (bullet != NULL)
 	{
-		Item *currentItem = &map.data[(int)bullet->pos.y / BLOCK_SIZE][(int)(bullet->pos.x) / BLOCK_SIZE];
 		BulletElm* next = bullet->next;
-
-		if (currentItem->type == WALL)
+		if (checkCollisionWall(headItemList, bullet))
 			headBulletList = remove_any(headBulletList, bullet);
-		else if (currentItem->type != BLANK)
-		{
-			Player *player = (Player*)currentItem->data;
-			if (player->playerBase.id != bullet->ownerId && playerIsAlive(&player->playerBase) && checkCollision(&bullet->pos, &player->playerBase.pos))
-			{
-					player->playerBase.health -= 10;
-					headBulletList = remove_any(headBulletList, bullet);
-			}
-		}
+		else if (checkCollisionPlayer(bullet, playerCount))
+				headBulletList = remove_any(headBulletList, bullet);
 		if (bullet != NULL)
 		{
 
@@ -321,7 +312,14 @@ void app(void)
 		int count = read_client(sock, &csin, buffer);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
-		if (type == ConnectionMessage_fields && check_if_client_exists(clients, &csin, playerCount) == 0)
+		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, playerCount))
+		{
+			QuitMessage qMessage;
+			status = decode_unionmessage_contents(&stream, QuitMessage_fields, &qMessage);
+			remove_client(&clients, qMessage.id, &playerCount);
+			printf("%s has been disconnected. Reason: /quit\n", Players[qMessage.id].name);
+		}
+		if (type == ConnectionMessage_fields && !check_if_client_exists(clients, &csin, playerCount))
 		{
 			ConnectionMessage connectionMessage;
 			status = decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage);
@@ -399,21 +397,13 @@ void app(void)
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
 				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
 				int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
-			}
-			
+			}			
 		}
 
 		if (headBulletList != NULL && ft_delay(&lastInc, 5))
 		{
 			incrementBullet(headBulletList);
 		}
-		//size_t pos = get_client_pos(clients, &csin, actual);
-		//printf("pos: %d\n", pos);
-		/*if (pos < actual) {
-			array_remove(clients, MAX_CLIENTS, pos, actual);
-			printf("player disconnected \n");
-			actual--;
-		}*/
 	}
 	end_connection(sock);
 }
