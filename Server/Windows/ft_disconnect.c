@@ -1,9 +1,10 @@
+#include <stdio.h>
 #include "include/ft_disconnect.h"
 #include "include/client.h"
 
 int threadStartDisconnect(void)
 {
-	if (pthread_create(&DisconnectThread, NULL, DisconnectThreading, playerCount) == -1) {
+	if (pthread_create(&DisconnectThread, NULL, DisconnectThreading, NULL) == -1) {
 		perror("pthread_create");
 		return false;
 	}

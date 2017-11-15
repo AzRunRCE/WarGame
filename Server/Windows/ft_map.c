@@ -92,6 +92,5 @@ int ft_LoadMap(char * path, Map *map)
 		i = 0;
 	}
 	printf("%d items\n", countItemWall(headItemList));
-	return headItemList;
 }
 

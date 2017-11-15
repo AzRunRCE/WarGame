@@ -44,8 +44,8 @@ int checkCollisionPlayer(BulletElm* bullet, int playerCount)
 	for (int i = 0; i < playerCount; i++)
 	{
 		currentPlayerPos = Players[i].playerBase.pos;
-		currentPlayerPos.w = 10;
-		currentPlayerPos.h = 20;
+		currentPlayerPos.w = 20;
+		currentPlayerPos.h = 24;
 		if (SDL_HasIntersection(&currentPlayerPos, &bullet->pos) && Players[i].playerBase.id != bullet->ownerId && Players[i].playerBase.state != DEAD)
 		{
 			Players[i].playerBase.health -= 10;

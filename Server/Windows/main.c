@@ -239,38 +239,6 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 	return head;
 }
 
-Item* pushItem(Item* head, Item *new_node)
-{
-	if (head == NULL) {
-		head = new_node;
-		return head;
-	}
-	/* go to the last node */
-	Item *cursor = head;
-	while (cursor->next != NULL)
-		cursor = cursor->next;
-	cursor->next = new_node;
-	return head;
-}
-
-int countItemWall(Item* head)
-{
-	int total = 0;
-	if (head == NULL) {
-		return 0;
-	}
-	/* go to the last node */
-	Item *cursor = head;
-	while (cursor != NULL)
-	{
-		total++;
-		if (cursor->next == NULL)
-			break;
-		cursor = cursor->next;
-	}
-	return total;
-}
-
 void app(void)
 {
 	bool status = true;
@@ -396,7 +364,7 @@ void app(void)
 				gameDataMessage.bullets.funcs.encode = &listBullets_callback;
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
 				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
-				int n = write_client(sock, &csin, currentGameBuffer, output.bytes_written);
+				write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			}			
 		}
 

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "include/client.h"
 
 int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int playerCount)
@@ -32,8 +33,7 @@ Client* get_client(Client *clients, SOCKADDR_IN *csin, int playerCount)
 
 int get_client_pos(Client *clients, SOCKADDR_IN *csin, int actual)
 {
-	int i = 0;
-	for (i = 0; i < actual; i++)
+	for (int i = 0; i < actual; i++)
 	{
 		if (clients[i].sin.sin_addr.s_addr == csin->sin_addr.s_addr
 			&& clients[i].sin.sin_port == csin->sin_port)

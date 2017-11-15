@@ -97,7 +97,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HAVE_STRUCT_TIMESPEC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -163,6 +163,7 @@
     <ClCompile Include="ft_checkcollision.c" />
     <ClCompile Include="ft_client.c" />
     <ClCompile Include="ft_disconnect.c" />
+    <ClCompile Include="ft_item.c" />
     <ClCompile Include="ft_map.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="pb_common.c" />

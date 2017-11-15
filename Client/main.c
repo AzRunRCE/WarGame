@@ -144,9 +144,6 @@ int GetKeyPressEvent()
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
 		_engine.mainPlayer.playerBase.state = IDLE;
-		int playerPosX = _engine.mainPlayer.playerBase.pos.x + 16;
-		int playerPosY = _engine.mainPlayer.playerBase.pos.y + 16;
-
 		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A])
 			&& !checkWallColision(headItemList2, LEFT)
 			)

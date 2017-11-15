@@ -48,6 +48,9 @@
     <ClCompile Include="ft_client.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="ft_item.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\client.h">

@@ -1,5 +1,6 @@
 #ifndef FT_ITEM_H
 #define FT_ITEM_H
+#include <SDL.h>
 typedef enum ItemType
 {
 	BLANK = 0,
@@ -13,4 +14,7 @@ typedef struct Item {
 	SDL_Rect *rect;
 	struct Item *next;
 }Item;
+
+Item* pushItem(Item* head, Item *new_node);
+int countItemWall(Item* head);
 #endif // FT_ITEM_H
