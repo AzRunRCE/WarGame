@@ -249,7 +249,7 @@ int GetKeyPressEvent()
 void FireBullet(bool MouseButtonLeft)
 {
 	if (_engine.mainPlayer.playerBase.ammo > 3 && MouseButtonLeft) {
-		_engine.mainPlayer.playerBase.ammo -= 3;
+		_engine.mainPlayer.playerBase.ammo -= 2;
 		sound_Play(soundChannelMainPlayer);
 
 		_engine.mainPlayer.playerBase.state = FIRE;

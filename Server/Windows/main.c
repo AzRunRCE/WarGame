@@ -136,7 +136,7 @@ void incrementBullet(BulletElm* headBullets)
 			bullet->pos.y = bullet->y0;
 			bullet->pos.x = bullet->x0;
 			bullet->e2 = bullet->err;
-			for (size_t i = 0; i < 3; i++)
+			for (size_t i = 0; i < 4; i++)
 			{
 				if (bullet->e2 > -bullet->dX)
 				{
@@ -270,8 +270,10 @@ void app(void)
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
 	headBulletList = NULL;;
+#if defined DEBUG
 	if (!threadStartDisconnect())
 		exit(EXIT_FAILURE);
+#endif
 
 	while (true)
 	{
@@ -368,7 +370,7 @@ void app(void)
 			}
 		}
 
-		if (headBulletList != NULL && ft_delay(&lastInc, 5))
+		if (headBulletList != NULL && ft_delay(&lastInc, 1))
 		{
 			incrementBullet(headBulletList);
 		}
