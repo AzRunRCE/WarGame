@@ -74,10 +74,9 @@ int main(int argc, char *argv[])
 	sound_Init();
 	sound_Load("res/fire.wav");
 	fontSurface = SDL_GetWindowSurface(_engine.window);
-	do
-	{
-		menu(mainConfiguration, 0);
-	} while (!create_connection(mainConfiguration));
+	menu(mainConfiguration, 0);
+	if (!create_connection(mainConfiguration))
+		perror("Create_connection()");
 	if (NwkThreadRet < 0)
 		menu(mainConfiguration, NwkThreadRet);
 	_engine.AnimKillEx.Pos.h = 56;
@@ -90,8 +89,8 @@ int main(int argc, char *argv[])
 
 	while (ft_checkEvent())
 	{
-		if (NwkThreadRet < 0)
-			menu(mainConfiguration, NwkThreadRet);
+		if (!checkServerisAlive(mainConfiguration))
+				exit(EXIT_FAILURE);
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		checkNearWall();
@@ -269,7 +268,7 @@ void FireBullet(bool MouseButtonLeft)
 		bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
 		encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
-		if (!write_client(buffer, output.bytes_written))
+		if (write_client(buffer, output.bytes_written) < 0)
 			perror("FireBullet()");
 	}
 	else if (_engine.mainPlayer.playerBase.ammo == 3 && ft_delay(&lastFire, FIRE_DELAY))

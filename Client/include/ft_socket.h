@@ -12,6 +12,7 @@
 #include "unionproto.pb.h"
 #include "pb_functions.h"
 #include "ft_configuration.h"
+#include "ft_menu.h"
 
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
@@ -40,8 +41,10 @@ void *NetworkThreadingListening(void);
 int create_connection(configuration *settings);
 int write_client(const uint8_t *buffer, const int length);
 void end();
+int checkServerisAlive(configuration *settings);
 bool connected;
 int NwkThreadRet;
+time_t lastUpdateFromServer;
 pthread_t NwkThread;
 pthread_t NwkThreadSender;
 #endif // SOCKET_H

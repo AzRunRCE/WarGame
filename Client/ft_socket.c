@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <string.h>
 #include <string.h>
+#include <time.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -18,6 +19,7 @@ int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
 static uint8_t buffer[MAX_BUFFER];
+NwkThreadRet = 0;
 
 void end()
 {
@@ -132,7 +134,6 @@ BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage)
 
 int create_connection(configuration *settings)
 {
-	NwkThreadRet = 0;
 	configuration *mainConfiguration;
 	mainConfiguration = ft_loadConf();
 	bool status = false;
@@ -201,10 +202,11 @@ void *NetworkThreadingListening(void)
 {
 	while (true)
 	{
+		lastUpdateFromServer = time(NULL);
 		int count = read_client();
 		if (count < 0) /* This mean there is an error, we need to kill the thread ! */
 		{
-			NwkThreadRet = -10;
+			NwkThreadRet = count;
 			pthread_exit(&count);
 		}
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
@@ -256,7 +258,24 @@ void *SreamClientData(void)
 		pb_ostream_t output = pb_ostream_from_buffer(writebuffer, sizeof(writebuffer));
 		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
 			write_client(writebuffer, output.bytes_written);
+
 		SLEEP10MS;
 	}
 	pthread_exit(NULL);
+}
+
+int checkServerisAlive(configuration *settings)
+{
+	time_t actualTime = time(NULL);
+	while (lastUpdateFromServer != 0 && actualTime - lastUpdateFromServer > 2) {
+		printf("ERROR: No answer from server for 2 sec.\n");
+		pthread_kill(NwkThread, 1);
+		menu(settings, NwkThreadRet);
+		lastUpdateFromServer = time(NULL);
+		if (!create_connection(settings)) {
+			perror("create_connection()");
+			return false;
+		}
+	}
+	return true;
 }
