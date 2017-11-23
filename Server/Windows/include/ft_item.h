@@ -17,4 +17,6 @@ typedef struct Item {
 
 Item* pushItem(Item* head, Item *new_node);
 int countItemWall(Item* head);
+
+Item *headItemList;
 #endif // FT_ITEM_H

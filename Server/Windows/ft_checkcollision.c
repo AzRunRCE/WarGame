@@ -23,15 +23,9 @@ int checkCollisionWall(Item *head, BulletElm* bullet)
 	while (cursor != NULL)
 	{
 		if (SDL_HasIntersection(cursor->rect, &bullet->pos))
-		{
 			return 1;
-			break;
-		}
 		if (cursor->next == NULL)
-		{
 			return 0;
-			break;
-		}
 		cursor = cursor->next;
 	}
 }

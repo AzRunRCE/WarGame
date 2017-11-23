@@ -8,6 +8,7 @@
 
 
 
+
 /*obtenirPixel : permet de récupérer la couleur d'un pixel*/
 Uint32 obtenirPixel(SDL_Surface *surface, int x, int y)
 {

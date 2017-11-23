@@ -30,12 +30,15 @@ typedef struct in_addr IN_ADDR;
 #define BLOCK_SIZE 32
 
 BulletElm *headBulletList;
+
 SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 int lastInc = 0;
+playerCount = -1;
+
 
 BulletElm *initBullet(BulletElm* bullet)
 {
@@ -270,16 +273,17 @@ void app(void)
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
 	headBulletList = NULL;;
-#if defined DEBUG
+//#if defined DEBUG
 	if (!threadStartDisconnect())
 		exit(EXIT_FAILURE);
-#endif
+//#endif
 
 	while (true)
 	{
 		SOCKADDR_IN csin = { 0 };
 		uint8_t buffer[MAX_BUFFER];
 		int count = read_client(sock, &csin, buffer);
+		printf("count: %d\n", count);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, playerCount))
@@ -408,8 +412,7 @@ bool ft_delay(int *last, int SleepTimeAnim)
 int main(int argc, char **argv)
 {
 	headItemList = NULL;
-	//map = malloc(sizeof(Map));
-	//map = calloc(3, sizeof(Map));
+	headBulletList = NULL;
 	ft_LoadMap("map/first.bmp", &map);
 	app();
 

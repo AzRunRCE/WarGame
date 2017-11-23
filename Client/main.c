@@ -257,8 +257,6 @@ void FireBullet(bool MouseButtonLeft)
 		BulletMessage bulletMessage;
 		bulletMessage.pos.x = _engine.mainPlayer.playerBase.pos.x + 8;
 		bulletMessage.pos.y = _engine.mainPlayer.playerBase.pos.y + 8;
-		bulletMessage.pos.w = 6;
-		bulletMessage.pos.h = 6;
 
 		bulletMessage.pos.h = bulletMessage.pos.w = 6;
 		bulletMessage.dest = _engine.mousePos;
