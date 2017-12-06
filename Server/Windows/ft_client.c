@@ -88,11 +88,7 @@ int read_client(SOCKET sock, SOCKADDR_IN *sin, uint8_t *buffer)
 	size_t sinsize = sizeof *sin;
 
 	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)sin, &sinsize)) < 0)
-	{
-		perror("recvfrom()");
-
-	}
-
+		printf("recvfrom() error: %d, %s\n", errno, strerror(errno));
 
 	return n;
 }
@@ -101,11 +97,7 @@ int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int
 {
 	int n = 0;
 	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin)) < 0)
-	{
-		perror("send()");
-
-	}
-	return n;
+		printf("sendto() error: %d, %s\n", errno, strerror(errno));
 }
 
 int init_connection(void)
@@ -129,20 +121,19 @@ int init_connection(void)
 		return false;
 	}
 
-
 	if (sock == INVALID_SOCKET)
 	{
-		perror("socket()");
+		printf("socket() error: %d, %s\n", errno, strerror(errno));
 		exit(errno);
 	}
 
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);
 	sin.sin_port = htons(PORT);
 	sin.sin_family = AF_INET;
-
+	
 	if (bind(sock, (SOCKADDR *)&sin, sizeof sin) == SOCKET_ERROR)
 	{
-		perror("bind()");
+		printf("bind() error: %d, %s\n", errno, strerror(errno));
 		exit(errno);
 	}
 

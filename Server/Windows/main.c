@@ -30,14 +30,12 @@ typedef struct in_addr IN_ADDR;
 #define BLOCK_SIZE 32
 
 BulletElm *headBulletList;
-
-SOCKET sock;
 typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 int lastInc = 0;
-playerCount = -1;
+playerCount = 0;
 
 
 BulletElm *initBullet(BulletElm* bullet)
@@ -161,7 +159,7 @@ void incrementBullet(BulletElm* headBullets)
 
 }
 
-bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+static bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 	BulletElm* cursor = headBulletList;
 	int count = 0;
@@ -182,11 +180,10 @@ bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, void * 
 	return true;
 }
 
-bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+static bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
 	for (int i = 0; i < playerCount; i++)
 	{
-
 
 		/* This encodes the header for the field, based on the constant info
 		* from pb_field_t. */
@@ -245,11 +242,12 @@ BulletElm* pushBullet(BulletElm* head, BulletMessage *bulletMsg)
 void app(void)
 {
 	bool status = true;
+	SOCKET sock;
 	sock = init_connection();
 	/* an array for all clients */
 	ConnectionCallbackMessage *callBackMessage = calloc(1, sizeof(ConnectionCallbackMessage));
-	strncpy(callBackMessage->motd, "Bienvenue sur mon serveur", sizeof(callBackMessage->motd));
-	callBackMessage->motd[sizeof(callBackMessage->motd) - 1] = '\0';
+	char motd[] = "Bienvenue sur mon serveur";
+	strncpy(callBackMessage->motd, motd, strlen(motd));
 	callBackMessage->sucess = true;
 
 	SpawnList[0].x = 1002;
@@ -273,88 +271,92 @@ void app(void)
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
 	headBulletList = NULL;;
-//#if defined DEBUG
+#ifndef _DEBUG
 	if (!threadStartDisconnect())
 		exit(EXIT_FAILURE);
-//#endif
-
+#endif
 	while (true)
 	{
 		SOCKADDR_IN csin = { 0 };
 		uint8_t buffer[MAX_BUFFER];
 		int count = read_client(sock, &csin, buffer);
-		printf("count: %d\n", count);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, playerCount))
 		{
-			QuitMessage qMessage;
-			status = decode_unionmessage_contents(&stream, QuitMessage_fields, &qMessage);
+			QuitMessage qMessage = QuitMessage_init_zero;
+			if (!decode_unionmessage_contents(&stream, QuitMessage_fields, &qMessage))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			remove_client(&clients, qMessage.id, &playerCount);
 			printf("%s has been disconnected. Reason: /quit\n", Players[qMessage.id].name);
 		}
 		if (type == ConnectionMessage_fields && !check_if_client_exists(clients, &csin, playerCount))
 		{
-			ConnectionMessage connectionMessage;
-			status = decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage);
-			if (playerCount != MAX_CLIENTS && status)
+			ConnectionMessage connectionMessage = ConnectionMessage_init_zero;
+			if (playerCount != MAX_CLIENTS && decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage))
 			{
 				Client c = { csin };
 				c.id = playerCount;
 				clients[playerCount] = c;
-				strncpy(Players[playerCount].name, connectionMessage.name, sizeof(Players[playerCount].name));
-				connectionMessage.name[sizeof(connectionMessage.name) - 1] = '\0';
+				strncpy(Players[playerCount].name, connectionMessage.name, strlen(connectionMessage.name));
 				Players[playerCount].playerBase.health = 100;
 				Players[playerCount].playerBase.id = playerCount;
 				callBackMessage->clientId = playerCount;
 
-				uint8_t callback_buffer[ConnectionCallbackMessage_size];
+				uint8_t callback_buffer[MAX_BUFFER];
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
-				status = encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage);
+				if (!encode_unionmessage(&output, ConnectionCallbackMessage_fields, callBackMessage))
+					fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 				write_client(sock, &csin, callback_buffer, output.bytes_written);
 				printf("%s connected\n", connectionMessage.name);
 				playerCount++;
 
 			}
+			else
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 		}
 		else if (type == BulletMessage_fields)
 		{
-
-			BulletMessage bulletMsg;
+			BulletMessage bulletMsg = BulletMessage_init_zero;
 			status = decode_unionmessage_contents(&stream, BulletMessage_fields, &bulletMsg);
-			if (playerIsAlive(&Players[bulletMsg.ownerId].playerBase)) {
-				//printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
+			if (playerIsAlive(&Players[bulletMsg.ownerId].playerBase))
+			{
+#ifdef _DEBUG
+				printf("BulletMessage name:%s x:%d y:%d\n", Players[bulletMsg.ownerId].name, bulletMsg.pos.x, bulletMsg.pos.y);
+#endif
 				headBulletList = pushBullet(headBulletList, &bulletMsg);
 			}
 		}
 		else if (type == SpawnMessage_fields)
 		{
-			SpawnMessage spawnMsg;
-			status = decode_unionmessage_contents(&stream, SpawnMessage_fields, &spawnMsg);
+			SpawnMessage spawnMsg = SpawnMessage_init_zero;
+			if (!decode_unionmessage_contents(&stream, SpawnMessage_fields, &spawnMsg))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			printf("Spawn request: %s\n", Players[spawnMsg.id].name);
 			Players[spawnMsg.id].playerBase.health = 100;
 			Players[spawnMsg.id].playerBase.ammo = 30;
 			int random;
 			srand(time(NULL)); // initialisation de rand
 			random = (rand() % (9 + 1));
-			SpawnCallbackMessage spawnCallbackMsg;
+			SpawnCallbackMessage spawnCallbackMsg = SpawnCallbackMessage_init_zero;
 			uint8_t spCallbackBuffer[MAX_BUFFER];
 			spawnCallbackMsg.id = spawnMsg.id;
 			spawnCallbackMsg.x = SpawnList[random].x;
 			spawnCallbackMsg.y = SpawnList[random].y;
 			pb_ostream_t output = pb_ostream_from_buffer(spCallbackBuffer, sizeof(spCallbackBuffer));
-			encode_unionmessage(&output, SpawnCallbackMessage_fields, &spawnCallbackMsg);
+			if (!encode_unionmessage(&output, SpawnCallbackMessage_fields, &spawnCallbackMsg))
+				fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 			write_client(sock, &csin, spCallbackBuffer, output.bytes_written);
 
 		}
 		else if (type == PlayerBase_fields)
 		{
-			PlayerBase pMessage;
-			status = decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage);
+			PlayerBase pMessage = PlayerBase_init_zero;
+			if(!decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			Client *client = get_client(clients, &csin, playerCount);
-			if (client != NULL) /*Ne devrait pas arriver, ne devrait pas être nul. FIXME*/
-				clients[client->id].lastUpdate = time(NULL);
 			if (client == NULL) continue;
+			clients[client->id].lastUpdate = time(NULL);
 			if (pMessage.pos.x || pMessage.pos.y) {
 				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].type = BLANK;
 				map.data[(int)Players[pMessage.id].playerBase.pos.y / BLOCK_SIZE][(int)(Players[pMessage.id].playerBase.pos.x) / BLOCK_SIZE].data = NULL;
@@ -362,14 +364,15 @@ void app(void)
 				map.data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].type = PLAYER;
 				map.data[(int)pMessage.pos.y / BLOCK_SIZE][(int)(pMessage.pos.x) / BLOCK_SIZE].data = &Players[pMessage.id];
 
-				GameDataMessage gameDataMessage;
+				GameDataMessage gameDataMessage = GameDataMessage_init_zero;
 				uint8_t currentGameBuffer[MAX_BUFFER];
 				gameDataMessage.gameMode = 1;
 				gameDataMessage.playersCount = playerCount;
 				gameDataMessage.players.funcs.encode = &listPlayers_callback;
 				gameDataMessage.bullets.funcs.encode = &listBullets_callback;
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));
-				encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage);
+				if (!encode_unionmessage(&output, GameDataMessage_fields, &gameDataMessage))
+					fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 				write_client(sock, &csin, currentGameBuffer, output.bytes_written);
 			}
 		}

@@ -235,8 +235,9 @@ int GetKeyPressEvent()
 			uint8_t buffer[SpawnMessage_size];
 			spMessage.id = _engine.mainPlayer.playerBase.id;
 			pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-			if (encode_unionmessage(&output, SpawnMessage_fields, &spMessage))
-				write_client(buffer, output.bytes_written);
+			if (!encode_unionmessage(&output, SpawnMessage_fields, &spMessage))
+				fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
+			write_client(buffer, output.bytes_written);
 		}
 	}
 	return 1;
@@ -252,7 +253,7 @@ void FireBullet(bool MouseButtonLeft)
 		sound_Play(soundChannelMainPlayer);
 
 		_engine.mainPlayer.playerBase.state = FIRE;
-		uint8_t buffer[BulletMessage_size];
+		uint8_t buffer[MAX_BUFFER];
 
 		BulletMessage bulletMessage;
 		bulletMessage.pos.x = _engine.mainPlayer.playerBase.pos.x + 8;
@@ -265,9 +266,11 @@ void FireBullet(bool MouseButtonLeft)
 
 		bulletMessage.ownerId = _engine.mainPlayer.playerBase.id;
 		pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-		encode_unionmessage(&output, BulletMessage_fields, &bulletMessage);
-		if (write_client(buffer, output.bytes_written) < 0)
-			perror("FireBullet()");
+		if (!encode_unionmessage(&output, BulletMessage_fields, &bulletMessage))
+			fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
+		buffer[output.bytes_written] = '\0';
+		write_client(buffer, output.bytes_written);
+		
 	}
 	else if (_engine.mainPlayer.playerBase.ammo == 3 && ft_delay(&lastFire, FIRE_DELAY))
 		_engine.mainPlayer.playerBase.ammo = 0;

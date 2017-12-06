@@ -862,7 +862,6 @@ bool checkreturn pb_decode_noinit(pb_istream_t *stream, const pb_field_t fields[
 	/* Return value ignored, as empty message types will be correctly handled by
 	* pb_field_iter_find() anyway. */
 	(void)pb_field_iter_begin(&iter, fields, dest_struct);
-
 	while (stream->bytes_left)
 	{
 		uint32_t tag;

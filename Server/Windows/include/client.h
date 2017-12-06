@@ -60,8 +60,8 @@ typedef struct BulletElm
 	struct BulletElm *next;
 }BulletElm;
 
-Client clients[MAX_CLIENTS];
-Player Players[MAX_CLIENTS];
+static Client clients[MAX_CLIENTS];
+static Player Players[MAX_CLIENTS];
 
 int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int playerCount);
 Client* get_client(Client *clients, SOCKADDR_IN *csin, int playerCount);

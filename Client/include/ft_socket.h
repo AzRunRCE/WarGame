@@ -29,6 +29,8 @@
 #error not defined for this platform
 #endif
 
+#define MAX_BUFFER 4096
+
 typedef enum
 {
 	RECVERROR = -10,

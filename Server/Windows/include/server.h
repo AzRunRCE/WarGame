@@ -2,7 +2,7 @@
 #define SERVER_H
 #ifdef _WIN32 || _WIN64 /* si vous êtes sous Windows */
 #include <winsock2.h>
-#define SOCKET_ERRNO	WSAGetLastError()
+#define SOCKET_ERRNO WSAGetLastError()
 #elif defined linux || defined __linux || defined __linux__ /* si vous êtes sous linux */
 #include <sys/types.h>
 #include <sys/socket.h>

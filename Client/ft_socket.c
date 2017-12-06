@@ -11,14 +11,12 @@
 
 #define h_addr h_addr_list[0] /* for backward compatibility */
 #define PORT 1977
-#define MAX_BUFFER 4096
 
 SOCKET sock;
 SOCKADDR_IN *psin;
 int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
-static uint8_t buffer[MAX_BUFFER];
 NwkThreadRet = 0;
 
 void end()
@@ -68,7 +66,7 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	return sock;
 }
 
-bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
 	BulletMessage bullet;
 
@@ -143,14 +141,14 @@ int create_connection(configuration *settings)
 	if ((sock = init_connection(mainConfiguration->server, psin)) == false)
 		return false;
 
-	ConnectionMessage connectionMessage;
+	ConnectionMessage connectionMessage = ConnectionMessage_init_zero;
 	strncpy(_engine.mainPlayer.name, settings->nickname, strlen(settings->nickname) + 1);
 	strncpy(connectionMessage.name, settings->nickname, strlen(settings->nickname) + 1);
 
-
+	uint8_t buffer[MAX_BUFFER];
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
-	status = encode_unionmessage(&output, ConnectionMessage_fields, &connectionMessage);
-
+	if (!encode_unionmessage(&output, ConnectionMessage_fields, &connectionMessage))
+		fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 	write_client(buffer, output.bytes_written);
 	if (pthread_create(&NwkThread, NULL, NetworkThreadingListening, NULL) == -1) {
 		perror("pthread_create");
@@ -158,22 +156,22 @@ int create_connection(configuration *settings)
 	}
 	return true;
 }
-int read_client()
+int read_client(const uint8_t *readBuffer)
 {
 	int n = 0;
 	size_t sinsize = sizeof *psin;
 
-	if ((n = recvfrom(sock, buffer, MAX_BUFFER, 0, (SOCKADDR *)psin, &sinsize)) < 0)
+	if ((n = recvfrom(sock, readBuffer, MAX_BUFFER, 0, (SOCKADDR *)psin, &sinsize)) < 0)
 	{
 		perror("recvfrom()");
 		return RECVERROR;
 	}
 	return n;
 }
-int write_client(const uint8_t *writebuffer, const int length)
+int write_client(const uint8_t *writeBuffer, const int length)
 {
 	int n = 0;
-	if ((n = sendto(sock, writebuffer, length, 0, (SOCKADDR *)psin, sizeof *psin)) < 0)
+	if ((n = sendto(sock, writeBuffer, length, 0, (SOCKADDR *)psin, sizeof *psin)) < 0)
 	{
 		perror("write_client()");
 		return SENDERROR;
@@ -181,9 +179,9 @@ int write_client(const uint8_t *writebuffer, const int length)
 	return n;
 }
 
-bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+static bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
-	PlayerBase pMessage;
+	PlayerBase pMessage = PlayerBase_init_zero;
 	if (!pb_decode(stream, PlayerBase_fields, &pMessage))
 		return false;
 	if (_engine.mainPlayer.playerBase.id != pMessage.id)
@@ -202,8 +200,10 @@ void *NetworkThreadingListening(void)
 {
 	while (true)
 	{
+		uint8_t buffer[MAX_BUFFER];
+		memset(&buffer, 0, strlen(buffer));
 		lastUpdateFromServer = time(NULL);
-		int count = read_client();
+		int count = read_client(&buffer);
 		if (count < 0) /* This mean there is an error, we need to kill the thread ! */
 		{
 			NwkThreadRet = count;
@@ -213,8 +213,9 @@ void *NetworkThreadingListening(void)
 		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == ConnectionCallbackMessage_fields)
 		{
-			ConnectionCallbackMessage callback;
-			decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback);
+			ConnectionCallbackMessage callback = ConnectionCallbackMessage_init_zero;
+			if (!decode_unionmessage_contents(&stream, ConnectionCallbackMessage_fields, &callback))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			if (callback.sucess)
 			{
 				printf("Connection success motd:%s\n", callback.motd);
@@ -228,16 +229,20 @@ void *NetworkThreadingListening(void)
 		else if (type == GameDataMessage_fields)
 		{
 			dispose(headBullets);
-			GameDataMessage gameData;
+			GameDataMessage gameData = GameDataMessage_init_zero;
 			gameData.players.funcs.decode = &readPlayers_callback;
 			gameData.bullets.funcs.decode = &readBullets_callback;
-			decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData);
+			if (!decode_unionmessage_contents(&stream, GameDataMessage_fields, &gameData))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			_engine.playersCount = gameData.playersCount;
 		}
 		else if (type == SpawnCallbackMessage_fields)
 		{
-			SpawnCallbackMessage spawnCallbackMsg;
-			if (decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg) && _engine.mainPlayer.playerBase.id == spawnCallbackMsg.id) {
+			SpawnCallbackMessage spawnCallbackMsg = SpawnCallbackMessage_init_zero;
+			if (!decode_unionmessage_contents(&stream, SpawnCallbackMessage_fields, &spawnCallbackMsg))
+				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
+			else if (_engine.mainPlayer.playerBase.id == spawnCallbackMsg.id)
+			{
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.x;
 				_engine.mainPlayer.playerBase.pos.x = spawnCallbackMsg.y;
 				_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
@@ -252,12 +257,14 @@ void *SreamClientData(void)
 {
 	while (true)
 	{
-		uint8_t writebuffer[PlayerBase_size];
-		PlayerBase pMessage;
+		uint8_t writebuffer[MAX_BUFFER];
+		PlayerBase pMessage = PlayerBase_init_zero;
 		memcpy(&pMessage, &_engine.mainPlayer.playerBase, sizeof(PlayerBase));
 		pb_ostream_t output = pb_ostream_from_buffer(writebuffer, sizeof(writebuffer));
-		if (encode_unionmessage(&output, PlayerBase_fields, &pMessage))
-			write_client(writebuffer, output.bytes_written);
+		if (!encode_unionmessage(&output, PlayerBase_fields, &pMessage))
+			fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
+		writebuffer[output.bytes_written] = '\0';
+		write_client(writebuffer, output.bytes_written);
 
 		SLEEP10MS;
 	}
