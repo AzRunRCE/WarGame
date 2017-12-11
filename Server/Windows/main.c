@@ -29,13 +29,12 @@ typedef struct in_addr IN_ADDR;
 #define MAX_BUFFER 4096
 #define BLOCK_SIZE 32
 
-BulletElm *headBulletList;
-typedef void(*callback)(BulletElm* head_bulletList);
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
 int lastInc = 0;
-playerCount = 0;
+int playerCount = 0;
+BulletElm *headBulletList = NULL;
 
 
 BulletElm *initBullet(BulletElm* bullet)
@@ -270,7 +269,6 @@ void app(void)
 	SpawnList[8].y = 1176;
 	SpawnList[9].x = 1192;
 	SpawnList[9].y = 1202;
-	headBulletList = NULL;;
 #ifndef _DEBUG
 	if (!threadStartDisconnect())
 		exit(EXIT_FAILURE);
@@ -301,6 +299,7 @@ void app(void)
 				strncpy(Players[playerCount].name, connectionMessage.name, strlen(connectionMessage.name));
 				Players[playerCount].playerBase.health = 100;
 				Players[playerCount].playerBase.id = playerCount;
+				clients[playerCount].lastUpdate = time(NULL);
 				callBackMessage->clientId = playerCount;
 
 				uint8_t callback_buffer[MAX_BUFFER];
@@ -392,6 +391,7 @@ void updatePlayer(PlayerBase *playerBase) {
 		Players[playerBase->id].playerBase.pos = playerBase->pos;
 	}
 	Players[playerBase->id].playerBase.state = playerBase->state;
+	strncpy(Players[playerBase->id].playerBase.name, playerBase->name, strlen(playerBase->name));
 	// Update player state even if he is dead !
 }
 bool playerIsAlive(PlayerBase *playerBase) {

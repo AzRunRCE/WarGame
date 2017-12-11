@@ -249,7 +249,7 @@ void menu(configuration *settings, int errcode)
 	SDL_FreeSurface(Menu.selectionLeft);
 	SDL_FreeSurface(Menu.selectionRight);
 }
-int init_menuDeath(void) {
+void init_menuDeath(void) {
 	_menuDeath.font = TTF_OpenFont("res/verdana.ttf", 40);
 	_menuDeath.black = (SDL_Color) { 255, 255, 255 };
 	char textRespawn[] = "Respawn in ";

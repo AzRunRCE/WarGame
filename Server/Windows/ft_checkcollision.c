@@ -1,6 +1,7 @@
 #include "include/ft_checkcollision.h"
+#include "include/client.h"
 
-int checkCollision(SDL_Rect *bullet, SDL_Rect *player)
+bool checkCollision(SDL_Rect *bullet, SDL_Rect *player)
 {
 	player->w = 32;
 
@@ -11,7 +12,7 @@ int checkCollision(SDL_Rect *bullet, SDL_Rect *player)
 		return false;
 }
 
-int checkCollisionWall(Item *head, BulletElm* bullet)
+int checkCollisionWall(Item *head, BulletElm *bullet)
 /* Function to check collisons between walls and bullet */
 {
 
@@ -30,11 +31,11 @@ int checkCollisionWall(Item *head, BulletElm* bullet)
 	}
 }
 
-int checkCollisionPlayer(BulletElm* bullet, int playerCount)
+bool checkCollisionPlayer(BulletElm *bullet, int playerCount)
 {
 	SDL_Rect currentPlayerPos;
 	if (playerCount < 2)
-		return 0;
+		return false;
 	for (int i = 0; i < playerCount; i++)
 	{
 		currentPlayerPos = Players[i].playerBase.pos;
@@ -43,9 +44,9 @@ int checkCollisionPlayer(BulletElm* bullet, int playerCount)
 		if (SDL_HasIntersection(&currentPlayerPos, &bullet->pos) && Players[i].playerBase.id != bullet->ownerId && Players[i].playerBase.state != DEAD)
 		{
 			Players[i].playerBase.health -= 10;
-			return 1;
+			return true;
 			break;
 		}
 	}
-	return 0;
+	return false;
 }

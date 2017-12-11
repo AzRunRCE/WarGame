@@ -65,5 +65,5 @@ static MenuDeath _menuDeath;
 void menu(configuration *settings, int errcode);
 void endMenuOptions(Menu *Menu);
 void menuDeath(void);
-int init_menuDeath(void);
+void init_menuDeath(void);
 #endif // FT_MENU_H

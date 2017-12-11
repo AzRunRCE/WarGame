@@ -66,6 +66,7 @@ bool ft_checkEvent()
 
 int main(int argc, char *argv[])
 {	
+	headBullets = NULL;
 	keystate = SDL_GetKeyboardState(NULL);
 	mainConfiguration = ft_loadConf();
 	SDL_init();

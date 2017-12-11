@@ -33,35 +33,15 @@ typedef struct in_addr IN_ADDR;
 #define MAX_BUFFER 4096
 #define PORT	 	1977
 #define SERVER "127.0.0.1"
-typedef struct Client
+typedef struct _Client
 {
     SOCKADDR_IN sin;
 	int id;
 	time_t lastUpdate;
 }Client;
 
-
-typedef struct BulletElm
-{
-	SDL_Rect dest;
-	SDL_Rect pos;
-	int dY;
-	int dX;
-	int x0;
-	int x1;
-	int y0;
-	int y1;
-	int sX;
-	int sY;
-	int err;
-	int e2;
-	int ownerId;
-	int id;
-	struct BulletElm *next;
-}BulletElm;
-
-static Client clients[MAX_CLIENTS];
-static Player Players[MAX_CLIENTS];
+Client clients[MAX_CLIENTS];
+Player Players[MAX_CLIENTS];
 
 int check_if_client_exists(Client *clients, SOCKADDR_IN *csin, int playerCount);
 Client* get_client(Client *clients, SOCKADDR_IN *csin, int playerCount);

@@ -98,6 +98,7 @@ int write_client(SOCKET sock, SOCKADDR_IN *sin, const uint8_t *buffer, const int
 	int n = 0;
 	if ((n = sendto(sock, buffer, length, 0, (SOCKADDR *)sin, sizeof *sin)) < 0)
 		printf("sendto() error: %d, %s\n", errno, strerror(errno));
+	return n;
 }
 
 int init_connection(void)

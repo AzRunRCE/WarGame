@@ -17,7 +17,7 @@ SOCKADDR_IN *psin;
 int clientId;
 BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
-NwkThreadRet = 0;
+int NwkThreadRet = 0;
 
 void end()
 {
@@ -66,7 +66,7 @@ int init_connection(const char *address, SOCKADDR_IN *sin)
 	return sock;
 }
 
-static bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+bool readBullets_callback(pb_istream_t *stream, void **arg)
 {
 	BulletMessage bullet;
 
@@ -132,18 +132,16 @@ BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage)
 
 int create_connection(configuration *settings)
 {
-	configuration *mainConfiguration;
-	mainConfiguration = ft_loadConf();
-	bool status = false;
 	psin = malloc(sizeof(SOCKADDR_IN));
 	psin->sin_family = AF_INET;
 
-	if ((sock = init_connection(mainConfiguration->server, psin)) == false)
+	if ((sock = init_connection(settings->server, psin)) == false)
 		return false;
 
 	ConnectionMessage connectionMessage = ConnectionMessage_init_zero;
-	strncpy(_engine.mainPlayer.name, settings->nickname, strlen(settings->nickname) + 1);
-	strncpy(connectionMessage.name, settings->nickname, strlen(settings->nickname) + 1);
+	strncpy(_engine.mainPlayer.name, settings->nickname, strlen(settings->nickname));
+	strncpy(_engine.mainPlayer.playerBase.name, settings->nickname, strlen(settings->nickname));
+	strncpy(connectionMessage.name, settings->nickname, strlen(settings->nickname));
 
 	uint8_t buffer[MAX_BUFFER];
 	pb_ostream_t output = pb_ostream_from_buffer(buffer, sizeof(buffer));
@@ -179,7 +177,7 @@ int write_client(const uint8_t *writeBuffer, const int length)
 	return n;
 }
 
-static bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
+bool readPlayers_callback(pb_istream_t *stream, void **arg)
 {
 	PlayerBase pMessage = PlayerBase_init_zero;
 	if (!pb_decode(stream, PlayerBase_fields, &pMessage))
@@ -218,9 +216,10 @@ void *NetworkThreadingListening(void)
 				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
 			if (callback.sucess)
 			{
-				printf("Connection success motd:%s\n", callback.motd);
+				printf("[SERVER] %s\n", callback.motd);
+				ft_chat_add(SERVERMESSAGE, &callback.motd);
 				_engine.mainPlayer.playerBase.id = callback.clientId;
-				if (pthread_create(&NwkThreadSender, NULL, SreamClientData, NULL) == -1) {
+				if (pthread_create(&NwkThreadSender, NULL, StreamClientData, NULL) == -1) {
 					perror("pthread_create");
 				}
 			}
@@ -253,7 +252,7 @@ void *NetworkThreadingListening(void)
 	pthread_exit(NULL);
 }
 
-void *SreamClientData(void)
+void *StreamClientData(void)
 {
 	while (true)
 	{

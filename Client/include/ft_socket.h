@@ -13,6 +13,7 @@
 #include "pb_functions.h"
 #include "ft_configuration.h"
 #include "ft_menu.h"
+#include "ft_chat.h"
 
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
@@ -38,7 +39,7 @@ typedef enum
 
 } SocketError;
 
-void *SreamClientData(void);
+void *StreamClientData(void);
 void *NetworkThreadingListening(void);
 int create_connection(configuration *settings);
 int write_client(const uint8_t *buffer, const int length);

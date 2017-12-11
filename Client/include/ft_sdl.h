@@ -8,6 +8,7 @@
 #include "ft_sound.h"
 #include "ft_engine.h"
 #include "ft_delay.h"
+#include "ft_chat.h"
 
 
 int ft_drawPlayers();

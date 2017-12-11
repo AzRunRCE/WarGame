@@ -52,11 +52,12 @@ message SDL_Rect
 message PlayerBase
 {
     int32 id = 1;
-	int32 health = 2;
-	int32 ammo = 3;
-	int32 state = 4;
-	int32 orientation = 5;
-	SDL_Rect pos = 6;
+	string name = 2;
+	int32 health = 3;
+	int32 ammo = 4;
+	int32 state = 5;
+	int32 orientation = 6;
+	SDL_Rect pos = 7;
 }
 message Player
 {

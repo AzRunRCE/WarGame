@@ -11,6 +11,7 @@
 
 
 int lastupdate = 0;
+int lastPlayerCount = 1;
 
 void SDL_init()
 {
@@ -31,18 +32,24 @@ int ft_drawPlayers()
 {
 	for (int i = 0; i < _engine.playersCount; i++)
 	{
-
-		_engine.players[i].sprite.h = _engine.players[i].sprite.w = 32;
 		if (_engine.players[i].playerBase.id == -1 || _engine.players[i].playerBase.id == _engine.mainPlayer.playerBase.id)
 			continue;
-		_engine.players[i].playerBase.pos.w = 32;
-		_engine.players[i].playerBase.pos.h = 32;
+		_engine.players[i].sprite.h = _engine.players[i].sprite.w = 32;
+		_engine.players[i].playerBase.pos.w = _engine.players[i].playerBase.pos.h = 32;
 		SDL_Rect rect = _engine.players[i].playerBase.pos;
 		rect.x = _engine.players[i].playerBase.pos.x - _engine.camera.x;
 		rect.y = _engine.players[i].playerBase.pos.y - _engine.camera.y;
 		ft_getCharactSprite(&_engine.players[i]);
 		if (_engine.players[i].playerBase.health > 0)
 		{
+			if (strlen(_engine.players[i].playerBase.name) > 0)
+			{
+				TTF_Font *font = TTF_OpenFont("res/verdanab.ttf", 16);
+				SDL_Surface *pseudoSurface = TTF_RenderText_Blended(font, _engine.players[i].playerBase.name, _engine.colorWhite);
+				SDL_Texture *texturePseudoSurface = SDL_CreateTextureFromSurface(_engine.screenRenderer, pseudoSurface);
+				SDL_Rect posPseudo = { rect.x - pseudoSurface->w / 4, rect.y - 30, pseudoSurface->w, pseudoSurface->h };
+				SDL_RenderCopy(_engine.screenRenderer, texturePseudoSurface, NULL, &posPseudo);
+			}
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
 		}
 		else
@@ -68,7 +75,7 @@ int ft_drawPlayers()
 		if (_engine.players[i].playerBase.state == FIRE)
 			sound_Play(soundChannelEnemies);
 	}
-	return 1;
+	return true;
 }
 
 
@@ -105,10 +112,19 @@ void ft_drawGame()
 	else
 		menuDeath();
 
-	browserBullets(headBullets, &drawBullet);		
-
+	browserBullets(headBullets, &drawBullet);	
 	SDL_RenderCopy(_engine.screenRenderer, _engine.AmmoSurface, &_engine.AmmoRect, &_engine.ammoPos);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.healthSurface, &_engine.healthRect, &_engine.healthPos);
+
+	if (_engine.playersCount > lastPlayerCount)
+	{
+		if (strlen(_engine.players[_engine.playersCount - 1].playerBase.name) > 0)
+		{
+			ft_chat_add(PLAYERCONNECTION, &_engine.players[_engine.playersCount - 1].playerBase.name);
+			lastPlayerCount = _engine.playersCount;
+		}
+	}
+	ft_chat_display();
 	SDL_RenderPresent(_engine.screenRenderer);
 	//ft_freeAllSurfaces();
 }
