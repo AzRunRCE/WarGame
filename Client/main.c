@@ -113,6 +113,8 @@ int main(int argc, char *argv[])
 		write_client(bufferQuit, outputQuit.bytes_written);
 	end();
 	sound_Close();
+	ft_chat_Close();
+	SDL_close();
 	return EXIT_SUCCESS;
 
 }

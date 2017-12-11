@@ -1,5 +1,6 @@
 #ifndef FT_CHAT_H
 #define FT_CHAT_H
+#include <SDL.h>
 
 typedef enum _ChatMessageType
 {
@@ -27,8 +28,14 @@ unsigned int chatMessageCount;
 		see ChatMessageType
 *  \param *argument For now , you have to pass char *
 */
-bool ft_chat_add(int messageType, char *arguments);
+bool ft_chat_Add(int messageType, char *arguments);
 
-bool ft_chat_display(void);
+bool ft_chat_Display(void);
+void ft_chat_Close(void);
+
+TTF_Font *font;
+SDL_Surface *textSurface;
+SDL_Texture *textureTextSurface;
+SDL_Rect posText;
 
 #endif // FT_CHAT_H

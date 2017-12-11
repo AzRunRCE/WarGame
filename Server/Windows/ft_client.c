@@ -62,10 +62,10 @@ void array_remove(Client* arr, size_t size, size_t index, size_t rem_size)
 
 }
 
-void remove_client(Client *clients, int to_remove, int *actual)
+void remove_client(Client *client, int to_remove, int *actual)
 {
 	/* we remove the client in the array */
-	memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove) * sizeof(Client));
+	memmove(client + to_remove, client + to_remove + 1, (*actual - to_remove) * sizeof(Client));
 	/* number client - 1 */
 	(*actual)--;
 }

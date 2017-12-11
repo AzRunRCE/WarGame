@@ -217,7 +217,7 @@ void *NetworkThreadingListening(void)
 			if (callback.sucess)
 			{
 				printf("[SERVER] %s\n", callback.motd);
-				ft_chat_add(SERVERMESSAGE, &callback.motd);
+				ft_chat_Add(SERVERMESSAGE, &callback.motd);
 				_engine.mainPlayer.playerBase.id = callback.clientId;
 				if (pthread_create(&NwkThreadSender, NULL, StreamClientData, NULL) == -1) {
 					perror("pthread_create");
