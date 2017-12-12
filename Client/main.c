@@ -72,14 +72,15 @@ int main(int argc, char *argv[])
 	SDL_init();
 	Engine_init();
 	nearWallInit();
-	sound_Init();
-	sound_Load("res/fire.wav");
+	ft_chat_Init();
 	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu(mainConfiguration, 0);
 	if (!create_connection(mainConfiguration))
 		perror("Create_connection()");
 	if (NwkThreadRet < 0)
 		menu(mainConfiguration, NwkThreadRet);
+	if (mainConfiguration->sound)
+		sound_Init(mainConfiguration->music);
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
 	_engine.AnimKillEx.Step = 0;

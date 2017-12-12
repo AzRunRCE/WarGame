@@ -4,11 +4,13 @@
 #include <stdbool.h>
 #include "ini.h"
 
-typedef struct
+typedef struct _configuration
 {
 	char version[MAX_LENGTH];
 	char nickname[MAX_LENGTH];
 	char server[MAX_LENGTH];
+	bool sound;
+	bool music;
 } configuration;
 
 static int handler(void* user, const char* section, const char* name,

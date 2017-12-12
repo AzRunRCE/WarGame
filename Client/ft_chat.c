@@ -49,7 +49,6 @@ bool ft_chat_Display(void)
 {
 	if (chatMessageCount == 0)
 		return false;
-	font = TTF_OpenFont("res/verdana.ttf", 15);
 
 	for (int i = 0; i < chatMessageCount; i++)
 	{
@@ -59,15 +58,21 @@ bool ft_chat_Display(void)
 		SDL_RenderCopy(_engine.screenRenderer, textureTextSurface, NULL, &posText);
 		if (ft_delay(&chatMessage[i].lastUpdate, MESSAGE_DELAY))
 			ft_chat_Remove(i);
-		TTF_CloseFont(font);
+		
 		SDL_FreeSurface(textSurface);
 		SDL_DestroyTexture(textureTextSurface);
 	}
 	return true;
 }
 
+void ft_chat_Init(void)
+{
+	font = TTF_OpenFont("res/verdana.ttf", 15);
+}
+
 void ft_chat_Close(void)
 {
+	TTF_CloseFont(font);
 	SDL_FreeSurface(textSurface);
 	SDL_DestroyTexture(textureTextSurface);
 }

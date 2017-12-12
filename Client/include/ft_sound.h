@@ -8,9 +8,9 @@ FMOD_CHANNEL **soundChannelMainPlayer;
 FMOD_CHANNEL **soundChannelEnemies;
 
 
-void sound_Init();
+void sound_Init(bool musicEnable);
 void sound_Load(char file[30]);
 void sound_Play(FMOD_CHANNEL **channel);
-void sound_Close();
+void sound_Close(void);
 
 #endif // FT_SOUND_H

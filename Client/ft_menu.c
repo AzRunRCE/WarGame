@@ -8,12 +8,19 @@ void initMenuOptions(Menu *Menu, configuration *settings)
 {
 	Menu->textInputIpAddress[0] = '\0';
 	Menu->textInputPseudo[0] = '\0';
+	Menu->textMusic[0] = '\0';
+	Menu->textSound[0] = '\0';
 	strncpy(Menu->textInputIpAddress, settings->server, strlen(settings->server) + 1);
 	strncpy(Menu->textInputPseudo, settings->nickname, strlen(settings->nickname) + 1);
+	sprintf(Menu->textMusic, "%d", settings->sound);
+
 	Menu->labelIpAddress = TTF_RenderText_Blended(Menu->WarGameFont, "Server address ", _engine.colorWarGame);
 	Menu->labelPseudo = TTF_RenderText_Blended(Menu->WarGameFont, "Pseudo  ", _engine.colorWarGame);
+	Menu->labelMusic = TTF_RenderText_Blended(Menu->WarGameFont, "Music ", _engine.colorWarGame);
+	Menu->labelSound = TTF_RenderText_Blended(Menu->WarGameFont, "Sound ", _engine.colorWarGame);
 	Menu->labelApply = TTF_RenderText_Blended(Menu->WarGameFont, "Apply", _engine.colorWarGame);
 	Menu->labelReturn = TTF_RenderText_Blended(Menu->WarGameFont, "Return", _engine.colorWarGame);
+
 	Menu->posLabelIpAddress = (SDL_Rect) { _engine.WIDTH / 3.5 - Menu->labelIpAddress->w / 2, _engine.HEIGHT / 2.2 + Menu->labelIpAddress->h / 2, Menu->labelIpAddress->w, Menu->labelIpAddress->h };
 	Menu->posLabelPseudo = (SDL_Rect) { _engine.WIDTH / 3.5 - Menu->labelPseudo->w, _engine.HEIGHT / 1.8 + Menu->labelPseudo->h / 2, Menu->labelPseudo->w, Menu->labelPseudo->h };
 	Menu->posLabelApply = (SDL_Rect) { _engine.WIDTH / 2 + Menu->labelApply->w, _engine.HEIGHT / 1.3 + Menu->labelApply->h / 2, Menu->labelApply->w, Menu->labelApply->h };
@@ -28,10 +35,14 @@ void endMenuOptions(Menu *Menu)
 {
 	SDL_DestroyTexture(Menu->textureLabelIpAddress);
 	SDL_DestroyTexture(Menu->textureLabelPseudo);
+	SDL_DestroyTexture(Menu->textureLabelMusic);
+	SDL_DestroyTexture(Menu->textureLabelSound);
 	SDL_DestroyTexture(Menu->textureLabelApply);
 	SDL_DestroyTexture(Menu->textureLabelReturn);
 	SDL_FreeSurface(Menu->labelIpAddress);
 	SDL_FreeSurface(Menu->labelPseudo);
+	SDL_FreeSurface(Menu->labelMusic);
+	SDL_FreeSurface(Menu->labelSound);
 	SDL_FreeSurface(Menu->labelApply);
 	SDL_FreeSurface(Menu->labelReturn);
 	SDL_FreeSurface(Menu->menuOptionsBackground);
@@ -201,6 +212,12 @@ void menu(configuration *settings, int errcode)
 			Menu.posPseudo = (SDL_Rect) { _engine.WIDTH / 3.4, _engine.HEIGHT / 1.8 + Menu.pseudo->h / 2, Menu.pseudo->w, Menu.pseudo->h };
 			Menu.textureTextPseudo = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.pseudo);
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextPseudo, NULL, &Menu.posPseudo);
+		}
+		if (Menu.textMusic[0] != '\0' && Menu.selectionOptionsDone) {
+			Menu.music = TTF_RenderText_Blended(Menu.WarGameFont, Menu.textMusic, _engine.colorWarGame);
+			Menu.posMusic = (SDL_Rect) { _engine.WIDTH / 3.4, _engine.HEIGHT / 2.6 + Menu.music->h / 2, Menu.music->w, Menu.music->h };
+			Menu.textureTextMusic = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu.music);
+			SDL_RenderCopy(_engine.screenRenderer, Menu.textureTextPseudo, NULL, &Menu.posMusic);
 		}
 		if (Menu.selectionOptionsDone && Menu.selectionMenuOptionsDone) {
 			SDL_RenderCopy(_engine.screenRenderer, Menu.textureLabelApply, NULL, &Menu.posLabelApply);

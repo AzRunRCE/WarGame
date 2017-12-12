@@ -336,7 +336,8 @@ void app(void)
 			Players[spawnMsg.id].playerBase.ammo = 30;
 			int random;
 			srand(time(NULL)); // initialisation de rand
-			random = (rand() % (9 + 1));
+			//random = (rand() % (9 + 1));
+			random = 1;
 			SpawnCallbackMessage spawnCallbackMsg = SpawnCallbackMessage_init_zero;
 			uint8_t spCallbackBuffer[MAX_BUFFER];
 			spawnCallbackMsg.id = spawnMsg.id;
