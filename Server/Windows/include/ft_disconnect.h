@@ -1,7 +1,8 @@
 #ifndef FT_DISCONNECT_H
 #define FT_DISCONNECT_H
-#define true 1
-#define false 0
+
+#include <SDL.h>
+
 #ifdef _WIN32 || _WIN64
 /* si vous êtes sous Windows */
 #include <pthread_VC.h>
@@ -17,6 +18,6 @@
 pthread_t DisconnectThread;
 int threadStartDisconnect(void);
 void *DisconnectThreading(void);
-int playerCount;
+static uint8_t playerCount;
 
 #endif /* FT_DISCONNECT_H */

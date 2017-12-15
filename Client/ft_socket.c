@@ -19,17 +19,21 @@ BulletElm* create(BulletMessage *bulletMessage, BulletElm* next);
 BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage);
 int NwkThreadRet = 0;
 
-void end()
+void network_Clean(void)
 {
-	/*ClientPacket w;
-	strcpy(w.clientPlayer.name, "\0");
-	write_server(sock, psin, w);*/
+	/* Send quit message to server before cleanup */
+	uint8_t bufferQuit[QuitMessage_size];
+	QuitMessage qMessage;
+	qMessage.id = _engine.mainPlayer.playerBase.id;
+	pb_ostream_t outputQuit = pb_ostream_from_buffer(bufferQuit, sizeof(bufferQuit));
+	if (encode_unionmessage(&outputQuit, QuitMessage_fields, &qMessage))
+		write_client(bufferQuit, outputQuit.bytes_written);
 #ifdef WIN32
 	WSACleanup();
 #endif
 }
 
-int init_connection(const char *address, SOCKADDR_IN *sin)
+int network_Init(const char *address, SOCKADDR_IN *sin)
 {
 #ifdef _WIN32
 	WSADATA WSAData;                    // Contains details of the 
@@ -77,7 +81,7 @@ bool readBullets_callback(pb_istream_t *stream, void **arg)
 	return true;
 }
 
-void end_connection(int sock)
+void socket_Close(void)
 {
 	closesocket(sock);
 }
@@ -130,12 +134,12 @@ BulletElm* appendBullet(BulletElm* head, BulletMessage *bulletMessage)
 	return head;
 }
 
-int create_connection(configuration *settings)
+int network_CreateConnection(configuration *settings)
 {
 	psin = malloc(sizeof(SOCKADDR_IN));
 	psin->sin_family = AF_INET;
 
-	if ((sock = init_connection(settings->server, psin)) == false)
+	if ((sock = network_Init(settings->server, psin)) == false)
 		return false;
 
 	ConnectionMessage connectionMessage = ConnectionMessage_init_zero;
@@ -278,7 +282,7 @@ int checkServerisAlive(configuration *settings)
 		pthread_kill(NwkThread, 1);
 		menu(settings, NwkThreadRet);
 		lastUpdateFromServer = time(NULL);
-		if (!create_connection(settings)) {
+		if (!network_CreateConnection(settings)) {
 			perror("create_connection()");
 			return false;
 		}

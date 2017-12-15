@@ -19,11 +19,10 @@ typedef struct _SDL
 } SDL;
 
 SDL sdl;
-int ft_drawPlayers();
-// void ft_freeAllSurfaces();
-void ft_drawGame();
-void SDL_init(void);
-void SDL_close(void);
+int ft_SDL_DrawPlayers(void);
+void ft_SDL_DrawGame(void);
+void ft_SDL_init(void);
+void ft_SDL_Close(void);
 void ft_getCharactSprite(Player *player);
 
 #endif // FT_SDL_H

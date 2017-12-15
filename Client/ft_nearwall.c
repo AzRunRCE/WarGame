@@ -6,7 +6,7 @@
 #include "include/ft_nearwall.h"
 
 
-void nearWallInit()
+void ft_nearWall_Init(void)
 {	
 	nearWall[0].x = 0;
 	nearWall[0].y = 0;
@@ -30,7 +30,7 @@ void nearWallInit()
 }
 
 
-void checkNearWall()
+void ft_nearWall_Check()
 {
 	int nWallModeTmp1 = NONE;
 	int nWallModeTmp2 = NONE;

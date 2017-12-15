@@ -32,8 +32,7 @@ typedef struct in_addr IN_ADDR;
 void updatePlayer(PlayerBase *playerBase);
 bool playerIsAlive(PlayerBase *playerBase);
 bool list_bullet;
-int lastInc = 0;
-int playerCount = 0;
+uint32_t lastInc = 0;
 BulletElm *headBulletList = NULL;
 
 
@@ -277,7 +276,7 @@ void app(void)
 	{
 		SOCKADDR_IN csin = { 0 };
 		uint8_t buffer[MAX_BUFFER];
-		int count = read_client(sock, &csin, buffer);
+		uint8_t count = read_client(sock, &csin, buffer);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
 		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, playerCount))
@@ -334,7 +333,7 @@ void app(void)
 			printf("Spawn request: %s\n", Players[spawnMsg.id].name);
 			Players[spawnMsg.id].playerBase.health = 100;
 			Players[spawnMsg.id].playerBase.ammo = 30;
-			int random;
+			uint8_t random;
 			srand(time(NULL)); // initialisation de rand
 			//random = (rand() % (9 + 1));
 			random = 1;

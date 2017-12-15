@@ -18,9 +18,6 @@
     <ClInclude Include="include\ft_bullet.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\ft_client.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\ft_engine.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

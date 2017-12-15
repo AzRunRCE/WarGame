@@ -36,7 +36,7 @@ typedef struct in_addr IN_ADDR;
 typedef struct _Client
 {
     SOCKADDR_IN sin;
-	int id;
+	uint8_t id;
 	time_t lastUpdate;
 }Client;
 

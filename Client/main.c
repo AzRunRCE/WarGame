@@ -12,22 +12,15 @@
 #define BLOCK_SIZE 32
 
 Engine _engine;
-void FireBullet(bool MouseButtonLeft);
-SDL_Color colorWhite = { 255, 255, 255 };
-SDL_Surface *text = NULL;
-SDL_Surface *fontSurface = NULL;
-char message[20];
-time_t lastTime = 0, lastTimeAnim = 0;
-SDL_Rect p = { .x = 200,.y = 200,.w = 4,.h = 4 };
+static SDL_Event event;
 
 const Uint8 *keystate;
-int actual = 0;
 configuration *mainConfiguration;
-Explode explode;
-int GetKeyPressEvent();
-int lastFire = 0;
-int lastUpdate = 0;
-New_Map newMapLeft;
+bool GetKeyPressEvent(void);
+void weapon_AutoReload(void);
+static uint32_t lastFire = 0;
+static uint32_t fireDelay = FIRE_DELAY;
+static uint32_t lastUpdate = 0;
 
 bool ft_getNextExplodeSprite(Explode *explode)
 {
@@ -49,14 +42,13 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 bool ft_checkEvent()
 {
-	SDL_Event event;
 	SDL_PollEvent(&event);
 	if (event.type == SDL_QUIT)
 		return false;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	GetKeyPressEvent();
 	if (_engine.mainPlayer.playerBase.state != DEAD) {
-		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && ft_delay(&lastFire, FIRE_DELAY))
+		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
 			FireBullet(true);
 		else
 			FireBullet(false);
@@ -69,13 +61,12 @@ int main(int argc, char *argv[])
 	headBullets = NULL;
 	keystate = SDL_GetKeyboardState(NULL);
 	mainConfiguration = ft_loadConf();
-	SDL_init();
+	ft_SDL_init();
 	Engine_init();
-	nearWallInit();
+	ft_nearWall_Init();
 	ft_chat_Init();
-	fontSurface = SDL_GetWindowSurface(_engine.window);
 	menu(mainConfiguration, 0);
-	if (!create_connection(mainConfiguration))
+	if (!network_CreateConnection(mainConfiguration))
 		perror("Create_connection()");
 	if (NwkThreadRet < 0)
 		menu(mainConfiguration, NwkThreadRet);
@@ -91,11 +82,13 @@ int main(int argc, char *argv[])
 
 	while (ft_checkEvent())
 	{
+#ifndef _DEBUG
 		if (!checkServerisAlive(mainConfiguration))
 				exit(EXIT_FAILURE);
+#endif
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
-		checkNearWall();
+		ft_nearWall_Check();
 		if (ft_delay(&lastUpdate, LAST_UPDATE)) {
 			if (!keystate[SDL_SCANCODE_UP] && !keystate[SDL_SCANCODE_DOWN] && !keystate[SDL_SCANCODE_LEFT] && !keystate[SDL_SCANCODE_RIGHT] && !keystate[SDL_SCANCODE_W] && !keystate[SDL_SCANCODE_S] && !keystate[SDL_SCANCODE_A] && !keystate[SDL_SCANCODE_D])
 				checkPlayerPosition();
@@ -103,27 +96,18 @@ int main(int argc, char *argv[])
 			ft_getHealthSprite(&_engine.mainPlayer);
 			ft_getAmmoSprite(&_engine.mainPlayer);
 		}
-		//ft_getNextExplodeSprite(&explode);	
-		ft_drawGame();
+		ft_SDL_DrawGame();
+		weapon_AutoReload();
 	}
-	uint8_t bufferQuit[QuitMessage_size];
-	QuitMessage qMessage;
-	qMessage.id = _engine.mainPlayer.playerBase.id;
-	pb_ostream_t outputQuit = pb_ostream_from_buffer(bufferQuit, sizeof(bufferQuit));
-	if (encode_unionmessage(&outputQuit, QuitMessage_fields, &qMessage))
-		write_client(bufferQuit, outputQuit.bytes_written);
-	end();
+	socket_Close();
+	network_Clean();
 	sound_Close();
 	ft_chat_Close();
-	SDL_close();
+	ft_SDL_Close();
 	return EXIT_SUCCESS;
 
 }
 
-/*void ft_getNextDyingSprite(Explode *explode)
-{
-	
-}*/
 void ft_getHealthSprite(Player *player)
 {
 	int nb_life = player->playerBase.health / 10;
@@ -142,7 +126,7 @@ void ft_getAmmoSprite(Player *player)
 
 }
 
-int GetKeyPressEvent()
+bool GetKeyPressEvent(void)
 {
 	if (_engine.mainPlayer.playerBase.health > 0)
 	{
@@ -226,6 +210,10 @@ int GetKeyPressEvent()
 		}
 		else if (_engine.mainPlayer.playerBase.ammo < 30 && keystate[SDL_SCANCODE_R])
 			_engine.mainPlayer.playerBase.ammo = 30;
+		else if (keystate[SDL_SCANCODE_H])
+			ft_chat_History_Show();
+		else if (keystate[SDL_SCANCODE_J])
+			ft_chat_History_Hide();
 	}
 	else
 	{
@@ -244,7 +232,7 @@ int GetKeyPressEvent()
 			write_client(buffer, output.bytes_written);
 		}
 	}
-	return 1;
+	return true;
 }
 
 
@@ -252,7 +240,18 @@ int GetKeyPressEvent()
 
 void FireBullet(bool MouseButtonLeft)
 {
-	if (_engine.mainPlayer.playerBase.ammo > 3 && MouseButtonLeft) {
+	if (_engine.mainPlayer.playerBase.ammo > 10 && _engine.mainPlayer.playerBase.ammo < 20)
+	{
+		fireDelay = FIRE_DELAY + 75 - _engine.mainPlayer.playerBase.ammo * 3;
+	}
+	else if (_engine.mainPlayer.playerBase.ammo > 3 && _engine.mainPlayer.playerBase.ammo <= 10)
+	{
+		fireDelay = FIRE_DELAY + 200 - _engine.mainPlayer.playerBase.ammo * 3;
+	}
+	else if (fireDelay != FIRE_DELAY && _engine.mainPlayer.playerBase.ammo >= 20)
+		fireDelay = FIRE_DELAY;
+
+	if (_engine.mainPlayer.playerBase.ammo > 0 && MouseButtonLeft && ft_delay(&lastFire, fireDelay)) {
 		_engine.mainPlayer.playerBase.ammo -= 2;
 		sound_Play(soundChannelMainPlayer);
 
@@ -274,10 +273,32 @@ void FireBullet(bool MouseButtonLeft)
 			fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 		buffer[output.bytes_written] = '\0';
 		write_client(buffer, output.bytes_written);
-		
 	}
-	else if (_engine.mainPlayer.playerBase.ammo == 3 && ft_delay(&lastFire, FIRE_DELAY))
+	if (_engine.mainPlayer.playerBase.ammo == 0)
+		_engine.mainPlayer.playerBase.ammo = 5;
+	else if (_engine.mainPlayer.playerBase.ammo < 2)
 		_engine.mainPlayer.playerBase.ammo = 0;
-	else if (_engine.mainPlayer.playerBase.ammo == 0 && ft_delay(&lastFire, FIRE_DELAY))
-		_engine.mainPlayer.playerBase.ammo = 3;
+	
+		
+
+}
+
+uint32_t lastReload;
+
+void weapon_AutoReload(void)
+{
+	if (ft_delay(&lastReload, (uint32_t)fireDelay * 2))
+	{
+		/*if (_engine.mainPlayer.playerBase.ammo < 5)
+		{
+			if (_engine.mainPlayer.playerBase.ammo != 0 && _engine.mainPlayer.playerBase.ammo % 2 == 0)
+				_engine.mainPlayer.playerBase.ammo = 0;
+			else
+				_engine.mainPlayer.playerBase.ammo = 3;
+		}*/
+
+		if (_engine.mainPlayer.playerBase.ammo < 30)
+			_engine.mainPlayer.playerBase.ammo++;
+	
+	}
 }

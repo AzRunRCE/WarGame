@@ -2,7 +2,7 @@
 #define FT_EXPL_H
 #include <SDL.h>
 
-typedef struct
+typedef struct _Explode
 {
 	SDL_Rect Pos;
 	SDL_Rect Sprite;

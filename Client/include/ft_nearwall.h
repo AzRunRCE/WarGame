@@ -11,7 +11,7 @@ typedef enum
 
 int nWallMode;
 static SDL_Rect nearWall[4];
-void nearWallInit();
-void checkNearWall();
+void ft_nearWall_Init(void);
+void ft_nearWall_Check(void);
 
 #endif // FT_NEARWALL_H

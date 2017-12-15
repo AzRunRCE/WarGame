@@ -13,7 +13,7 @@
 int lastupdate = 0;
 int lastPlayerCount = 1;
 
-void SDL_init(void)
+void ft_SDL_init(void)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
@@ -27,7 +27,7 @@ void SDL_init(void)
 	}
 	sdl.font = TTF_OpenFont("res/verdanab.ttf", 16);
 }
-void SDL_close(void)
+void ft_SDL_Close(void)
 {
 	TTF_CloseFont(sdl.font);
 	SDL_FreeSurface(sdl.pseudoSurface);
@@ -35,7 +35,7 @@ void SDL_close(void)
 }
 
 
-int ft_drawPlayers()
+int ft_SDL_DrawPlayers(void)
 {
 	for (int i = 0; i < _engine.playersCount; i++)
 	{
@@ -87,12 +87,12 @@ int ft_drawPlayers()
 }
 
 
-void ft_drawGame()
+void ft_SDL_DrawGame()
 {
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 	
-	ft_drawPlayers();
+	ft_SDL_DrawPlayers();
 	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
 		ft_getCharactSprite(&_engine.mainPlayer);

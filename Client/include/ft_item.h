@@ -16,8 +16,8 @@ typedef struct Item {
 	struct Item *next;
 }Item;
 
-int countItemWall(Item* head);
+uint32_t countItemWall(Item* head);
 Item* pushItem(Item* head, Item *new_node);
-int checkWallColision(Item *head, int32_t direction);
-int browseItemWall(Item* head);
+int8_t checkWallColision(Item *head, int32_t direction);
+bool browseItemWall(Item* head);
 #endif // FT_ITEM_H

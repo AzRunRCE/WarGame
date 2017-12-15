@@ -155,7 +155,6 @@
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\ft_bullet.h" />
     <ClInclude Include="include\ft_chat.h" />
-    <ClInclude Include="include\ft_client.h" />
     <ClInclude Include="include\ft_configuration.h" />
     <ClInclude Include="include\ft_delay.h" />
     <ClInclude Include="include\ft_engine.h" />

@@ -24,12 +24,11 @@
 #include "ft_nearwall.h"
 #include "ft_playerPosition.h"
 #include "ft_delay.h"
+#include "ft_chat.h"
 
-#define true 1
-#define false 0
 
 void FireBullet(bool MouseButtonLeft);
 void ft_getHealthSprite(Player *player);
 void ft_getAmmoSprite(Player *player);
-//void ft_getNextDyingSprite(Explode *explode);
+void FireBullet(bool MouseButtonLeft);
 #endif // MAIN_H

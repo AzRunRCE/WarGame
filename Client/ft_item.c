@@ -2,11 +2,11 @@
 #include "include/ft_engine.h"
 #define BLOCK_SIZE 32
 
-int countItemWall(Item* head)
+uint32_t countItemWall(Item* head)
 {
 	int total = 0;
 	if (head == NULL) {
-		return 0;
+		return false;
 	}
 	/* go to the last node */
 	Item *cursor = head;
@@ -20,10 +20,10 @@ int countItemWall(Item* head)
 	return total;
 }
 
-int browseItemWall(Item* head)
+bool browseItemWall(Item* head)
 {
 	if (head == NULL) {
-		return 0;
+		return false;
 	}
 	/* go to the last node */
 	Item *cursor = head;
@@ -37,7 +37,7 @@ int browseItemWall(Item* head)
 			break;
 		cursor = cursor->next;
 	}
-	return 1;
+	return true;
 }
 
 Item* pushItem(Item* head, Item *new_node)
@@ -54,7 +54,7 @@ Item* pushItem(Item* head, Item *new_node)
 	return head;
 }
 
-int checkWallColision(Item *head, int32_t direction)
+int8_t checkWallColision(Item *head, int32_t direction)
 {
 
 	if (head == NULL) {
@@ -88,12 +88,12 @@ int checkWallColision(Item *head, int32_t direction)
 	{
 		if (SDL_HasIntersection(cursor->rect, &playerBaseposTEMP))
 		{
-			return 1;
+			return true;
 			break;
 		}
 		if (cursor->next == NULL)
 		{
-			return 0;
+			return false;
 			break;
 		}
 		cursor = cursor->next;
