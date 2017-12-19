@@ -7,7 +7,7 @@
 #include "include/main.h"
 
 #define MAX_LENGTH 32
-#define FIRE_DELAY 150
+#define FIRE_DELAY 200
 #define LAST_UPDATE 12
 #define BLOCK_SIZE 32
 
@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
 
 	while (ft_checkEvent())
 	{
-		ft_checkPlayerAlive();
 #ifndef _DEBUG
 		if (!checkServerisAlive(mainConfiguration))
 				exit(EXIT_FAILURE);
@@ -100,6 +99,7 @@ int main(int argc, char *argv[])
 		}
 		ft_SDL_DrawGame();
 		weapon_AutoReload();
+		ft_checkPlayerAlive();
 	}
 	socket_Close();
 	network_Clean();
@@ -252,7 +252,7 @@ void FireBullet(bool MouseButtonLeft)
 	else if (fireDelay != FIRE_DELAY && _engine.mainPlayer.playerBase.ammo >= 20)
 		fireDelay = FIRE_DELAY;
 
-	if (_engine.mainPlayer.playerBase.ammo > 0 && MouseButtonLeft && ft_delay(&lastFire, fireDelay)) {
+	if (_engine.mainPlayer.playerBase.ammo > 1 && MouseButtonLeft && ft_delay(&lastFire, fireDelay)) {
 		_engine.mainPlayer.playerBase.ammo -= 2;
 		sound_Play(soundChannelMainPlayer);
 
@@ -277,10 +277,10 @@ void FireBullet(bool MouseButtonLeft)
 	}
 	if (ft_delay(&lastFire, fireDelay))
 	{
-		if (_engine.mainPlayer.playerBase.ammo < 4 && _engine.mainPlayer.playerBase.ammo > 0)
+		if (_engine.mainPlayer.playerBase.ammo < 3 && _engine.mainPlayer.playerBase.ammo > 0)
 			_engine.mainPlayer.playerBase.ammo = 0;
 		else if (_engine.mainPlayer.playerBase.ammo == 0)
-			_engine.mainPlayer.playerBase.ammo = 3;
+			_engine.mainPlayer.playerBase.ammo = 2;
 	}
 	
 		
@@ -295,13 +295,15 @@ void weapon_AutoReload(void)
 		&& _engine.mainPlayer.playerBase.ammo < 30
 		&& ft_delay(&lastReload, (uint32_t)fireDelay * 2)
 		)
-			_engine.mainPlayer.playerBase.ammo++;
+		_engine.mainPlayer.playerBase.ammo += 2;
 }
 
 
 void ft_checkPlayerAlive(void)
 {
-	if (_engine.mainPlayer.playerBase.health < 0)
+	if (_engine.mainPlayer.playerBase.health < 1)
 		_engine.mainPlayer.playerBase.state = DEAD;
+	else
+		_engine.mainPlayer.playerBase.state = IDLE;
 
 }

@@ -192,7 +192,7 @@ bool readPlayers_callback(pb_istream_t *stream, void **arg)
 		if (_engine.players[pMessage.id].playerBase.state != DEAD)
 			_engine.players[pMessage.id].deathAnimationStep = 0;
 	}
-	else
+	else if (_engine.mainPlayer.playerBase.health != pMessage.health)
 		_engine.mainPlayer.playerBase.health = pMessage.health;
 	return true;
 }

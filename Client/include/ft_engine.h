@@ -53,6 +53,7 @@ typedef struct Engine {
 	SDL_Texture *healthSurface;
 	SDL_Texture *bulletSurface;
 	SDL_Texture *explodeSurface;
+	SDL_Texture *bloodSurface;
 	SDL_Texture *AnimKill;
 	SDL_Texture *bombSurface;
 	SDL_Texture *characterSurface;

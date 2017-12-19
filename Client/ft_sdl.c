@@ -87,18 +87,25 @@ int ft_SDL_DrawPlayers(void)
 }
 
 
-void ft_SDL_DrawGame()
+void ft_SDL_DrawGame(void)
 {
 	SDL_RenderClear(_engine.screenRenderer);
 	SDL_RenderCopy(_engine.screenRenderer, _engine.mapSurface, &_engine.camera, NULL);
 	
 	ft_SDL_DrawPlayers();
+	ft_SDL_checkPlayerHit();
 	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
+		
 		ft_getCharactSprite(&_engine.mainPlayer);
-		SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.relativePos);
 		_engine.mainPlayer.deathAnimationStep = 0;
 		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
+		if (_engine.mainPlayer.playerBase.state == HIT)
+			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.relativePos);
+		else
+			SDL_RenderCopy(_engine.screenRenderer, _engine.characterSurface, &_engine.mainPlayer.sprite, &_engine.mainPlayer.relativePos);
+		if (_engine.mainPlayer.playerBase.health < 100)
+			SDL_RenderCopy(_engine.screenRenderer, _engine.bloodSurface, NULL, NULL);
 	}
 	else if (_engine.mainPlayer.deathAnimationStep != 10)
 	{
@@ -166,4 +173,31 @@ void ft_getCharactSprite(Player *player)
 		default:
 			break;
 		}
+}
+
+uint16_t playerLastHealth = 100;
+uint32_t lastHit = 0;
+uint16_t opacity = 0;
+
+void ft_SDL_checkPlayerHit(void)
+{
+	
+	if (_engine.mainPlayer.playerBase.state != HIT && _engine.mainPlayer.playerBase.health == 100)
+	{
+		opacity = 0;
+		playerLastHealth = _engine.mainPlayer.playerBase.health;
+	}
+
+	if (_engine.mainPlayer.playerBase.state != DEAD && _engine.mainPlayer.playerBase.health < playerLastHealth)
+	{
+		_engine.mainPlayer.playerBase.state = HIT;
+		if (opacity + 25 < 255)
+			opacity += 22;
+		
+		if (ft_delay(&lastHit, 200))
+		{
+			playerLastHealth = _engine.mainPlayer.playerBase.health;
+		}
+	}
+	SDL_SetTextureAlphaMod(_engine.bloodSurface, opacity);
 }

@@ -24,5 +24,6 @@ void ft_SDL_DrawGame(void);
 void ft_SDL_init(void);
 void ft_SDL_Close(void);
 void ft_getCharactSprite(Player *player);
+void ft_SDL_checkPlayerHit(void);
 
 #endif // FT_SDL_H

@@ -45,7 +45,6 @@ bool checkCollisionPlayer(BulletElm *bullet, int playerCount)
 		{
 			Players[i].playerBase.health -= 10;
 			return true;
-			break;
 		}
 	}
 	return false;
