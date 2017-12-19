@@ -1,6 +1,6 @@
 #include "include/ft_delay.h"
 
-bool ft_delay(Uint32 *lastAnim, Uint32 SleepTimeAnim)
+bool ft_delay(uint32_t *lastAnim, uint32_t SleepTimeAnim)
 {
 	int ActualTimeAnim = SDL_GetTicks();
 	if (ActualTimeAnim - *lastAnim > SleepTimeAnim)

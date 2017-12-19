@@ -10,8 +10,7 @@
 #include "include/ft_sdl.h"
 
 
-int lastupdate = 0;
-int lastPlayerCount = 1;
+uint16_t lastPlayerCount = 1;
 
 void ft_SDL_init(void)
 {
@@ -176,8 +175,8 @@ void ft_getCharactSprite(Player *player)
 }
 
 uint16_t playerLastHealth = 100;
-uint32_t lastHit = 0;
 uint16_t opacity = 0;
+uint32_t lastHit = 0;
 
 void ft_SDL_checkPlayerHit(void)
 {
@@ -193,11 +192,12 @@ void ft_SDL_checkPlayerHit(void)
 		_engine.mainPlayer.playerBase.state = HIT;
 		if (opacity + 25 < 255)
 			opacity += 22;
-		
-		if (ft_delay(&lastHit, 200))
+		if (ft_delay(&lastHit, 1000))
 		{
 			playerLastHealth = _engine.mainPlayer.playerBase.health;
 		}
+		
 	}
+
 	SDL_SetTextureAlphaMod(_engine.bloodSurface, opacity);
 }
