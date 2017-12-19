@@ -18,6 +18,7 @@ const Uint8 *keystate;
 configuration *mainConfiguration;
 bool GetKeyPressEvent(void);
 void weapon_AutoReload(void);
+void ft_checkPlayerAlive(void);
 static uint32_t lastFire = 0;
 static uint32_t fireDelay = FIRE_DELAY;
 static uint32_t lastUpdate = 0;
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
 
 	while (ft_checkEvent())
 	{
+		ft_checkPlayerAlive();
 #ifndef _DEBUG
 		if (!checkServerisAlive(mainConfiguration))
 				exit(EXIT_FAILURE);
@@ -128,7 +130,7 @@ void ft_getAmmoSprite(Player *player)
 
 bool GetKeyPressEvent(void)
 {
-	if (_engine.mainPlayer.playerBase.health > 0)
+	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
 		_engine.mainPlayer.playerBase.state = IDLE;
 		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A])
@@ -215,9 +217,8 @@ bool GetKeyPressEvent(void)
 		else if (keystate[SDL_SCANCODE_J])
 			ft_chat_History_Hide();
 	}
-	else
+	else if (_engine.mainPlayer.playerBase.state = DEAD)
 	{
-		_engine.mainPlayer.playerBase.state = DEAD;
 		if (!_engine.cooldownDeath && keystate[SDL_SCANCODE_SPACE])
 			/* When spawn cooldown is done and space pressed */
 		{
@@ -274,10 +275,13 @@ void FireBullet(bool MouseButtonLeft)
 		buffer[output.bytes_written] = '\0';
 		write_client(buffer, output.bytes_written);
 	}
-	if (_engine.mainPlayer.playerBase.ammo == 0)
-		_engine.mainPlayer.playerBase.ammo = 5;
-	else if (_engine.mainPlayer.playerBase.ammo < 2)
-		_engine.mainPlayer.playerBase.ammo = 0;
+	if (ft_delay(&lastFire, fireDelay))
+	{
+		if (_engine.mainPlayer.playerBase.ammo < 4 && _engine.mainPlayer.playerBase.ammo > 0)
+			_engine.mainPlayer.playerBase.ammo = 0;
+		else if (_engine.mainPlayer.playerBase.ammo == 0)
+			_engine.mainPlayer.playerBase.ammo = 3;
+	}
 	
 		
 
@@ -287,18 +291,17 @@ uint32_t lastReload;
 
 void weapon_AutoReload(void)
 {
-	if (ft_delay(&lastReload, (uint32_t)fireDelay * 2))
-	{
-		/*if (_engine.mainPlayer.playerBase.ammo < 5)
-		{
-			if (_engine.mainPlayer.playerBase.ammo != 0 && _engine.mainPlayer.playerBase.ammo % 2 == 0)
-				_engine.mainPlayer.playerBase.ammo = 0;
-			else
-				_engine.mainPlayer.playerBase.ammo = 3;
-		}*/
-
-		if (_engine.mainPlayer.playerBase.ammo < 30)
+	if ((event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
+		&& _engine.mainPlayer.playerBase.ammo < 30
+		&& ft_delay(&lastReload, (uint32_t)fireDelay * 2)
+		)
 			_engine.mainPlayer.playerBase.ammo++;
-	
-	}
+}
+
+
+void ft_checkPlayerAlive(void)
+{
+	if (_engine.mainPlayer.playerBase.health < 0)
+		_engine.mainPlayer.playerBase.state = DEAD;
+
 }
