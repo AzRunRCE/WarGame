@@ -10,6 +10,15 @@
 #include "ft_configuration.h"
 #include "ft_delay.h"
 
+typedef enum _menuType
+{
+	MENU_MAIN = 0,
+	MENU_OPTIONS = 1,
+	MENU_GAME = 2,
+	MENU_SOUND = 3,
+	MENU_VIDEO = 4
+} MenuType;
+
 typedef struct Menu {
     int menuSelection;
     int menuOptionsSelection;

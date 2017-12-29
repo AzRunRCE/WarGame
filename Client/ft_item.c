@@ -65,16 +65,16 @@ int8_t checkWallColision(Item *head, int32_t direction)
 	switch (direction)
 	{
 	case UP:
-		playerBaseposTEMP.y--;
+		playerBaseposTEMP.y -= 2;
 		break;
 	case DOWN:
-		playerBaseposTEMP.y++;
+		playerBaseposTEMP.y += 2;
 		break;
 	case LEFT:
-		playerBaseposTEMP.x--;
+		playerBaseposTEMP.x -= 2;
 		break;
 	case RIGHT:
-		playerBaseposTEMP.x++;
+		playerBaseposTEMP.x += 2;
 		break;
 	case -1:
 		break;

@@ -36,7 +36,7 @@ void ft_SDL_Close(void)
 
 int ft_SDL_DrawPlayers(void)
 {
-	for (int i = 0; i < _engine.playersCount; i++)
+	for (uint8_t i = 0; i < _engine.playersCount; i++)
 	{
 		if (_engine.players[i].playerBase.id == -1 || _engine.players[i].playerBase.id == _engine.mainPlayer.playerBase.id)
 			continue;
@@ -80,7 +80,7 @@ int ft_SDL_DrawPlayers(void)
 		
 		}
 		if (_engine.players[i].playerBase.state == FIRE)
-			sound_Play(soundChannelEnemies);
+			sound_Play_Fire(&soundChannelEnemies);
 	}
 	return true;
 }
@@ -95,7 +95,6 @@ void ft_SDL_DrawGame(void)
 	ft_SDL_checkPlayerHit();
 	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
-		
 		ft_getCharactSprite(&_engine.mainPlayer);
 		_engine.mainPlayer.deathAnimationStep = 0;
 		SDL_RenderCopyEx(_engine.screenRenderer, _engine.viewSurface, NULL, &_engine.viewRect, _engine.viewDegrees, NULL, SDL_FLIP_NONE);
@@ -177,6 +176,7 @@ void ft_getCharactSprite(Player *player)
 uint16_t playerLastHealth = 100;
 uint16_t opacity = 0;
 uint32_t lastHit = 0;
+uint8_t grunt = 0;
 
 void ft_SDL_checkPlayerHit(void)
 {
@@ -187,15 +187,20 @@ void ft_SDL_checkPlayerHit(void)
 		playerLastHealth = _engine.mainPlayer.playerBase.health;
 	}
 
-	if (_engine.mainPlayer.playerBase.state != DEAD && _engine.mainPlayer.playerBase.health < playerLastHealth)
+	if (_engine.mainPlayer.playerBase.state != DEAD && _engine.mainPlayer.playerBase.health < playerLastHealth && !ft_delay(&lastHit, 1000))
 	{
 		_engine.mainPlayer.playerBase.state = HIT;
+		
+		printf("grunt: %d", grunt);
+		sound_Play_Grunt(&soundChannelGrunt, grunt);
+		if (grunt >= 5)
+			grunt = 0;
+		else
+			grunt++;
+		
 		if (opacity + 25 < 255)
 			opacity += 22;
-		if (ft_delay(&lastHit, 1000))
-		{
-			playerLastHealth = _engine.mainPlayer.playerBase.health;
-		}
+		playerLastHealth = _engine.mainPlayer.playerBase.health;
 		
 	}
 

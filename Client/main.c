@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	_engine.camera.x = _engine.mainPlayer.playerBase.pos.x - _engine.WIDTH / 2 + 16;
 	_engine.camera.y = _engine.mainPlayer.playerBase.pos.y - _engine.HEIGHT / 2 + 16;
 	headBullets = NULL;
-
+	
 	while (ft_checkEvent())
 	{
 #ifndef _DEBUG
@@ -96,6 +96,11 @@ int main(int argc, char *argv[])
 			ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 			ft_getHealthSprite(&_engine.mainPlayer);
 			ft_getAmmoSprite(&_engine.mainPlayer);
+			
+			/*uint32_t i = 0;
+			FMOD_Channel_GetPosition(soundChannelMusic, &i, FMOD_TIMEUNIT_MS);
+			printf("Music position: %d\n", i)*/
+			sound_Grunt_Poll();
 		}
 		ft_SDL_DrawGame();
 		weapon_AutoReload();
@@ -194,7 +199,7 @@ bool GetKeyPressEvent(void)
 				if (nWallMode == NONE || nWallMode == LEFTRIGHT)
 					_engine.camera.y++;
 			}
-			else  if (_engine.mainPlayer.playerBase.orientation == RIGHT)
+			else if (_engine.mainPlayer.playerBase.orientation == RIGHT)
 			{
 				_engine.mainPlayer.playerBase.orientation = DOWN_RIGHT;
 				_engine.mainPlayer.playerBase.pos.y++;
@@ -210,8 +215,18 @@ bool GetKeyPressEvent(void)
 			}
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
+#ifdef _DEBUG
 		else if (_engine.mainPlayer.playerBase.ammo < 30 && keystate[SDL_SCANCODE_R])
 			_engine.mainPlayer.playerBase.ammo = 30;
+#endif
+		else if (keystate[SDL_SCANCODE_LALT] && keystate[SDL_SCANCODE_RETURN] && ft_delay(&_engine.cooldownFullscreen, 500))
+		{
+			if (!_engine.fullscreen)
+				_engine.fullscreen = true;
+			else
+				_engine.fullscreen = false;
+			SDL_SetWindowFullscreen(_engine.window, _engine.fullscreen);
+		}
 		else if (keystate[SDL_SCANCODE_H])
 			ft_chat_History_Show();
 		else if (keystate[SDL_SCANCODE_J])
@@ -254,7 +269,7 @@ void FireBullet(bool MouseButtonLeft)
 
 	if (_engine.mainPlayer.playerBase.ammo > 1 && MouseButtonLeft && ft_delay(&lastFire, fireDelay)) {
 		_engine.mainPlayer.playerBase.ammo -= 2;
-		sound_Play(soundChannelMainPlayer);
+		sound_Play_Fire(&soundChannelMainPlayer);
 
 		_engine.mainPlayer.playerBase.state = FIRE;
 		uint8_t buffer[MAX_BUFFER];

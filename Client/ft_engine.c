@@ -36,7 +36,9 @@ void Engine_init()
 	
 	_engine.mousePos.w = 55;
 	_engine.mousePos.h = 55;
-	
+	_engine.fullscreen = false;
+	_engine.cooldownFullscreen = 0;
+	SDL_SetWindowResizable(_engine.window, true);
 	_engine.mainPlayer = (Player) Player_init_default;
 	_engine.mainPlayer.playerBase.state = 0;
 	_engine.healthPos = (SDL_Rect) { .x =10, .y = _engine.HEIGHT - 25, .w = 150, .h = 30 };

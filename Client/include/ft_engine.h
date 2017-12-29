@@ -20,10 +20,11 @@ typedef struct Engine {
 	pthread_mutex_t mutex; 
     int WIDTH;
     int HEIGHT;
-    int fullscreen;
-	int playersCount;
-	int cooldownDeath;
-	int lastCooldownDeath;
+    bool fullscreen;
+	uint32_t cooldownFullscreen;
+	uint16_t playersCount;
+	uint32_t cooldownDeath;
+	uint32_t lastCooldownDeath;
     Player players[16];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
