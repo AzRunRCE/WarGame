@@ -2,11 +2,268 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <string.h>
+#include <stdlib.h>
 #include "include/ft_menu.h"
+
+void initMainMenu(void)
+{
+	_menu.selectionDone = false;
+	_subMenu.subMenuLoaded = false;
+	_menu.delayEvent = 0;
+	_menu.selection = SELECTION_PLAY;
+
+	_menu.background = IMG_LoadTexture(_engine.screenRenderer, "res/menu.png");
+	_menu.WarGameFont = TTF_OpenFont("res/PixelOperator.ttf", 80);
+	_menu.WarGameFontTitle = TTF_OpenFont("res/PixelOperator-Bold.ttf", 100);
+	_menu.WarGameFontOptions = TTF_OpenFont("res/PixelOperator.ttf", 40);
+
+	// TITLE
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFontTitle, "WarGame", _engine.colorWhite);
+	_menu.posTitle = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _menu.tempText->w / 2, (int32_t)_engine.HEIGHT / 50, (int32_t)_menu.tempText->w, (int32_t)_menu.tempText->h };
+	_menu.textureTitle = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+	
+	// PLAY BUTTON
+	// - WHITE
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Play", _engine.colorWhite);
+	_menu.posPlay = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _menu.tempText->w / 2, (int32_t)_engine.HEIGHT / 4, (int32_t)_menu.tempText->w, (int32_t)_menu.tempText->h };
+	_menu.texturePlay = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+	// - RED
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Play", _engine.colorRed);
+	_menu.texturePlayBlink = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+
+	// OPTIONS BUTTON
+	// - WHITE
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Options", _engine.colorWhite);
+	_menu.posOptions = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _menu.tempText->w / 2, (int32_t)_engine.HEIGHT / 4 + _engine.HEIGHT / 8, (int32_t)_menu.tempText->w, (int32_t)_menu.tempText->h };
+	_menu.textureOptions = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+	// - RED
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Options", _engine.colorRed);
+	_menu.textureOptionsBlink = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+
+	// QUIT BUTTON
+	// - WHITE
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Quit", _engine.colorWhite);
+	_menu.posQuit = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _menu.tempText->w / 2, (int32_t)_engine.HEIGHT / 4 + (_engine.HEIGHT / 8) * 2, (int32_t)_menu.tempText->w, (int32_t)_menu.tempText->h };
+	_menu.textureQuit = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+	// - RED
+	_menu.tempText = TTF_RenderText_Blended(_menu.WarGameFont, "Quit", _engine.colorRed);
+	_menu.textureQuitBlink = SDL_CreateTextureFromSurface(_engine.screenRenderer, _menu.tempText);
+	SDL_FreeSurface(_menu.tempText);
+
+}
+
+void initSubMenu(void)
+{
+	_subMenu.selection = SELECTION_GAME_OPTIONS;
+
+	// TITLES
+	strcpy(_subMenu.title[SELECTION_MAIN_OPTIONS].text, "Options");
+	strcpy(_subMenu.title[SELECTION_GAME_OPTIONS].text, "Game Options");
+	strcpy(_subMenu.title[SELECTION_SOUND_OPTIONS].text, "Sound Options");
+	strcpy(_subMenu.title[SELECTION_VIDEO_OPTIONS].text, "Video Options");
+
+	for (uint8_t i = 0; i < SUBMENU_TITLE_MAX; i++)
+	{
+		// TITLES
+		_subMenu.title[i].surface = TTF_RenderText_Blended(_menu.WarGameFontTitle, _subMenu.title[i].text, _engine.colorWhite);
+		_subMenu.title[i].rect = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _subMenu.title[i].surface->w / 2, (int32_t)_engine.HEIGHT / 50, (int32_t)_subMenu.title[i].surface->w, (int32_t)_subMenu.title[i].surface->h };
+		_subMenu.title[i].texture = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.title[i].surface);
+		SDL_FreeSurface(_subMenu.title[i].surface);
+		_subMenu.title[i].surface = NULL;
+
+		// BUTTONS
+		_subMenu.button[i].surfaceWhite = TTF_RenderText_Blended(_menu.WarGameFont, _subMenu.title[i].text, _engine.colorWhite);
+		_subMenu.button[i].surfaceRed = TTF_RenderText_Blended(_menu.WarGameFont, _subMenu.title[i].text, _engine.colorRed);
+		_subMenu.button[i].rect = (SDL_Rect) { (int32_t)_engine.WIDTH / 2 - _subMenu.button[i].surfaceWhite->w / 2, (int32_t)_engine.HEIGHT / 4 + (_engine.HEIGHT / 8)*(i - 1), (int32_t)_subMenu.button[i].surfaceWhite->w, (int32_t)_subMenu.button[i].surfaceWhite->h };
+		_subMenu.button[i].textureWhite = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.button[i].surfaceWhite);
+		_subMenu.button[i].textureRed = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.button[i].surfaceRed);
+		SDL_FreeSurface(_subMenu.button[i].surfaceWhite);
+		SDL_FreeSurface(_subMenu.button[i].surfaceRed);
+		_subMenu.button[i].surfaceWhite = NULL;
+		_subMenu.button[i].surfaceRed = NULL;
+	}
+
+	// BUTTONS OPTIONS
+	
+	// - GAME
+	strcpy(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].text, "Server Address :");
+	strncpy(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->server, strlen(_menu.mainConfiguration->server));
+	strcpy(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].text, "Pseudo :");
+	strncpy(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->nickname, strlen(_menu.mainConfiguration->nickname));
+	
+	// - SOUND
+	strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_ACTIVATION - SUBMENU_OPTIONS_STEP].text, "Sound activated (all sounds) :");
+	if (_menu.mainConfiguration->sound)
+		strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+	else
+		strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "No");
+	strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].text, "Sound volume :");
+	sprintf(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%d", _menu.mainConfiguration->soundLevel);
+	strcat(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%");
+
+	strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_ACTIVATION - SUBMENU_OPTIONS_STEP].text, "Music activated :");
+	if (_menu.mainConfiguration->music)
+		strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+	else
+		strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "No");
+	strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP].text, "Music volume :");
+	sprintf(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%d", _menu.mainConfiguration->musicLevel);
+	strcat(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%");
+
+	// - VIDEO
+	strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].text, "Screen resolution :");
+	char temp[10];
+	sprintf(temp, "%d", _menu.mainConfiguration->width);
+	strncpy(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+	strcpy(temp, "x");
+	strncat(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+	sprintf(temp, "%d", _menu.mainConfiguration->height);
+	strncat(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+	strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP].text, "Fullscreen :");
+	if (_engine.fullscreen)
+		strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+	else
+		strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP].textInput, "No");
+
+	uint8_t positionCount = 0;
+	for (uint8_t i = 0; i < SUBMENU_OPTIONS_MAX - 2; i++)
+	{
+
+		// BUTTONS
+
+		if (strlen(_subMenu.buttonOptions[i].text) > 1) {
+			_subMenu.buttonOptions[i].surfaceTextWhite = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].text, _engine.colorWhite);
+			_subMenu.buttonOptions[i].surfaceTextRed = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].text, _engine.colorRed);
+			_subMenu.buttonOptions[i].rectText = (SDL_Rect) { (int32_t)_engine.WIDTH * 0.05, (int32_t)_engine.HEIGHT*0.4 + (_engine.HEIGHT * 0.08)*(positionCount - 1), (int32_t)_subMenu.buttonOptions[i].surfaceTextWhite->w, (int32_t)_subMenu.buttonOptions[i].surfaceTextWhite->h };
+			_subMenu.buttonOptions[i].textureTextWhite = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextWhite);
+			_subMenu.buttonOptions[i].textureTextRed = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextRed);
+			SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextWhite);
+			SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextRed);
+			_subMenu.buttonOptions[i].surfaceTextWhite = NULL;
+			_subMenu.buttonOptions[i].surfaceTextRed = NULL;
+		}
+		else
+		{
+			_subMenu.buttonOptions[i].surfaceTextWhite = NULL;
+			_subMenu.buttonOptions[i].surfaceTextRed = NULL;
+		}
+
+
+		if (strlen(_subMenu.buttonOptions[i].textInput) > 1) {
+			_subMenu.buttonOptions[i].surfaceTextInput = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].textInput, _engine.colorWhite);
+			_subMenu.buttonOptions[i].rectTextInput = (SDL_Rect) { (int32_t)_engine.WIDTH * 0.01 + _subMenu.buttonOptions[i].rectText.x + _subMenu.buttonOptions[i].rectText.w, (int32_t)_engine.HEIGHT*0.4 + (_engine.HEIGHT * 0.08)*(positionCount - 1), (int32_t)_subMenu.buttonOptions[i].surfaceTextInput->w, (int32_t)_subMenu.buttonOptions[i].surfaceTextInput->h };
+			_subMenu.buttonOptions[i].textureTextInput = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextInput);
+			SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextInput);
+			_subMenu.buttonOptions[i].surfaceTextInput = NULL;
+		}
+		else
+			_subMenu.buttonOptions[i].textureTextInput = NULL;
+
+		switch (i)
+		{
+		case SELECTION_GAME_PSEUDO - SUBMENU_BUTTON_MAX:
+			positionCount = 0;
+			break;
+		case SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_BUTTON_MAX:
+			positionCount = 0;
+			break;
+		default:
+			positionCount++;
+			break;
+		}
+	}
+
+	strcpy(_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].text, "Press ESC to discard changes");
+	strcpy(_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].text, "Save");
+	
+	_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].text, _engine.colorWhite);
+	_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].rectText = (SDL_Rect) { (int32_t)_engine.WIDTH * 0.05, (int32_t)_engine.HEIGHT*0.9, (int32_t)_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite->w, (int32_t)_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite->h };
+	_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].textureTextWhite = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite);
+	SDL_FreeSurface(_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite);
+	_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextWhite = NULL;
+	_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].surfaceTextRed = NULL;
+
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].text, _engine.colorWhite);
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextRed = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].text, _engine.colorRed);
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].rectText = (SDL_Rect) { (int32_t)_engine.WIDTH * 0.85, (int32_t)_engine.HEIGHT*0.9, (int32_t)_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite->w, (int32_t)_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite->h };
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].textureTextWhite = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite);
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].textureTextRed = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextRed);
+	SDL_FreeSurface(_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite);
+	SDL_FreeSurface(_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextRed);
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextWhite = NULL;
+	_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].surfaceTextRed = NULL;
+
+	_subMenu.subMenuLoaded = true;
+}
+
+void reloadSubMenu(uint8_t subMenuSelection)
+{
+	uint8_t min;
+	uint8_t max;
+	switch (subMenuSelection)
+	{
+	case SELECTION_GAME_OPTIONS:
+		min = SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP;
+		max = SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP + 1;
+		strncpy(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->server, strlen(_menu.mainConfiguration->server));
+		strncpy(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->nickname, strlen(_menu.mainConfiguration->nickname));
+		break;
+	case SELECTION_SOUND_OPTIONS:
+		min = SELECTION_SOUND_SOUND_ACTIVATION - SUBMENU_OPTIONS_STEP;
+		max = SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP + 1;
+		if (_menu.mainConfiguration->sound)
+			strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+		else
+			strcpy(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "No");
+		if (_menu.mainConfiguration->music)
+			strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+		else
+			strcpy(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_ACTIVATION - SUBMENU_OPTIONS_STEP].textInput, "No");
+		sprintf(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%d", _menu.mainConfiguration->soundLevel);
+		strcat(_subMenu.buttonOptions[SELECTION_SOUND_SOUND_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%");
+		sprintf(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%d", _menu.mainConfiguration->musicLevel);
+		strcat(_subMenu.buttonOptions[SELECTION_SOUND_MUSIC_VOLUME - SUBMENU_OPTIONS_STEP].textInput, "%");
+		break;
+	case SELECTION_VIDEO_OPTIONS:
+		min = SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP;
+		max = SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP + 1;
+		memset(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, '\0', strlen(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput));
+		char temp[10];
+		sprintf(temp, "%d", _menu.mainConfiguration->width);
+		strncpy(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+		strcpy(temp, "x");
+		strncat(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+		sprintf(temp, "%d", _menu.mainConfiguration->height);
+		strncat(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
+		if (_engine.fullscreen)
+			strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP].textInput, "Yes");
+		else
+			strcpy(_subMenu.buttonOptions[SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP].textInput, "No");
+		break;
+	}
+
+	for (uint8_t i = min; i < max; i++)
+	{
+		SDL_DestroyTexture(_subMenu.buttonOptions[i].textureTextInput);
+		_subMenu.buttonOptions[i].surfaceTextInput = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].textInput, _engine.colorWhite);
+		_subMenu.buttonOptions[i].rectTextInput.w = _subMenu.buttonOptions[i].surfaceTextInput->w;
+		_subMenu.buttonOptions[i].rectTextInput.h = _subMenu.buttonOptions[i].surfaceTextInput->h;
+		_subMenu.buttonOptions[i].textureTextInput = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextInput);
+		SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextInput);
+		_subMenu.buttonOptions[i].surfaceTextInput = NULL;
+	}
+
+}
 
 void initMenuOptions(Menu *Menu, configuration *settings)
 {
-	Menu->textInputIpAddress[0] = '\0';
+	/*Menu->textInputIpAddress[0] = '\0';
 	Menu->textInputPseudo[0] = '\0';
 	Menu->textMusic[0] = '\0';
 	Menu->textSound[0] = '\0';
@@ -28,7 +285,7 @@ void initMenuOptions(Menu *Menu, configuration *settings)
 	Menu->textureLabelIpAddress = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelIpAddress);
 	Menu->textureLabelPseudo = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelPseudo);
 	Menu->textureLabelApply = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelApply);
-	Menu->textureLabelReturn = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelReturn);
+	Menu->textureLabelReturn = SDL_CreateTextureFromSurface(_engine.screenRenderer, Menu->labelReturn);*/
 }
 
 void endMenuOptions(Menu *Menu)
@@ -49,17 +306,58 @@ void endMenuOptions(Menu *Menu)
 	SDL_FreeSurface(Menu->selectionLeft);
 }
 
-void menu(configuration *settings, int errcode)
+void mainMenu(int errcode)
 /* TODO: handling errorcode, for example when server is not recheable or disconnected */
 {
-	Menu Menu;
+	initMainMenu();
+	while (!_menu.selectionDone)
+	{
+		SDL_RenderCopy(_engine.screenRenderer, _menu.background, NULL, NULL);
+		SDL_RenderCopy(_engine.screenRenderer, _menu.textureTitle, NULL, &_menu.posTitle);
+		SDL_RenderCopy(_engine.screenRenderer, _menu.texturePlay, NULL, &_menu.posPlay);
+		SDL_RenderCopy(_engine.screenRenderer, _menu.textureOptions, NULL, &_menu.posOptions);
+		SDL_RenderCopy(_engine.screenRenderer, _menu.textureQuit, NULL, &_menu.posQuit);
+		SDL_PollEvent(&_engine.event);
+		if (_engine.event.type == SDL_QUIT)
+			exit(EXIT_SUCCESS);
+		else if (_engine.event.type == SDL_KEYDOWN && ft_delay(&_menu.delayEvent, 150))
+		{
+			if (_engine.keystate[SDL_SCANCODE_UP] && _menu.selection > 0)
+				_menu.selection--;
+			else if (_engine.keystate[SDL_SCANCODE_DOWN] && _menu.selection < 2)
+				_menu.selection++;
+		}
+
+		switch (_menu.selection)
+		{
+		case SELECTION_PLAY:
+			if (_engine.keystate[SDL_SCANCODE_RETURN])
+				_menu.selectionDone = true;
+			SDL_RenderCopy(_engine.screenRenderer, _menu.texturePlayBlink, NULL, &_menu.posPlay);
+			break;
+		case SELECTION_OPTIONS:
+			if (_engine.keystate[SDL_SCANCODE_RETURN])
+				subMenu(SELECTION_MAIN_OPTIONS);
+			SDL_RenderCopy(_engine.screenRenderer, _menu.textureOptionsBlink, NULL, &_menu.posOptions);
+			break;
+		case SELECTION_QUIT:
+			if (_engine.keystate[SDL_SCANCODE_RETURN])
+				exit(EXIT_SUCCESS);
+			SDL_RenderCopy(_engine.screenRenderer, _menu.textureQuitBlink, NULL, &_menu.posQuit);
+			break;
+		}
+		//printf("selection: %d\n", _menu.selection);
+		SDL_RenderPresent(_engine.screenRenderer);
+	}
+
+
+	/*Menu Menu;
 	point pointLeft[3];
 	point pointRight[3];
 	Menu.menuSelection = 0;
 	Menu.menuOptionsSelection = 0;
 	Menu.countBlink = 0;
 	Menu.WarGameFont = TTF_OpenFont("res/boston.ttf", 40);
-	Menu.menuBackground = IMG_LoadTexture(_engine.screenRenderer, "res/menu.png");
 	Menu.menuOptionsBackground = IMG_LoadTexture(_engine.screenRenderer, "res/menu-options.png");
 	Menu.selectionRight = IMG_LoadTexture(_engine.screenRenderer, "res/selection-right.png");
 	Menu.selectionLeft = IMG_LoadTexture(_engine.screenRenderer, "res/selection-left.png");
@@ -99,7 +397,7 @@ void menu(configuration *settings, int errcode)
 				exit(0);
 				break;
 			case SDL_TEXTINPUT:
-				/* Add new text onto the end of our text */
+				// Add new text onto the end of our text
 				if (Menu.menuOptionsSelection == 0 && strlen(Menu.textInputIpAddress) < MAX_LENGTH && Menu.selectionOptionsDone && Menu.confirmOptionsForm == 0)
 					strcat(Menu.textInputIpAddress, event.text.text);
 				else if (Menu.menuOptionsSelection == 1 && strlen(Menu.textInputPseudo) < MAX_LENGTH && Menu.selectionOptionsDone && Menu.confirmOptionsForm == 0)
@@ -264,8 +562,161 @@ void menu(configuration *settings, int errcode)
 	}
 	SDL_FreeSurface(Menu.menuBackground);
 	SDL_FreeSurface(Menu.selectionLeft);
-	SDL_FreeSurface(Menu.selectionRight);
+	SDL_FreeSurface(Menu.selectionRight);*/
 }
+
+void subMenu(uint8_t subMenuSelection)
+{
+	_subMenu.selectionDone = false;
+	if (!_subMenu.subMenuLoaded)
+		initSubMenu();
+	switch (subMenuSelection)
+	{
+	case SELECTION_MAIN_OPTIONS:
+		_subMenu.selection = SELECTION_GAME_OPTIONS;
+		_subMenu.selectionMin = SELECTION_GAME_OPTIONS;
+		_subMenu.selectionMax = SELECTION_VIDEO_OPTIONS;
+		break;
+	case SELECTION_GAME_OPTIONS:
+		_subMenu.selection = SELECTION_GAME_SERVER_ADDRESS;
+		_subMenu.selectionMin = SELECTION_GAME_SERVER_ADDRESS;
+		_subMenu.selectionMax = SELECTION_GAME_PSEUDO;
+		break;
+	case SELECTION_SOUND_OPTIONS:
+		_subMenu.selection = SELECTION_SOUND_SOUND_ACTIVATION;
+		_subMenu.selectionMin = SELECTION_SOUND_SOUND_ACTIVATION;
+		_subMenu.selectionMax = SELECTION_SOUND_MUSIC_VOLUME;
+		break;
+	case SELECTION_VIDEO_OPTIONS:
+		_subMenu.selection = SELECTION_VIDEO_RESOLUTION;
+		_subMenu.selectionMin = SELECTION_VIDEO_RESOLUTION;
+		_subMenu.selectionMax = SELECTION_VIDEO_FULLSCREEN;
+		break;
+	}
+	while (!_subMenu.selectionDone) {
+		SDL_PollEvent(&_engine.event);
+		SDL_RenderCopy(_engine.screenRenderer, _menu.background, NULL, NULL);
+		SDL_RenderCopy(_engine.screenRenderer, _subMenu.title[subMenuSelection].texture, NULL, &_subMenu.title[subMenuSelection].rect);
+		SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].textureTextWhite, NULL, &_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].rectText);
+		if (_engine.event.type == SDL_QUIT)
+			exit(EXIT_SUCCESS);
+		else if (_engine.event.type == SDL_KEYDOWN && ft_delay(&_menu.delayEvent, 150))
+		{
+			if (_engine.keystate[SDL_SCANCODE_UP] && _subMenu.selection > _subMenu.selectionMin && _subMenu.selection <= _subMenu.selectionMax)
+				_subMenu.selection--;
+			else if (_engine.keystate[SDL_SCANCODE_DOWN] && _subMenu.selection < _subMenu.selectionMax)
+				_subMenu.selection++;
+			else if (_engine.keystate[SDL_SCANCODE_UP] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == SELECTION_SAVE)
+				_subMenu.selection = _subMenu.selectionMax;
+			else if (_engine.keystate[SDL_SCANCODE_DOWN] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == _subMenu.selectionMax)
+				_subMenu.selection = SELECTION_SAVE;
+			else if (subMenuSelection != SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
+			{
+				subMenu(SELECTION_MAIN_OPTIONS);
+				_menu.mainConfiguration = ft_loadConf();
+				reloadSubMenu(subMenuSelection);
+			}
+			else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
+				_subMenu.selectionDone = true;
+			else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_RETURN])
+				subMenu(_subMenu.selection);
+			else if (subMenuSelection != SELECTION_MAIN_OPTIONS && (_engine.keystate[SDL_SCANCODE_RETURN] || _engine.keystate[SDL_SCANCODE_LEFT] || _engine.keystate[SDL_SCANCODE_RIGHT]))
+			{
+				switch (_subMenu.selection)
+				{
+				case SELECTION_SOUND_SOUND_VOLUME:
+					if (_engine.keystate[SDL_SCANCODE_LEFT])
+					{
+						if (_menu.mainConfiguration->soundLevel > 10)
+							_menu.mainConfiguration->soundLevel -= 10;
+						else
+							_menu.mainConfiguration->soundLevel = 100;
+					}
+					else
+					{
+						if (_menu.mainConfiguration->soundLevel < 100)
+							_menu.mainConfiguration->soundLevel += 10;
+						else
+							_menu.mainConfiguration->soundLevel = 10;
+					}
+					break;
+				case SELECTION_SOUND_MUSIC_VOLUME:
+					if (_engine.keystate[SDL_SCANCODE_LEFT])
+					{
+						if (_menu.mainConfiguration->musicLevel > 10)
+							_menu.mainConfiguration->musicLevel -= 10;
+						else
+							_menu.mainConfiguration->musicLevel = 100;
+					}
+					else
+					{
+						if (_menu.mainConfiguration->musicLevel < 100)
+							_menu.mainConfiguration->musicLevel += 10;
+						else
+							_menu.mainConfiguration->musicLevel = 10;
+					}
+					break;
+				case SELECTION_SOUND_MUSIC_ACTIVATION:
+						if (_menu.mainConfiguration->music)
+							_menu.mainConfiguration->music = false;
+						else
+							_menu.mainConfiguration->music = true;
+						break;
+				case SELECTION_SOUND_SOUND_ACTIVATION:
+					if (_menu.mainConfiguration->sound)
+						_menu.mainConfiguration->sound = false;
+					else
+						_menu.mainConfiguration->sound = true;
+					break;
+				case SELECTION_VIDEO_RESOLUTION:
+					if (_engine.keystate[SDL_SCANCODE_LEFT])
+					{
+						if (_menu.mainConfiguration->width > 800)
+							_menu.mainConfiguration->width -= 192;
+						else
+							_menu.mainConfiguration->width = 1184;
+					}
+					else
+					{
+						if (_menu.mainConfiguration->width < 1184)
+							_menu.mainConfiguration->width += 192;
+						else
+							_menu.mainConfiguration->width = 800;
+					}
+					_menu.mainConfiguration->height = _menu.mainConfiguration->width * (3.0 / 4.0);
+					break;
+				case SELECTION_SAVE:
+					if (_engine.keystate[SDL_SCANCODE_RETURN])
+						ft_saveConf(_menu.mainConfiguration);
+					break;
+				}
+				reloadSubMenu(subMenuSelection);
+			}
+		}
+		switch (subMenuSelection)
+		{
+		case SELECTION_MAIN_OPTIONS:
+			for (uint8_t i = SELECTION_GAME_OPTIONS; i < SUBMENU_OPTIONS_STEP; i++)
+				SDL_RenderCopy(_engine.screenRenderer, _subMenu.button[i].textureWhite, NULL, &_subMenu.button[i].rect);
+			SDL_RenderCopy(_engine.screenRenderer, _subMenu.button[_subMenu.selection].textureRed, NULL, &_subMenu.button[_subMenu.selection].rect);
+			break;
+		case SELECTION_GAME_OPTIONS:
+		case SELECTION_SOUND_OPTIONS:
+		case SELECTION_VIDEO_OPTIONS:
+			for (uint8_t i = _subMenu.selectionMin - SUBMENU_OPTIONS_STEP; i < _subMenu.selectionMax - SUBMENU_OPTIONS_STEP + 1; i++)
+			{
+				SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[i].textureTextWhite, NULL, &_subMenu.buttonOptions[i].rectText);
+				SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[i].textureTextInput, NULL, &_subMenu.buttonOptions[i].rectTextInput);
+			}
+			SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].textureTextWhite, NULL, &_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].rectText);
+			SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].textureTextRed, NULL, &_subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].rectText);
+			break;
+		}
+		printf("SubMenu selection: %d\n", _subMenu.selection);
+		SDL_RenderPresent(_engine.screenRenderer);
+	}
+}
+
 void init_menuDeath(void) {
 	_menuDeath.font = TTF_OpenFont("res/verdana.ttf", 40);
 	_menuDeath.black = (SDL_Color) { 255, 255, 255 };

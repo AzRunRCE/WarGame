@@ -12,10 +12,6 @@
 #define BLOCK_SIZE 32
 
 Engine _engine;
-static SDL_Event event;
-
-const Uint8 *keystate;
-configuration *mainConfiguration;
 bool GetKeyPressEvent(void);
 void weapon_AutoReload(void);
 void ft_checkPlayerAlive(void);
@@ -43,13 +39,13 @@ bool ft_getNextExplodeSprite(Explode *explode)
 
 bool ft_checkEvent()
 {
-	SDL_PollEvent(&event);
-	if (event.type == SDL_QUIT)
+	SDL_PollEvent(&_engine.event);
+	if (_engine.event.type == SDL_QUIT)
 		return false;
 	SDL_GetMouseState(&_engine.mousePos.x, &_engine.mousePos.y);
 	GetKeyPressEvent();
 	if (_engine.mainPlayer.playerBase.state != DEAD) {
-		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+		if (_engine.event.type == SDL_MOUSEBUTTONDOWN && _engine.event.button.button == SDL_BUTTON_LEFT)
 			FireBullet(true);
 		else
 			FireBullet(false);
@@ -60,19 +56,19 @@ bool ft_checkEvent()
 int main(int argc, char *argv[])
 {	
 	headBullets = NULL;
-	keystate = SDL_GetKeyboardState(NULL);
-	mainConfiguration = ft_loadConf();
+	_engine.keystate = SDL_GetKeyboardState(NULL);
+	_menu.mainConfiguration = ft_loadConf();
 	ft_SDL_init();
 	Engine_init();
 	ft_nearWall_Init();
 	ft_chat_Init();
-	menu(mainConfiguration, 0);
-	if (!network_CreateConnection(mainConfiguration))
+	mainMenu(_menu.mainConfiguration, 0);
+	if (!network_CreateConnection(_menu.mainConfiguration))
 		perror("Create_connection()");
 	if (NwkThreadRet < 0)
-		menu(mainConfiguration, NwkThreadRet);
-	if (mainConfiguration->sound)
-		sound_Init(mainConfiguration->music);
+		mainMenu(NwkThreadRet);
+	if (_menu.mainConfiguration->sound)
+		sound_Init(_menu.mainConfiguration->music);
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
 	_engine.AnimKillEx.Step = 0;
@@ -84,22 +80,20 @@ int main(int argc, char *argv[])
 	while (ft_checkEvent())
 	{
 #ifndef _DEBUG
-		if (!checkServerisAlive(mainConfiguration))
+		if (!checkServerisAlive(_menu.mainConfiguration))
 				exit(EXIT_FAILURE);
 #endif
+		printf("Sizeof Engine: %d\n", sizeof(_engine));
+		printf("Sizeof Player: %d\n", sizeof(_engine.players));
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		ft_nearWall_Check();
 		if (ft_delay(&lastUpdate, LAST_UPDATE)) {
-			if (!keystate[SDL_SCANCODE_UP] && !keystate[SDL_SCANCODE_DOWN] && !keystate[SDL_SCANCODE_LEFT] && !keystate[SDL_SCANCODE_RIGHT] && !keystate[SDL_SCANCODE_W] && !keystate[SDL_SCANCODE_S] && !keystate[SDL_SCANCODE_A] && !keystate[SDL_SCANCODE_D])
+			if (!_engine.keystate[SDL_SCANCODE_UP] && !_engine.keystate[SDL_SCANCODE_DOWN] && !_engine.keystate[SDL_SCANCODE_LEFT] && !_engine.keystate[SDL_SCANCODE_RIGHT] && !_engine.keystate[SDL_SCANCODE_W] && !_engine.keystate[SDL_SCANCODE_S] && !_engine.keystate[SDL_SCANCODE_A] && !_engine.keystate[SDL_SCANCODE_D])
 				checkPlayerPosition();
 			ft_ViewGetDegrees(_engine.mousePos.y - _engine.mainPlayer.relativePos.y, _engine.mousePos.x - _engine.mainPlayer.relativePos.x); // Fonction de calcul de degrées de la vue "torche". Les deux paramètres sont des calculs pour mettre l'image de la torche au milieu du joueur.
 			ft_getHealthSprite(&_engine.mainPlayer);
 			ft_getAmmoSprite(&_engine.mainPlayer);
-			
-			/*uint32_t i = 0;
-			FMOD_Channel_GetPosition(soundChannelMusic, &i, FMOD_TIMEUNIT_MS);
-			printf("Music position: %d\n", i)*/
 			sound_Grunt_Poll();
 		}
 		ft_SDL_DrawGame();
@@ -138,7 +132,7 @@ bool GetKeyPressEvent(void)
 	if (_engine.mainPlayer.playerBase.state != DEAD)
 	{
 		_engine.mainPlayer.playerBase.state = IDLE;
-		if ((keystate[SDL_SCANCODE_LEFT] || keystate[SDL_SCANCODE_A])
+		if ((_engine.keystate[SDL_SCANCODE_LEFT] || _engine.keystate[SDL_SCANCODE_A])
 			&& !checkWallColision(headItemList2, LEFT)
 			)
 		{
@@ -149,7 +143,7 @@ bool GetKeyPressEvent(void)
 			_engine.mainPlayer.playerBase.state = WALK;
 
 		}
-		else if ((keystate[SDL_SCANCODE_RIGHT] || keystate[SDL_SCANCODE_D])
+		else if ((_engine.keystate[SDL_SCANCODE_RIGHT] || _engine.keystate[SDL_SCANCODE_D])
 			&& !checkWallColision(headItemList2, RIGHT)
 			)
 		{
@@ -159,7 +153,7 @@ bool GetKeyPressEvent(void)
 			_engine.mainPlayer.playerBase.orientation = RIGHT;
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		if ((keystate[SDL_SCANCODE_UP] || keystate[SDL_SCANCODE_W])
+		if ((_engine.keystate[SDL_SCANCODE_UP] || _engine.keystate[SDL_SCANCODE_W])
 			&& !checkWallColision(headItemList2, UP)
 			)
 		{
@@ -188,7 +182,7 @@ bool GetKeyPressEvent(void)
 
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
-		else if ((keystate[SDL_SCANCODE_DOWN] || keystate[SDL_SCANCODE_S])
+		else if ((_engine.keystate[SDL_SCANCODE_DOWN] || _engine.keystate[SDL_SCANCODE_S])
 			&& !checkWallColision(headItemList2, DOWN)
 			)
 		{
@@ -216,10 +210,10 @@ bool GetKeyPressEvent(void)
 			_engine.mainPlayer.playerBase.state = WALK;
 		}
 #ifdef _DEBUG
-		else if (_engine.mainPlayer.playerBase.ammo < 30 && keystate[SDL_SCANCODE_R])
+		else if (_engine.mainPlayer.playerBase.ammo < 30 && _engine.keystate[SDL_SCANCODE_R])
 			_engine.mainPlayer.playerBase.ammo = 30;
 #endif
-		else if (keystate[SDL_SCANCODE_LALT] && keystate[SDL_SCANCODE_RETURN] && ft_delay(&_engine.cooldownFullscreen, 500))
+		else if (_engine.keystate[SDL_SCANCODE_LALT] && _engine.keystate[SDL_SCANCODE_RETURN] && ft_delay(&_engine.cooldownFullscreen, 500))
 		{
 			if (!_engine.fullscreen)
 				_engine.fullscreen = true;
@@ -227,14 +221,14 @@ bool GetKeyPressEvent(void)
 				_engine.fullscreen = false;
 			SDL_SetWindowFullscreen(_engine.window, _engine.fullscreen);
 		}
-		else if (keystate[SDL_SCANCODE_H])
+		else if (_engine.keystate[SDL_SCANCODE_H])
 			ft_chat_History_Show();
-		else if (keystate[SDL_SCANCODE_J])
+		else if (_engine.keystate[SDL_SCANCODE_J])
 			ft_chat_History_Hide();
 	}
 	else if (_engine.mainPlayer.playerBase.state = DEAD)
 	{
-		if (!_engine.cooldownDeath && keystate[SDL_SCANCODE_SPACE])
+		if (!_engine.cooldownDeath && _engine.keystate[SDL_SCANCODE_SPACE])
 			/* When spawn cooldown is done and space pressed */
 		{
 			_engine.mainPlayer.playerBase.ammo = 30;
@@ -306,7 +300,7 @@ uint32_t lastReload;
 
 void weapon_AutoReload(void)
 {
-	if ((event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
+	if ((_engine.event.type != SDL_MOUSEBUTTONDOWN || _engine.event.button.button != SDL_BUTTON_LEFT)
 		&& _engine.mainPlayer.playerBase.ammo < 30
 		&& ft_delay(&lastReload, (uint32_t)fireDelay * 2)
 		)

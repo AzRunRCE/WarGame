@@ -280,7 +280,7 @@ int checkServerisAlive(configuration *settings)
 	while (lastUpdateFromServer != 0 && actualTime - lastUpdateFromServer > 2) {
 		printf("ERROR: No answer from server for 2 sec.\n");
 		pthread_kill(NwkThread, 1);
-		menu(settings, NwkThreadRet);
+		mainMenu(settings, NwkThreadRet);
 		lastUpdateFromServer = time(NULL);
 		if (!network_CreateConnection(settings)) {
 			perror("create_connection()");

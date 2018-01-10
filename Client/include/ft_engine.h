@@ -11,11 +11,17 @@
 #error not defined for this platform
 #endif
 
+#define MAX_PLAYERS 4
+#define MAX_BULLETS 250
+
 #include "ft_map.h"
 #include "ft_player.h"
 #include "unionproto.pb.h"
 #include "ft_explode.h"
 typedef struct Engine {
+
+	SDL_Event event;
+	const uint8_t *keystate;
 	pthread_cond_t condition; 
 	pthread_mutex_t mutex; 
     int WIDTH;
@@ -25,7 +31,7 @@ typedef struct Engine {
 	uint16_t playersCount;
 	uint32_t cooldownDeath;
 	uint32_t lastCooldownDeath;
-    Player players[16];
+    Player players[MAX_PLAYERS];
     Player mainPlayer;
     SDL_Renderer* screenRenderer;
     SDL_Window* window;
@@ -34,10 +40,11 @@ typedef struct Engine {
     TTF_Font *font;
 
     SDL_Color colorWhite;
+	SDL_Color colorRed;
     SDL_Color colorWarGame;
 
 	SDL_Rect camera;
-	SDL_Rect bullets[250];
+	SDL_Rect bullets[MAX_BULLETS];
 	SDL_Rect viewRect;
 	SDL_Rect healthRect;
 	Explode AnimKillEx;

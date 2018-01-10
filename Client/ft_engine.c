@@ -32,6 +32,7 @@ void Engine_init()
 
 	_engine.font = TTF_OpenFont("res/verdana.ttf", 20);
 	_engine.colorWhite = (SDL_Color) { 255, 255, 255 };
+	_engine.colorRed = (SDL_Color) { 255, 0, 0 };
 	_engine.colorWarGame = (SDL_Color) { 52, 22, 20 };
 	
 	_engine.mousePos.w = 55;

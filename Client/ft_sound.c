@@ -31,8 +31,7 @@ void sound_Init(bool musicEnable)
 void sound_Load(char file[MAX_FILENAME], FMOD_SOUND **sound)
 {
 	if (FMOD_System_CreateSound(soundSystem, file, FMOD_CREATESAMPLE, 0, sound))
-		exit(EXIT_FAILURE);
-	
+		exit(EXIT_FAILURE);	
 }
 
 void sound_Grunt_Poll(void)

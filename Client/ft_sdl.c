@@ -66,7 +66,7 @@ int ft_SDL_DrawPlayers(void)
 				if (ft_delay(&_engine.players[i].lastAnim, 100))
 				{
 					_engine.players[i].sprite.x = 56 * (_engine.players[i].deathAnimationStep % 5) + (_engine.players[i].deathAnimationStep % 5 + 1);
-					_engine.players[i].sprite.y = 41 * (_engine.players[i].deathAnimationStep / 5) + (_engine.players[i].deathAnimationStep / 5 + 1);	
+					_engine.players[i].sprite.y = 41 * (_engine.players[i].deathAnimationStep / 5) + (_engine.players[i].deathAnimationStep / 5 + 1);
 					_engine.players[i].deathAnimationStep += 1;
 				}
 				_engine.players[i].sprite.h = 41;
@@ -192,7 +192,7 @@ void ft_SDL_checkPlayerHit(void)
 		_engine.mainPlayer.playerBase.state = HIT;
 		
 		printf("grunt: %d", grunt);
-		sound_Play_Grunt(&soundChannelGrunt, grunt);
+		//sound_Play_Grunt(&soundChannelGrunt, grunt);
 		if (grunt >= 5)
 			grunt = 0;
 		else
