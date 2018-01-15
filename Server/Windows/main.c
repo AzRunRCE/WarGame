@@ -127,7 +127,7 @@ void incrementBullet(BulletElm* headBullets)
 		BulletElm* next = bullet->next;
 		if (checkCollisionWall(headItemList, bullet))
 			headBulletList = remove_any(headBulletList, bullet);
-		else if (checkCollisionPlayer(bullet, playerCount))
+		else if (checkCollisionPlayer(bullet, *playerCount))
 			headBulletList = remove_any(headBulletList, bullet);
 		if (bullet != NULL)
 		{
@@ -180,7 +180,7 @@ static bool listBullets_callback(pb_ostream_t *stream, const pb_field_t *field, 
 
 static bool listPlayers_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
 {
-	for (int i = 0; i < playerCount; i++)
+	for (int i = 0; i < *playerCount; i++)
 	{
 
 		/* This encodes the header for the field, based on the constant info
@@ -242,6 +242,7 @@ void app(void)
 	bool status = true;
 	SOCKET sock;
 	sock = init_connection();
+	playerCount = calloc(1, sizeof(uint16_t));
 	/* an array for all clients */
 	ConnectionCallbackMessage *callBackMessage = calloc(1, sizeof(ConnectionCallbackMessage));
 	char motd[] = "Bienvenue sur mon serveur";
@@ -279,27 +280,27 @@ void app(void)
 		uint8_t count = read_client(sock, &csin, buffer);
 		pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 		const pb_field_t *type = decode_unionmessage_type(&stream);
-		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, playerCount))
+		if (type == QuitMessage_fields && check_if_client_exists(clients, &csin, *playerCount))
 		{
 			QuitMessage qMessage = QuitMessage_init_zero;
 			if (!decode_unionmessage_contents(&stream, QuitMessage_fields, &qMessage))
 				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
-			remove_client(&clients, qMessage.id, &playerCount);
+			remove_client(&clients, qMessage.id, playerCount);
 			printf("%s has been disconnected. Reason: /quit\n", Players[qMessage.id].name);
 		}
-		if (type == ConnectionMessage_fields && !check_if_client_exists(clients, &csin, playerCount))
+		if (type == ConnectionMessage_fields && !check_if_client_exists(clients, &csin, *playerCount))
 		{
 			ConnectionMessage connectionMessage = ConnectionMessage_init_zero;
-			if (playerCount != MAX_CLIENTS && decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage))
+			if (*playerCount != MAX_CLIENTS && decode_unionmessage_contents(&stream, ConnectionMessage_fields, &connectionMessage))
 			{
 				Client c = { csin };
-				c.id = playerCount;
-				clients[playerCount] = c;
-				strncpy(Players[playerCount].name, connectionMessage.name, strlen(connectionMessage.name));
-				Players[playerCount].playerBase.health = 100;
-				Players[playerCount].playerBase.id = playerCount;
-				clients[playerCount].lastUpdate = time(NULL);
-				callBackMessage->clientId = playerCount;
+				c.id = *playerCount;
+				clients[*playerCount] = c;
+				strncpy(Players[*playerCount].name, connectionMessage.name, strlen(connectionMessage.name));
+				Players[*playerCount].playerBase.health = 100;
+				Players[*playerCount].playerBase.id = *playerCount;
+				clients[*playerCount].lastUpdate = time(NULL);
+				callBackMessage->clientId = *playerCount;
 
 				uint8_t callback_buffer[MAX_BUFFER];
 				pb_ostream_t output = pb_ostream_from_buffer(callback_buffer, sizeof(callback_buffer));
@@ -307,7 +308,7 @@ void app(void)
 					fprintf(stderr, "Encoding failed: %s\n", PB_GET_ERROR(&output));
 				write_client(sock, &csin, callback_buffer, output.bytes_written);
 				printf("%s connected\n", connectionMessage.name);
-				playerCount++;
+				*playerCount = *playerCount + 1;
 
 			}
 			else
@@ -353,7 +354,7 @@ void app(void)
 			PlayerBase pMessage = PlayerBase_init_zero;
 			if(!decode_unionmessage_contents(&stream, PlayerBase_fields, &pMessage))
 				fprintf(stderr, "Decoding failed: %s\n", PB_GET_ERROR(&stream));
-			Client *client = get_client(clients, &csin, playerCount);
+			Client *client = get_client(clients, &csin, *playerCount);
 			if (client == NULL) continue;
 			clients[client->id].lastUpdate = time(NULL);
 			if (pMessage.pos.x || pMessage.pos.y) {
@@ -366,7 +367,7 @@ void app(void)
 				GameDataMessage gameDataMessage = GameDataMessage_init_zero;
 				uint8_t currentGameBuffer[MAX_BUFFER];
 				gameDataMessage.gameMode = 1;
-				gameDataMessage.playersCount = playerCount;
+				gameDataMessage.playersCount = *playerCount;
 				gameDataMessage.players.funcs.encode = &listPlayers_callback;
 				gameDataMessage.bullets.funcs.encode = &listBullets_callback;
 				pb_ostream_t output = pb_ostream_from_buffer(currentGameBuffer, sizeof(currentGameBuffer));

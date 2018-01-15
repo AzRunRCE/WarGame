@@ -10,9 +10,11 @@ FMOD_SOUND *sound_Fire;
 FMOD_SOUND *sound_Grunt;
 
 
-void sound_Init(bool musicEnable)
+void sound_Init(bool soundEnable, bool musicEnable)
 {
 	startPosition_time = endPosition_time = -1;
+	if (!soundEnable)
+		return;
 	if (FMOD_System_Create(&soundSystem))
 		exit(EXIT_FAILURE);
 	if (FMOD_System_Init(soundSystem, 3, FMOD_INIT_NORMAL, NULL))
@@ -41,8 +43,8 @@ void sound_Grunt_Poll(void)
 		uint64_t current = 0;
 		FMOD_RESULT result = 0;
 		result = FMOD_Channel_GetPosition(soundChannelGrunt, &current, FMOD_TIMEUNIT_MS);
-		/*if (result) FIXME!!
-			exit(result); FIXME!!*/
+		if (result)
+			exit(result);
 		if (current > endPosition_time)
 		{
 			if (FMOD_Sound_Release(sound_Grunt))

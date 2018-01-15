@@ -7,7 +7,7 @@
 #include "include/main.h"
 
 #define MAX_LENGTH 32
-#define FIRE_DELAY 200
+#define FIRE_DELAY 250
 #define LAST_UPDATE 12
 #define BLOCK_SIZE 32
 
@@ -67,8 +67,7 @@ int main(int argc, char *argv[])
 		perror("Create_connection()");
 	if (NwkThreadRet < 0)
 		mainMenu(NwkThreadRet);
-	if (_menu.mainConfiguration->sound)
-		sound_Init(_menu.mainConfiguration->music);
+	sound_Init(_menu.mainConfiguration->sound, _menu.mainConfiguration->music);
 	_engine.AnimKillEx.Pos.h = 56;
 	_engine.AnimKillEx.Pos.w = 56;
 	_engine.AnimKillEx.Step = 0;
@@ -249,18 +248,15 @@ bool GetKeyPressEvent(void)
 void FireBullet(bool MouseButtonLeft)
 {
 	if (_engine.mainPlayer.playerBase.ammo > 10 && _engine.mainPlayer.playerBase.ammo < 20)
-	{
-		fireDelay = FIRE_DELAY + 75 - _engine.mainPlayer.playerBase.ammo * 3;
-	}
+		fireDelay = FIRE_DELAY + 100 - _engine.mainPlayer.playerBase.ammo * 3;
 	else if (_engine.mainPlayer.playerBase.ammo > 3 && _engine.mainPlayer.playerBase.ammo <= 10)
-	{
-		fireDelay = FIRE_DELAY + 200 - _engine.mainPlayer.playerBase.ammo * 3;
-	}
+		fireDelay = FIRE_DELAY + 300 - _engine.mainPlayer.playerBase.ammo * 3;
 	else if (fireDelay != FIRE_DELAY && _engine.mainPlayer.playerBase.ammo >= 20)
 		fireDelay = FIRE_DELAY;
 
-	if (_engine.mainPlayer.playerBase.ammo > 1 && MouseButtonLeft && ft_delay(&lastFire, fireDelay)) {
-		_engine.mainPlayer.playerBase.ammo -= 2;
+	if (_engine.mainPlayer.playerBase.ammo - 3 > 0 && MouseButtonLeft && ft_delay(&lastFire, fireDelay))
+	{
+		_engine.mainPlayer.playerBase.ammo -= 4;
 		sound_Play_Fire(&soundChannelMainPlayer);
 
 		_engine.mainPlayer.playerBase.state = FIRE;

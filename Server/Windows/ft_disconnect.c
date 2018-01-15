@@ -18,17 +18,14 @@ void *DisconnectThreading(void)
 	while (true)
 	{
 		SLEEP100MS;
-		//printf("playerCount: %d\n", playerCount);
-		if (playerCount > 0)
+		if (*playerCount > 0)
 		{
-			for (int i = 0; i < playerCount; i++)
+			for (uint16_t i = 0; i < *playerCount; i++)
 			{
 				time_t actualTime = time(NULL);
-				/*printf("actual time: %d\n", actualTime);
-				printf("Client %d last update: %d\n",i, clients[i].lastUpdate);*/
 				if (actualTime - clients[i].lastUpdate > 2)
 				{
-					remove_client(&clients, i, &playerCount);
+					remove_client(&clients, i, playerCount);
 					printf("%s has been disconnected. Reason: timeout\n", Players[i].name);
 				}
 			}

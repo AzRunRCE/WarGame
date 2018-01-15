@@ -730,7 +730,9 @@ void subMenu(uint8_t subMenuSelection)
 				case SELECTION_GAME_SERVER_ADDRESS:
 					if (strlen(_menu.mainConfiguration->server) < MAX_LENGTH)
 						strcat(_menu.mainConfiguration->server, _engine.event.text.text);
-					printf("server: %s\n", _menu.mainConfiguration->server);
+#ifdef _DEBUG
+					printf("[DEBUG] server: %s\n", _menu.mainConfiguration->server);
+#endif
 					break;
 				}
 				reloadSubMenu(subMenuSelection);
@@ -756,8 +758,10 @@ void subMenu(uint8_t subMenuSelection)
 			SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].textureTextRed, NULL, &_subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].rectText);
 			break;
 		}
-		printf("SubMenu selection: %d\n", _subMenu.selection);
-		printf("TextInput: %d\n", _subMenu.textInput);
+#ifdef _DEBUG
+		printf("[DEBUG] SubMenu selection: %d\n", _subMenu.selection);
+		printf("[DEBUG] TextInput: %d\n", _subMenu.textInput);
+#endif
 		SDL_RenderPresent(_engine.screenRenderer);
 	}
 }
@@ -773,7 +777,6 @@ void init_menuDeath(void) {
 
 void menuDeath(void)
 {
-
 	SDL_RenderCopy(_engine.screenRenderer, _engine.gameoverBackground, NULL, NULL);
 	sprintf(_menuDeath.textCoolDown, "%d", _engine.cooldownDeath);
 	strcat(_menuDeath.textRespawn, _menuDeath.textCoolDown);
@@ -795,5 +798,4 @@ void menuDeath(void)
 	_menuDeath.textRespawn[strlen(_menuDeath.textRespawn) - strlen(_menuDeath.textCoolDown)] = '\0';
 	SDL_FreeSurface(_menuDeath.textSurface);
 	SDL_DestroyTexture(_menuDeath.textTexture);
-
 }

@@ -71,7 +71,7 @@ Item* ft_LoadMap(char *path, Map *map)
 			item->rect->x = j * 32;
 			item->rect->y = i * 32;
 			bool findWall = false;
-			while ((int)obtenirPixel(mapBMP, j, i) == BLACK  && i < map->width)
+			while ((int)obtenirPixel(mapBMP, j, i) == BLACK && i < map->width)
 			{
 				findWall = true;
 				item->rect->h += 32;
@@ -83,6 +83,8 @@ Item* ft_LoadMap(char *path, Map *map)
 		j++;
 		i = 0;
 	}
-	printf("%d items\n", countItemWall(headItemList));
+#ifdef _DEBUG
+	printf("[DEBUG] %d items\n", countItemWall(headItemList));
+#endif
 	return headItemList;
 }

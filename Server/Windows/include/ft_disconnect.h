@@ -18,6 +18,6 @@
 pthread_t DisconnectThread;
 int threadStartDisconnect(void);
 void *DisconnectThreading(void);
-static uint8_t playerCount;
+uint16_t *playerCount;
 
 #endif /* FT_DISCONNECT_H */

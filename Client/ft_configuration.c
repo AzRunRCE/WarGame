@@ -43,7 +43,9 @@ configuration *ft_loadConf()
 		printf("Can't load '%s'\n", path);
 		settings = NULL;
 	}
-	printf("Version: %s\nNickname: %s\nServer: %s\nSound: %d\nMusic: %d\nSoundLevel: %d\nMusicLevel: %d\nResolution w: %d\nResolution h: %d\n", settings->version, settings->nickname, settings->server, settings->sound, settings->music, settings->soundLevel, settings->musicLevel, settings->width, settings->height);
+#ifdef _DEBUG
+	printf("[DEBUG] Version: %s\nNickname: %s\nServer: %s\nSound: %d\nMusic: %d\nSoundLevel: %d\nMusicLevel: %d\nResolution w: %d\nResolution h: %d\n", settings->version, settings->nickname, settings->server, settings->sound, settings->music, settings->soundLevel, settings->musicLevel, settings->width, settings->height);
+#endif
 
 	return settings;
 }
@@ -59,6 +61,8 @@ bool ft_saveConf(configuration *settings)
 	fp = fopen(path, "w+");
 	fprintf(fp, "[game]\nversion=%s\nserver=%s\n[player]\nnickname=%s\n[sound]\nmusic=%d\nsound=%d\nsoundLevel=%d\nmusicLevel=%d\n[video]\nresolution=%d\n", settings->version, settings->server, settings->nickname, settings->music, settings->sound, settings->soundLevel, settings->musicLevel, settings->width);
 	fclose(fp);
-	printf("Settings saved in '%s'\n", path);
+#ifdef _DEBUG
+	printf("[DEBUG] Settings saved in '%s'\n", path);
+#endif
 	return true;
 }

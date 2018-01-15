@@ -14,7 +14,7 @@ static int64_t startPosition_time;
 static int64_t endPosition_time;
 
 
-void sound_Init(bool musicEnable);
+void sound_Init(bool soundEnable, bool musicEnable);
 void sound_Load(char file[MAX_FILENAME], FMOD_SOUND **sound);
 void sound_Play_Fire(FMOD_CHANNEL **channel);
 void sound_Play_Grunt(FMOD_CHANNEL **channel, uint8_t startPosition);

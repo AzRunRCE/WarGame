@@ -19,11 +19,6 @@ void ft_SDL_init(void)
 		fprintf(stderr, "Erreur d'initialisation de SDL_INIT_VIDEO : %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
-	if (SDL_Init(SDL_INIT_EVENTS) == -1)
-	{
-		fprintf(stderr, "Erreur d'initialisation de SDL_INIT_EVENTS : %s\n", SDL_GetError());
-		exit(EXIT_FAILURE);
-	}
 	
 	if (TTF_Init() == -1)
 	{
@@ -65,25 +60,21 @@ int ft_SDL_DrawPlayers(void)
 			}
 			SDL_RenderCopy(_engine.screenRenderer, _engine.characterEnnemiSurface, &_engine.players[i].sprite, &rect);
 		}
-		else
+		else if (_engine.players[i].deathAnimationStep != 10)
 		{
-			if (_engine.players[i].deathAnimationStep != 10)
+			if (ft_delay(&_engine.players[i].lastAnim, 100))
 			{
-				if (ft_delay(&_engine.players[i].lastAnim, 100))
-				{
-					_engine.players[i].sprite.x = 56 * (_engine.players[i].deathAnimationStep % 5) + (_engine.players[i].deathAnimationStep % 5 + 1);
-					_engine.players[i].sprite.y = 41 * (_engine.players[i].deathAnimationStep / 5) + (_engine.players[i].deathAnimationStep / 5 + 1);
-					_engine.players[i].deathAnimationStep += 1;
-				}
-				_engine.players[i].sprite.h = 41;
-				_engine.players[i].sprite.w = 56;
-				rect.x -= 12;
-				rect.y -= 6;
-				rect.h = 41;
-				rect.w = 56;
-				SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.players[i].sprite, &rect);
+				_engine.players[i].sprite.x = 56 * (_engine.players[i].deathAnimationStep % 5) + (_engine.players[i].deathAnimationStep % 5 + 1);
+				_engine.players[i].sprite.y = 41 * (_engine.players[i].deathAnimationStep / 5) + (_engine.players[i].deathAnimationStep / 5 + 1);
+				_engine.players[i].deathAnimationStep += 1;
 			}
-		
+			_engine.players[i].sprite.h = 41;
+			_engine.players[i].sprite.w = 56;
+			rect.x -= 12;
+			rect.y -= 6;
+			rect.h = 41;
+			rect.w = 56;
+			SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.players[i].sprite, &rect);		
 		}
 		if (_engine.players[i].playerBase.state == FIRE)
 			sound_Play_Fire(&soundChannelEnemies);
@@ -128,7 +119,7 @@ void ft_SDL_DrawGame(void)
 		rect.w = 56;
 		SDL_RenderCopy(_engine.screenRenderer, _engine.AnimKill, &_engine.mainPlayer.sprite, &rect);
 	}
-	else
+	if (_engine.mainPlayer.playerBase.state == DEAD)
 		menuDeath();
 
 	browserBullets(headBullets, &drawBullet);	
@@ -196,9 +187,10 @@ void ft_SDL_checkPlayerHit(void)
 	if (_engine.mainPlayer.playerBase.state != DEAD && _engine.mainPlayer.playerBase.health < playerLastHealth && !ft_delay(&lastHit, 1000))
 	{
 		_engine.mainPlayer.playerBase.state = HIT;
-		
-		printf("grunt: %d", grunt);
-		//sound_Play_Grunt(&soundChannelGrunt, grunt);
+#ifdef _DEBUG
+		printf("[DEBUG] grunt: %d\n", grunt);
+#endif
+		/*sound_Play_Grunt(&soundChannelGrunt, grunt); /!\ FIXME /!\ */
 		if (grunt >= 5)
 			grunt = 0;
 		else
