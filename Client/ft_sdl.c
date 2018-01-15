@@ -14,11 +14,17 @@ uint16_t lastPlayerCount = 1;
 
 void ft_SDL_init(void)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
+	if (SDL_Init(SDL_INIT_VIDEO) == -1)
 	{
-		fprintf(stderr, "Erreur d'initialisation de SDL_Init : %s\n", SDL_GetError());
+		fprintf(stderr, "Erreur d'initialisation de SDL_INIT_VIDEO : %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
+	if (SDL_Init(SDL_INIT_EVENTS) == -1)
+	{
+		fprintf(stderr, "Erreur d'initialisation de SDL_INIT_EVENTS : %s\n", SDL_GetError());
+		exit(EXIT_FAILURE);
+	}
+	
 	if (TTF_Init() == -1)
 	{
 		fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());

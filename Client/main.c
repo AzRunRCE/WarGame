@@ -83,8 +83,6 @@ int main(int argc, char *argv[])
 		if (!checkServerisAlive(_menu.mainConfiguration))
 				exit(EXIT_FAILURE);
 #endif
-		printf("Sizeof Engine: %d\n", sizeof(_engine));
-		printf("Sizeof Player: %d\n", sizeof(_engine.players));
 		_engine.mainPlayer.relativePos.x = _engine.mainPlayer.playerBase.pos.x - _engine.camera.x;
 		_engine.mainPlayer.relativePos.y = _engine.mainPlayer.playerBase.pos.y - _engine.camera.y;
 		ft_nearWall_Check();

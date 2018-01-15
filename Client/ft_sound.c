@@ -41,8 +41,8 @@ void sound_Grunt_Poll(void)
 		uint64_t current = 0;
 		FMOD_RESULT result = 0;
 		result = FMOD_Channel_GetPosition(soundChannelGrunt, &current, FMOD_TIMEUNIT_MS);
-		if (result)
-			exit(result);
+		/*if (result) FIXME!!
+			exit(result); FIXME!!*/
 		if (current > endPosition_time)
 		{
 			if (FMOD_Sound_Release(sound_Grunt))

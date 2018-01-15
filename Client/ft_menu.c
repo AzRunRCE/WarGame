@@ -60,6 +60,7 @@ void initMainMenu(void)
 
 void initSubMenu(void)
 {
+	_subMenu.textInput = false;
 	_subMenu.selection = SELECTION_GAME_OPTIONS;
 
 	// TITLES
@@ -211,6 +212,8 @@ void reloadSubMenu(uint8_t subMenuSelection)
 	case SELECTION_GAME_OPTIONS:
 		min = SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP;
 		max = SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP + 1;
+		memset(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].textInput, 0, strlen(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].textInput));
+		memset(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].textInput, 0, strlen(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].textInput));
 		strncpy(_subMenu.buttonOptions[SELECTION_GAME_SERVER_ADDRESS - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->server, strlen(_menu.mainConfiguration->server));
 		strncpy(_subMenu.buttonOptions[SELECTION_GAME_PSEUDO - SUBMENU_OPTIONS_STEP].textInput, _menu.mainConfiguration->nickname, strlen(_menu.mainConfiguration->nickname));
 		break;
@@ -233,7 +236,7 @@ void reloadSubMenu(uint8_t subMenuSelection)
 	case SELECTION_VIDEO_OPTIONS:
 		min = SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP;
 		max = SELECTION_VIDEO_FULLSCREEN - SUBMENU_OPTIONS_STEP + 1;
-		memset(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, '\0', strlen(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput));
+		memset(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, 0, strlen(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput));
 		char temp[10];
 		sprintf(temp, "%d", _menu.mainConfiguration->width);
 		strncpy(_subMenu.buttonOptions[SELECTION_VIDEO_RESOLUTION - SUBMENU_OPTIONS_STEP].textInput, temp, strlen(temp));
@@ -250,13 +253,16 @@ void reloadSubMenu(uint8_t subMenuSelection)
 
 	for (uint8_t i = min; i < max; i++)
 	{
-		SDL_DestroyTexture(_subMenu.buttonOptions[i].textureTextInput);
-		_subMenu.buttonOptions[i].surfaceTextInput = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].textInput, _engine.colorWhite);
-		_subMenu.buttonOptions[i].rectTextInput.w = _subMenu.buttonOptions[i].surfaceTextInput->w;
-		_subMenu.buttonOptions[i].rectTextInput.h = _subMenu.buttonOptions[i].surfaceTextInput->h;
-		_subMenu.buttonOptions[i].textureTextInput = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextInput);
-		SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextInput);
-		_subMenu.buttonOptions[i].surfaceTextInput = NULL;
+		if (strlen(_subMenu.buttonOptions[i].textInput) > 0)
+		{
+			SDL_DestroyTexture(_subMenu.buttonOptions[i].textureTextInput);
+			_subMenu.buttonOptions[i].surfaceTextInput = TTF_RenderText_Blended(_menu.WarGameFontOptions, _subMenu.buttonOptions[i].textInput, _engine.colorWhite);
+			_subMenu.buttonOptions[i].rectTextInput.w = _subMenu.buttonOptions[i].surfaceTextInput->w;
+			_subMenu.buttonOptions[i].rectTextInput.h = _subMenu.buttonOptions[i].surfaceTextInput->h;
+			_subMenu.buttonOptions[i].textureTextInput = SDL_CreateTextureFromSurface(_engine.screenRenderer, _subMenu.buttonOptions[i].surfaceTextInput);
+			SDL_FreeSurface(_subMenu.buttonOptions[i].surfaceTextInput);
+			_subMenu.buttonOptions[i].surfaceTextInput = NULL;
+		}
 	}
 
 }
@@ -317,17 +323,18 @@ void mainMenu(int errcode)
 		SDL_RenderCopy(_engine.screenRenderer, _menu.texturePlay, NULL, &_menu.posPlay);
 		SDL_RenderCopy(_engine.screenRenderer, _menu.textureOptions, NULL, &_menu.posOptions);
 		SDL_RenderCopy(_engine.screenRenderer, _menu.textureQuit, NULL, &_menu.posQuit);
-		SDL_PollEvent(&_engine.event);
-		if (_engine.event.type == SDL_QUIT)
-			exit(EXIT_SUCCESS);
-		else if (_engine.event.type == SDL_KEYDOWN && ft_delay(&_menu.delayEvent, 150))
+		if (SDL_PollEvent(&_engine.event))
 		{
-			if (_engine.keystate[SDL_SCANCODE_UP] && _menu.selection > 0)
-				_menu.selection--;
-			else if (_engine.keystate[SDL_SCANCODE_DOWN] && _menu.selection < 2)
-				_menu.selection++;
+			if (_engine.event.type == SDL_QUIT)
+				exit(EXIT_SUCCESS);
+			else if (_engine.event.type == SDL_KEYDOWN)
+			{
+				if (_engine.keystate[SDL_SCANCODE_UP] && _menu.selection > 0)
+					_menu.selection--;
+				else if (_engine.keystate[SDL_SCANCODE_DOWN] && _menu.selection < 2)
+					_menu.selection++;
+			}
 		}
-
 		switch (_menu.selection)
 		{
 		case SELECTION_PLAY:
@@ -346,7 +353,6 @@ void mainMenu(int errcode)
 			SDL_RenderCopy(_engine.screenRenderer, _menu.textureQuitBlink, NULL, &_menu.posQuit);
 			break;
 		}
-		//printf("selection: %d\n", _menu.selection);
 		SDL_RenderPresent(_engine.screenRenderer);
 	}
 
@@ -594,100 +600,137 @@ void subMenu(uint8_t subMenuSelection)
 		break;
 	}
 	while (!_subMenu.selectionDone) {
-		SDL_PollEvent(&_engine.event);
 		SDL_RenderCopy(_engine.screenRenderer, _menu.background, NULL, NULL);
 		SDL_RenderCopy(_engine.screenRenderer, _subMenu.title[subMenuSelection].texture, NULL, &_subMenu.title[subMenuSelection].rect);
 		SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].textureTextWhite, NULL, &_subMenu.buttonOptions[HINT_ESCAPE_TO_QUIT - SUBMENU_OPTIONS_STEP].rectText);
-		if (_engine.event.type == SDL_QUIT)
-			exit(EXIT_SUCCESS);
-		else if (_engine.event.type == SDL_KEYDOWN && ft_delay(&_menu.delayEvent, 150))
+		if (SDL_PollEvent(&_engine.event))
 		{
-			if (_engine.keystate[SDL_SCANCODE_UP] && _subMenu.selection > _subMenu.selectionMin && _subMenu.selection <= _subMenu.selectionMax)
-				_subMenu.selection--;
-			else if (_engine.keystate[SDL_SCANCODE_DOWN] && _subMenu.selection < _subMenu.selectionMax)
-				_subMenu.selection++;
-			else if (_engine.keystate[SDL_SCANCODE_UP] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == SELECTION_SAVE)
-				_subMenu.selection = _subMenu.selectionMax;
-			else if (_engine.keystate[SDL_SCANCODE_DOWN] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == _subMenu.selectionMax)
-				_subMenu.selection = SELECTION_SAVE;
-			else if (subMenuSelection != SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
+			if (_engine.event.type == SDL_QUIT)
+				exit(EXIT_SUCCESS);
+			else if (_engine.event.type == SDL_KEYDOWN)
 			{
-				subMenu(SELECTION_MAIN_OPTIONS);
-				_menu.mainConfiguration = ft_loadConf();
-				reloadSubMenu(subMenuSelection);
-			}
-			else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
-				_subMenu.selectionDone = true;
-			else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_RETURN])
-				subMenu(_subMenu.selection);
-			else if (subMenuSelection != SELECTION_MAIN_OPTIONS && (_engine.keystate[SDL_SCANCODE_RETURN] || _engine.keystate[SDL_SCANCODE_LEFT] || _engine.keystate[SDL_SCANCODE_RIGHT]))
-			{
-				switch (_subMenu.selection)
+				if (_engine.keystate[SDL_SCANCODE_UP] && _subMenu.selection > _subMenu.selectionMin && _subMenu.selection <= _subMenu.selectionMax)
+					_subMenu.selection--;
+				else if (_engine.keystate[SDL_SCANCODE_DOWN] && _subMenu.selection < _subMenu.selectionMax)
+					_subMenu.selection++;
+				else if (_engine.keystate[SDL_SCANCODE_UP] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == SELECTION_SAVE)
+					_subMenu.selection = _subMenu.selectionMax;
+				else if (_engine.keystate[SDL_SCANCODE_DOWN] && subMenuSelection > SELECTION_MAIN_OPTIONS && _subMenu.selection == _subMenu.selectionMax)
+					_subMenu.selection = SELECTION_SAVE;
+				else if (subMenuSelection != SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
 				{
-				case SELECTION_SOUND_SOUND_VOLUME:
-					if (_engine.keystate[SDL_SCANCODE_LEFT])
+					subMenu(SELECTION_MAIN_OPTIONS);
+					_menu.mainConfiguration = ft_loadConf();
+					reloadSubMenu(subMenuSelection);
+				}
+				else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_ESCAPE])
+					_subMenu.selectionDone = true;
+				else if (subMenuSelection == SELECTION_MAIN_OPTIONS && _engine.keystate[SDL_SCANCODE_RETURN])
+					subMenu(_subMenu.selection);
+				else if (subMenuSelection != SELECTION_MAIN_OPTIONS && (_engine.keystate[SDL_SCANCODE_RETURN] || _engine.keystate[SDL_SCANCODE_LEFT] || _engine.keystate[SDL_SCANCODE_RIGHT]))
+				{
+					switch (_subMenu.selection)
 					{
-						if (_menu.mainConfiguration->soundLevel > 10)
-							_menu.mainConfiguration->soundLevel -= 10;
+					case SELECTION_SOUND_SOUND_VOLUME:
+						if (_engine.keystate[SDL_SCANCODE_LEFT])
+						{
+							if (_menu.mainConfiguration->soundLevel > 10)
+								_menu.mainConfiguration->soundLevel -= 10;
+							else
+								_menu.mainConfiguration->soundLevel = 100;
+						}
 						else
-							_menu.mainConfiguration->soundLevel = 100;
-					}
-					else
-					{
-						if (_menu.mainConfiguration->soundLevel < 100)
-							_menu.mainConfiguration->soundLevel += 10;
+						{
+							if (_menu.mainConfiguration->soundLevel < 100)
+								_menu.mainConfiguration->soundLevel += 10;
+							else
+								_menu.mainConfiguration->soundLevel = 10;
+						}
+						break;
+					case SELECTION_SOUND_MUSIC_VOLUME:
+						if (_engine.keystate[SDL_SCANCODE_LEFT])
+						{
+							if (_menu.mainConfiguration->musicLevel > 10)
+								_menu.mainConfiguration->musicLevel -= 10;
+							else
+								_menu.mainConfiguration->musicLevel = 100;
+						}
 						else
-							_menu.mainConfiguration->soundLevel = 10;
-					}
-					break;
-				case SELECTION_SOUND_MUSIC_VOLUME:
-					if (_engine.keystate[SDL_SCANCODE_LEFT])
-					{
-						if (_menu.mainConfiguration->musicLevel > 10)
-							_menu.mainConfiguration->musicLevel -= 10;
-						else
-							_menu.mainConfiguration->musicLevel = 100;
-					}
-					else
-					{
-						if (_menu.mainConfiguration->musicLevel < 100)
-							_menu.mainConfiguration->musicLevel += 10;
-						else
-							_menu.mainConfiguration->musicLevel = 10;
-					}
-					break;
-				case SELECTION_SOUND_MUSIC_ACTIVATION:
+						{
+							if (_menu.mainConfiguration->musicLevel < 100)
+								_menu.mainConfiguration->musicLevel += 10;
+							else
+								_menu.mainConfiguration->musicLevel = 10;
+						}
+						break;
+					case SELECTION_SOUND_MUSIC_ACTIVATION:
 						if (_menu.mainConfiguration->music)
 							_menu.mainConfiguration->music = false;
 						else
 							_menu.mainConfiguration->music = true;
 						break;
-				case SELECTION_SOUND_SOUND_ACTIVATION:
-					if (_menu.mainConfiguration->sound)
-						_menu.mainConfiguration->sound = false;
-					else
-						_menu.mainConfiguration->sound = true;
-					break;
-				case SELECTION_VIDEO_RESOLUTION:
-					if (_engine.keystate[SDL_SCANCODE_LEFT])
-					{
-						if (_menu.mainConfiguration->width > 800)
-							_menu.mainConfiguration->width -= 192;
+					case SELECTION_SOUND_SOUND_ACTIVATION:
+						if (_menu.mainConfiguration->sound)
+							_menu.mainConfiguration->sound = false;
 						else
-							_menu.mainConfiguration->width = 1184;
-					}
-					else
-					{
-						if (_menu.mainConfiguration->width < 1184)
-							_menu.mainConfiguration->width += 192;
+							_menu.mainConfiguration->sound = true;
+						break;
+					case SELECTION_VIDEO_RESOLUTION:
+						if (_engine.keystate[SDL_SCANCODE_LEFT])
+						{
+							if (_menu.mainConfiguration->width > 800)
+								_menu.mainConfiguration->width -= 192;
+							else
+								_menu.mainConfiguration->width = 1184;
+						}
 						else
-							_menu.mainConfiguration->width = 800;
+						{
+							if (_menu.mainConfiguration->width < 1184)
+								_menu.mainConfiguration->width += 192;
+							else
+								_menu.mainConfiguration->width = 800;
+						}
+						_menu.mainConfiguration->height = _menu.mainConfiguration->width * (3.0 / 4.0);
+						break;
+					case SELECTION_GAME_SERVER_ADDRESS:
+						if (_engine.keystate[SDL_SCANCODE_RETURN])
+						{
+							if (_subMenu.textInput)
+							{
+								SDL_StopTextInput();
+								_subMenu.textInput = false;
+							}
+							else
+							{
+								SDL_StartTextInput();
+								_subMenu.textInput = true;
+							}
+						}
+						break;
+					case SELECTION_SAVE:
+						if (_engine.keystate[SDL_SCANCODE_RETURN])
+							ft_saveConf(_menu.mainConfiguration);
+						break;
 					}
-					_menu.mainConfiguration->height = _menu.mainConfiguration->width * (3.0 / 4.0);
-					break;
-				case SELECTION_SAVE:
-					if (_engine.keystate[SDL_SCANCODE_RETURN])
-						ft_saveConf(_menu.mainConfiguration);
+					reloadSubMenu(subMenuSelection);
+				}
+				else if (_subMenu.textInput && _engine.keystate[SDL_SCANCODE_BACKSPACE])
+				{
+					if (_subMenu.selection == SELECTION_GAME_SERVER_ADDRESS && strlen(_menu.mainConfiguration->server) > 0)
+						_menu.mainConfiguration->server[strlen(_menu.mainConfiguration->server) - 1] = '\0';
+					else if (_subMenu.selection == SELECTION_GAME_PSEUDO && strlen(_menu.mainConfiguration->nickname) > 0)
+						_menu.mainConfiguration->nickname[strlen(_menu.mainConfiguration->nickname) - 1] = '\0';
+					reloadSubMenu(subMenuSelection);
+				}
+			}
+			else if (_engine.event.type == SDL_TEXTINPUT)
+			{
+				switch (_subMenu.selection)
+				{
+				case SELECTION_GAME_SERVER_ADDRESS:
+					if (strlen(_menu.mainConfiguration->server) < MAX_LENGTH)
+						strcat(_menu.mainConfiguration->server, _engine.event.text.text);
+					printf("server: %s\n", _menu.mainConfiguration->server);
 					break;
 				}
 				reloadSubMenu(subMenuSelection);
@@ -706,13 +749,15 @@ void subMenu(uint8_t subMenuSelection)
 			for (uint8_t i = _subMenu.selectionMin - SUBMENU_OPTIONS_STEP; i < _subMenu.selectionMax - SUBMENU_OPTIONS_STEP + 1; i++)
 			{
 				SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[i].textureTextWhite, NULL, &_subMenu.buttonOptions[i].rectText);
-				SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[i].textureTextInput, NULL, &_subMenu.buttonOptions[i].rectTextInput);
+				if (strlen(_subMenu.buttonOptions[i].textInput) > 0)
+					SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[i].textureTextInput, NULL, &_subMenu.buttonOptions[i].rectTextInput);
 			}
 			SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].textureTextWhite, NULL, &_subMenu.buttonOptions[SELECTION_SAVE - SUBMENU_OPTIONS_STEP].rectText);
 			SDL_RenderCopy(_engine.screenRenderer, _subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].textureTextRed, NULL, &_subMenu.buttonOptions[_subMenu.selection - SUBMENU_OPTIONS_STEP].rectText);
 			break;
 		}
 		printf("SubMenu selection: %d\n", _subMenu.selection);
+		printf("TextInput: %d\n", _subMenu.textInput);
 		SDL_RenderPresent(_engine.screenRenderer);
 	}
 }

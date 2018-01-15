@@ -163,6 +163,7 @@ typedef struct _SubMenu {
 	uint8_t selectionMax;
 	bool selectionDone;
 	bool subMenuLoaded;
+	bool textInput;
 	TextTitle title[SUBMENU_TITLE_MAX];
 	TextButton button[SUBMENU_BUTTON_MAX];
 	ButtonOptions buttonOptions[SUBMENU_OPTIONS_MAX];
