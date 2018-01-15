@@ -3,9 +3,9 @@ Work in progress, alpha only for now
 
 ## Features screenshots
 ### Game HUD
-![Game HUD](/screenshots/game.png?raw=true "Game HUD")
+![Game HUD](/screenshots/game.jpg?raw=true "Game HUD")
 ### Menu
-![Menu](/screenshots/game.png?raw=true "Menu")
+![Menu](/screenshots/menu.jpg?raw=true "Menu")
 
 
 ## License
