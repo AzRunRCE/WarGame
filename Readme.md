@@ -1,5 +1,6 @@
 # WarGame
 Work in progress, alpha only for now
+[![pipeline status](https://git.chunkz.net/WarGame/WarGame/badges/master/pipeline.svg)](https://git.chunkz.net/WarGame/WarGame/commits/master)
 
 ## Features screenshots
 ### Gameplay overview
