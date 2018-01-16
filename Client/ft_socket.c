@@ -70,7 +70,7 @@ int network_Init(const char *address, SOCKADDR_IN *sin)
 	return sock;
 }
 
-bool readBullets_callback(pb_istream_t *stream, void **arg)
+bool readBullets_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
 	BulletMessage bullet;
 
@@ -181,7 +181,7 @@ int write_client(const uint8_t *writeBuffer, const int length)
 	return n;
 }
 
-bool readPlayers_callback(pb_istream_t *stream, void **arg)
+bool readPlayers_callback(pb_istream_t *stream, const pb_field_t *field, void **arg)
 {
 	PlayerBase pMessage = PlayerBase_init_zero;
 	if (!pb_decode(stream, PlayerBase_fields, &pMessage))

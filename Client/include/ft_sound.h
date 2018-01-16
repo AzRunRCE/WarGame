@@ -1,7 +1,7 @@
 #ifndef FT_SOUND_H
 #define FT_SOUND_H
 #include <fmod.h>
-#include <SDL_config.h>
+#include <SDL.h>
 #define MAX_SOUND 6
 #define MAX_FILENAME 30
 
