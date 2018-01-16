@@ -13,7 +13,9 @@ build:
     - gcc -v
     - cd Client
     - make distclean
+    - mkdir obj
   script: 
     - make
   after_script:
     - make distclean
+    - rmdir obj
