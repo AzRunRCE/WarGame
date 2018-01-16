@@ -12,6 +12,8 @@ build:
     - apt update && apt -y install build-essential 
     - gcc -v
     - cd Client
+    - make distclean
   script: 
-    - make clean
     - make
+  after_script:
+    - make distclean
