@@ -4,18 +4,20 @@
 # see https://hub.docker.com/_/gcc/
 image: gcc
 
-build:
+stages:
+    - build-client
+    - build-server
+
+
+build-client:
   stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - sudo apt update && sudo apt -y install build-essential 
+    - sudo apt update && sudo apt -y install build-essential libsdl2-image-dev libsdl2-dev libsdl2-ttf-dev
     - gcc -v
     - cd Client
     - make distclean
-    - mkdir obj
   script: 
     - make
   after_script:
     - make distclean
-    - rmdir obj

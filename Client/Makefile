@@ -7,6 +7,8 @@ SRC=main.c common.c ft_configuration.c ft_explode.c ft_menu.c ft_socket.c ft_vie
 OBJDIR=obj
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 
+$(shell mkdir -p $(OBJDIR))
+
 all: $(EXEC)
 
 debug:

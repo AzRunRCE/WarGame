@@ -7,6 +7,8 @@ SRC=main.c common.c ft_map.c ft_checkcollision.c ft_disconnect.c ft_client.c ft_
 OBJDIR=obj
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 
+$(shell mkdir -p $(OBJDIR))
+
 all: $(EXEC)
 debug:
 	$(CC) $(CFLAGS) -g $(SRC) -o $(DEBUGEXEC) $(LDFLAGS)
