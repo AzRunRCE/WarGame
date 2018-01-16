@@ -21,3 +21,16 @@ build-client:
     - make
   after_script:
     - make distclean
+
+build-server:
+  stage: build
+  # install the necessary build tools when needed
+  before_script:
+    - sudo apt update && sudo apt -y install build-essential libsdl2-image-dev libsdl2-dev libsdl2-ttf-dev
+    - gcc -v
+    - cd Server/Windows
+    - make distclean
+  script: 
+    - make
+  after_script:
+    - make distclean
