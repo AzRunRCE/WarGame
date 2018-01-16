@@ -41,6 +41,7 @@ bool ft_chat_Add(uint8_t messageType, char *arguments);
 void ft_chat_Remove(uint8_t messagePosition);
 void ft_chat_History_Set(uint8_t messagePosition);
 void ft_chat_History_Show(void);
+void ft_chat_History_Hide(void);
 
 bool ft_chat_Display(void);
 void ft_chat_Init(void);

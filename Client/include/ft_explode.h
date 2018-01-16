@@ -7,9 +7,8 @@ typedef struct _Explode
 	SDL_Rect Pos;
 	SDL_Rect Sprite;
 
-	int Step;
-	int Delay;
-	int lastAnim;
+	uint8_t Step;
+	uint32_t lastAnim;
 }Explode;
 
 

@@ -10,7 +10,7 @@ stages:
 before_script:
     - sudo apt update && sudo apt -y install build-essential libsdl2-image-dev libsdl2-dev libsdl2-ttf-dev
     - gcc -v
-    - cd Client
+    - cd $PROJECTPATH
     - make distclean
 after_script:
     - make distclean
@@ -18,6 +18,8 @@ after_script:
 
 build-client:
   stage: build
+  variables:
+    PROJECTPATH: Client
   script: 
     - make
   only:
@@ -25,6 +27,8 @@ build-client:
 
 build-server:
   stage: build
+  variables:
+    PROJECTPATH: Server/Windows
   script: 
     - make
   only:

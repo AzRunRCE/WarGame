@@ -223,7 +223,7 @@ bool GetKeyPressEvent(void)
 		else if (_engine.keystate[SDL_SCANCODE_J])
 			ft_chat_History_Hide();
 	}
-	else if (_engine.mainPlayer.playerBase.state = DEAD)
+	else if (_engine.mainPlayer.playerBase.state == DEAD)
 	{
 		if (!_engine.cooldownDeath && _engine.keystate[SDL_SCANCODE_SPACE])
 			/* When spawn cooldown is done and space pressed */
