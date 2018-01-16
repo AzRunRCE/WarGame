@@ -5,32 +5,27 @@
 image: gcc
 
 stages:
-    - build-client
-    - build-server
-
-
-build-client:
-  stage: build
-  # install the necessary build tools when needed
-  before_script:
+    - build
+    
+before_script:
     - sudo apt update && sudo apt -y install build-essential libsdl2-image-dev libsdl2-dev libsdl2-ttf-dev
     - gcc -v
     - cd Client
     - make distclean
+after_script:
+    - make distclean
+
+
+build-client:
+  stage: build
   script: 
     - make
-  after_script:
-    - make distclean
+  only:
+    - master
 
 build-server:
   stage: build
-  # install the necessary build tools when needed
-  before_script:
-    - sudo apt update && sudo apt -y install build-essential libsdl2-image-dev libsdl2-dev libsdl2-ttf-dev
-    - gcc -v
-    - cd Server/Windows
-    - make distclean
   script: 
     - make
-  after_script:
-    - make distclean
+  only:
+    - master
