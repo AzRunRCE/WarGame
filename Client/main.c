@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	Engine_init();
 	ft_nearWall_Init();
 	ft_chat_Init();
-	mainMenu(_menu.mainConfiguration, 0);
+	mainMenu(0);
 	if (!network_CreateConnection(_menu.mainConfiguration))
 		perror("Create_connection()");
 	if (NwkThreadRet < 0)
